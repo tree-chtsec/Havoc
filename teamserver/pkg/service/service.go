@@ -34,7 +34,7 @@ func NewService(engine *gin.Engine) *Service {
 
 func (s *Service) Start() {
 
-	s.engine.GET("/"+s.Config.Endpoint, func(context *gin.Context) {
+	s.engine.GET("/service/"+s.Config.Endpoint, func(context *gin.Context) {
 		upgrade := websocket.Upgrader{}
 		WebSocket, err := upgrade.Upgrade(context.Writer, context.Request, nil)
 		if err != nil {

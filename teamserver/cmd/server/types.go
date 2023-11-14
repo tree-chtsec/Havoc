@@ -31,6 +31,11 @@ type Client struct {
 	Mutex         sync.Mutex
 }
 
+type client struct {
+	username string
+	socket   *websocket.Conn
+}
+
 type Users struct {
 	Name     string
 	Password string
@@ -80,10 +85,7 @@ type Teamserver struct {
 	WebHooks   *webhook.WebHook
 	DB         *db.DB
 
-	Server struct {
-		Path   string
-		Engine *gin.Engine
-	}
+	Server *ServerApi
 
 	Agents    agent.Agents
 	Listeners []*Listener
@@ -94,4 +96,7 @@ type Teamserver struct {
 		Compiler32 string
 		Nasm       string
 	}
+
+	// rewrite
+	clients sync.Map
 }

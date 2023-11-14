@@ -3,7 +3,6 @@ package server
 import "C"
 import (
 	"Havoc/pkg/agent"
-	"Havoc/pkg/common/certs"
 	"Havoc/pkg/db"
 	"Havoc/pkg/service"
 	"Havoc/pkg/webhook"
@@ -13,14 +12,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/sha3"
 
@@ -31,7 +28,6 @@ import (
 	"Havoc/pkg/logger"
 	"Havoc/pkg/packager"
 	"Havoc/pkg/profile"
-	"Havoc/pkg/utils"
 )
 
 func NewTeamserver(DatabasePath string) *Teamserver {
@@ -50,7 +46,6 @@ func (t *Teamserver) SetServerFlags(flags TeamserverFlags) {
 }
 
 func (t *Teamserver) Start() {
-	logger.Debug("Starting teamserver...")
 	var (
 		ServerFinished      chan bool
 		TeamserverWs        string
@@ -58,6 +53,8 @@ func (t *Teamserver) Start() {
 		ListenerCount       int
 		KillDate            int64
 	)
+
+	logger.Debug("Starting teamserver...")
 
 	if err != nil {
 		logger.Error("Couldn't get the current directory: " + err.Error())
@@ -72,7 +69,12 @@ func (t *Teamserver) Start() {
 		t.Flags.Server.Port = strconv.Itoa(t.Profile.ServerPort())
 	}
 
-	gin.SetMode(gin.ReleaseMode)
+	if t.Server, err = NewServerApi(t); err != nil {
+		logger.Error("Failed to start api server: " + err.Error())
+		return
+	}
+
+	/*gin.SetMode(gin.ReleaseMode)
 	t.Server.Engine = gin.New()
 
 	t.Server.Engine.GET("/", func(context *gin.Context) {
@@ -158,7 +160,10 @@ func (t *Teamserver) Start() {
 		ServerFinished <- true
 
 		os.Exit(0)
-	}(t.Flags.Server.Host, t.Flags.Server.Port)
+	}(t.Flags.Server.Host, t.Flags.Server.Port)*/
+
+	// start the api server
+	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, TeamserverPath+"/data", &ServerFinished)
 
 	t.WebHooks = webhook.NewWebHook()
 	t.Listeners = []*Listener{}
@@ -191,7 +196,6 @@ func (t *Teamserver) Start() {
 
 	// start teamserver service
 	if t.Profile.Config.Service != nil {
-
 		logger.Warn("Service api has been disabled for this version.")
 
 		// 3rd Party Agent Support Enabled
