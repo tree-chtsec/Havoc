@@ -1,22 +1,13 @@
-#include <global.hpp>
-#include <Havoc/Havoc.hpp>
-#include <QTimer>
+#include <Havoc.h>
+
+HavocClient* Havoc = nullptr;
 
 auto main(
     int    argc,
     char** argv
 ) -> int {
-    auto HavocApp = QApplication( argc, argv );
-    auto Status   = 0;
+    auto Application = QApplication( argc, argv );
 
-    QGuiApplication::setWindowIcon( QIcon( ":/Havoc.ico" ) );
-
-    HavocNamespace::HavocApplication = new HavocNamespace::HavocSpace::Havoc( new QMainWindow );
-    HavocNamespace::HavocApplication->Init( argc, argv );
-
-    Status = QApplication::exec();
-
-    spdlog::info( "Havoc Application status: {}", Status );
-
-    return Status;
+    Havoc = new HavocClient;
+    Havoc->Main( argc, argv );
 }

@@ -7,3 +7,18 @@
 [submodule "client/external/toml"]
 	path = client/external/toml
 	url = https://github.com/ToruNiina/toml11
+[submodule "client/extern/spdlog"]
+	path = client/extern/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "client/extern/toml"]
+	path = client/extern/toml
+	url = https://github.com/ToruNiina/toml11
+[submodule "client/extern/json"]
+	path = client/extern/json
+	url = https://github.com/nlohmann/json
+[submodule "client/extern/pybind11"]
+	path = client/extern/pybind11
+	url = https://github.com/pybind/pybind11
+[submodule "client/extern/http"]
+	path = client/extern/http
+	url = https://github.com/yhirose/cpp-httplib
