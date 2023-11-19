@@ -31,7 +31,7 @@ type Client struct {
 	Mutex         sync.Mutex
 }
 
-type client struct {
+type HavocUser struct {
 	username string
 	socket   *websocket.Conn
 }

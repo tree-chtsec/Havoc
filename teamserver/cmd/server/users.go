@@ -47,7 +47,7 @@ func (t *Teamserver) UserLogin(token string, login any, socket *websocket.Conn) 
 	}
 
 	// store the token and client data & socket into the sync map
-	t.clients.Store(token, client{
+	t.clients.Store(token, HavocUser{
 		socket:   socket,
 		username: username,
 	})
@@ -57,7 +57,7 @@ func (t *Teamserver) UserStatus(username string) int {
 	var status = UserStatusOffline
 
 	t.clients.Range(func(key, value any) bool {
-		if value.(client).username == username {
+		if value.(HavocUser).username == username {
 			status = UserStatusOnline
 			return false
 		}

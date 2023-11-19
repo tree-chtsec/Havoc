@@ -3,7 +3,8 @@ package server
 import (
 	"Havoc/pkg/common/certs"
 	"Havoc/pkg/logger"
-	"Havoc/pkg/utils"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -15,8 +16,8 @@ import (
 )
 
 const (
-	ApiMaxRequestRead  = 50000000 // 50mb
-	ApiMinTokenRequest = 26
+	ApiMaxRequestRead = 50000000 // 50mb
+	ApiTokenLength    = 32
 )
 
 type teamserver interface {
@@ -28,6 +29,10 @@ type teamserver interface {
 type ServerApi struct {
 	Engine *gin.Engine
 
+	// teamserver interface
+	// to interact with some functions to
+	// add/query/remove objects and data
+	// to from the teamserver
 	teamserver teamserver
 
 	// wait queue for websockets to send
@@ -54,6 +59,7 @@ func NewServerApi(teamserver teamserver) (*ServerApi, error) {
 }
 
 // Start the server api
+// generates an HTTP certificate and then starts the api server
 func (api *ServerApi) Start(host, port, certsPath string, finished *chan bool) {
 	var (
 		certPath = certsPath + "/server.cert"
@@ -120,7 +126,12 @@ func (api *ServerApi) login(ctx *gin.Context) {
 	}
 
 	// generate a token
-	token = utils.GenerateID(14)
+	// if failed then abort with status code
+	// 500: Internal Server Error
+	if token = api.generateToken(); len(token) == 0 {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
 	// get username from login request
 	switch login["username"].(type) {
@@ -219,7 +230,7 @@ func (api *ServerApi) handleEventClient(socket *websocket.Conn) {
 		goto ERROR
 	}
 
-	if len(body) < ApiMinTokenRequest {
+	if len(body) < ApiTokenLength {
 		logger.DebugError("Invalid socket request. closing connection")
 		goto ERROR
 	}
@@ -252,4 +263,15 @@ func (api *ServerApi) handleEventClient(socket *websocket.Conn) {
 	return
 ERROR:
 	socket.Close()
+}
+
+// generateToken
+// generate a token for the client to use for authenticate
+// and to use to interact with the api with
+func (api *ServerApi) generateToken() string {
+	b := make([]byte, ApiTokenLength/2)
+	if _, err := rand.Read(b); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(b)
 }

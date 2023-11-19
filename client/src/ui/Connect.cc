@@ -1,3 +1,4 @@
+#include <Common.h>
 #include <core/Helper.h>
 #include <ui/HavocConnect.h>
 
@@ -9,7 +10,7 @@ HavocConnect::HavocConnect() {
     resize( 600, 261 );
     setMinimumSize( QSize( 600, 0 ) );
     setMaximumSize( QSize( 800, 300 ) );
-
+    
     horizontalLayout = new QHBoxLayout( this );
     ConnectionWidget = new QWidget( this );
     gridLayout       = new QGridLayout( ConnectionWidget );
@@ -80,15 +81,12 @@ HavocConnect::HavocConnect() {
         }
     } );
 
-
     QObject::connect( ButtonAdd, &QPushButton::clicked, this, [&] {
-
         InputProfileName->setText( "Server" );
         InputHost->setText( "127.0.0.1" );
         InputPort->setText( "40056" );
         InputUsername->setText( "5pider" );
         InputPassword->setText( "password1234" );
-
     } );
 
     QMetaObject::connectSlotsByName( this );
