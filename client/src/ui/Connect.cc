@@ -1,6 +1,6 @@
 #include <Common.h>
 #include <core/Helper.h>
-#include <ui/HavocConnect.h>
+#include <ui/Connect.h>
 
 HavocConnect::HavocConnect() {
     if ( objectName().isEmpty() ) {
@@ -10,7 +10,7 @@ HavocConnect::HavocConnect() {
     resize( 600, 261 );
     setMinimumSize( QSize( 600, 0 ) );
     setMaximumSize( QSize( 800, 300 ) );
-    
+
     horizontalLayout = new QHBoxLayout( this );
     ConnectionWidget = new QWidget( this );
     gridLayout       = new QGridLayout( ConnectionWidget );
@@ -25,7 +25,7 @@ HavocConnect::HavocConnect() {
     ListConnection   = new QListWidget( this );
 
     horizontalLayout->setObjectName( QString::fromUtf8( "horizontalLayout" ) );
-    ConnectionWidget->setObjectName( QString::fromUtf8( "ConnectionWidget" ) ) ;
+    ConnectionWidget->setObjectName( QString::fromUtf8( "ConnectionWidget" ) );
 
     gridLayout->setObjectName( QString::fromUtf8( "gridLayout" ) );
     LabelHavoc->setObjectName( QString::fromUtf8( "LabelHavoc" ) );

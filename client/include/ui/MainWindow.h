@@ -1,5 +1,7 @@
-#ifndef HAVOCCLIENT_HAVOCMAINWINDOW_H
-#define HAVOCCLIENT_HAVOCMAINWINDOW_H
+#ifndef HAVOCCLIENT_MAINWINDOW_H
+#define HAVOCCLIENT_MAINWINDOW_H
+
+#include <Havoc.h>
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -12,28 +14,59 @@
 
 QT_BEGIN_NAMESPACE
 
+class HavocButton : public QPushButton
+{
+    bool    buttonUsed         = false;
+    QString originalObjectName = {};
+public:
+    explicit HavocButton( QWidget* w );
+
+    auto currentlyUsed() const -> bool;
+    auto setUsed( bool state ) -> void;
+};
+
 class HavocMainWindow : public QMainWindow
 {
+
 public:
     QWidget*        MainWidget      = nullptr;
     QGridLayout*    gridLayout      = nullptr;
     QGridLayout*    gridLayout_2    = nullptr;
     QWidget*        SideBarWidget   = nullptr;
-    QPushButton*    ButtonListeners = nullptr;
-    QPushButton*    ButtonSettings  = nullptr;
-    QPushButton*    ButtonScripts   = nullptr;
-    QPushButton*    ButtonAgents    = nullptr;
-    QPushButton*    ButtonServer    = nullptr;
-    QPushButton*    ButtonPayload   = nullptr;
+    HavocButton*    ButtonHavoc     = nullptr;
+    HavocButton*    ButtonListeners = nullptr;
+    HavocButton*    ButtonSettings  = nullptr;
+    HavocButton*    ButtonScripts   = nullptr;
+    HavocButton*    ButtonAgents    = nullptr;
+    HavocButton*    ButtonServer    = nullptr;
+    HavocButton*    ButtonPayload   = nullptr;
     QSpacerItem*    Spacer          = nullptr;
     QStackedWidget* StackedWidget   = nullptr;
+    HavocPageAgent* PageAgent       = nullptr;
+    QWidget*        PageListener    = nullptr;
+    QWidget*        PagePayload     = nullptr;
+    QWidget*        PageServer      = nullptr;
+    QWidget*        PageScripts     = nullptr;
+    QWidget*        PageSettings    = nullptr;
 
     explicit HavocMainWindow( );
 
     auto retranslateUi() -> void;
     auto renderWindow() -> void;
+    auto unusedSideButtons() -> void;
+    auto useSideButton(
+        HavocButton*   button,
+        const QString& name
+    ) -> void;
+
+    auto switchPageAgent() -> void;
+    auto switchPageListener() -> void;
+    auto switchPagePayload() -> void;
+    auto switchPageServer() -> void;
+    auto switchPageScripts() -> void;
+    auto switchPageSettings() -> void;
 };
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_HAVOCMAINWINDOW_H
+#endif //HAVOCCLIENT_MAINWINDOW_H

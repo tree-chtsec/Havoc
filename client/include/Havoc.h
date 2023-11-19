@@ -7,8 +7,9 @@
 #include <core/Helper.h>
 #include <core/Events.h>
 
+#include <ui/PageAgent.h>
 #include <ui/MainWindow.h>
-#include <ui/HavocConnect.h>
+#include <ui/Connect.h>
 
 #define HAVOC_VERSION  "0.7"
 #define HAVOC_CODENAME "Bite The Dust"
@@ -34,9 +35,12 @@ class HavocClient : public QWidget {
     } Events;
 
 public:
+    /* Main gui window */
+    HavocMainWindow* MainWindows = nullptr;
+
     /* havoc client constructor and destructor */
     explicit HavocClient();
-    ~HavocClient();
+    ~HavocClient() override;
 
     /* client entrypoint */
     auto Main(
@@ -53,8 +57,14 @@ public:
     /* get server connection token */
     auto getServerToken() -> std::string;
 
+    /* signals */
     auto eventHandle( const QByteArray& event ) -> void;
     auto eventClosed() -> void;
+
+    /*
+     * Ui methods
+     */
+    auto getStyleSheet() -> QByteArray;
 
     /* send request to api endpoint */
     auto ApiSend(

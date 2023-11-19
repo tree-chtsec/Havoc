@@ -11,9 +11,7 @@ HavocClient::HavocClient() {
 
 }
 
-HavocClient::~HavocClient() {
-
-}
+HavocClient::~HavocClient() = default;
 
 /*!
  * @brief
@@ -119,11 +117,25 @@ auto HavocClient::Main(
                 "Failed to login: Unauthorized"
             );
         } else {
+
+            if ( ( data = json::parse( Result->body ) ).is_discarded() ) {
+                goto InvalidServerResponseError;
+            }
+
+            if ( ! data.contains( "error" ) ) {
+                goto InvalidServerResponseError;
+            }
+
+            if ( ! data[ "error" ].is_string() ) {
+                goto InvalidServerResponseError;
+            }
+
             HavocMessageBox(
                 QMessageBox::Critical,
                 "Login failure",
-                QString( "Failed to login: %1" ).arg( Result->body.c_str() ).toStdString()
+                QString( "Failed to login: %1" ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
             );
+            return;
         }
 
     } else if ( Result->status != 200 ) {
@@ -132,6 +144,7 @@ auto HavocClient::Main(
             "Login failure",
             QString( "Unexpected response: Http status code %1" ).arg( Result->status ).toStdString()
         );
+        return;
     }
 
     spdlog::debug( "Result: {}", Result->body );
@@ -143,33 +156,25 @@ auto HavocClient::Main(
     Profile.Pass = data[ "password" ].get<std::string>();
 
     if ( ( data = json::parse( Result->body ) ).is_discarded() ) {
-        HavocMessageBox(
-            QMessageBox::Critical,
-            "Login failure",
-            "Failed to login: Invalid response from the server"
-        );
-        return;
+        goto InvalidServerResponseError;
     }
 
     if ( ! data.contains( "token" ) ) {
-        HavocMessageBox(
-            QMessageBox::Critical,
-            "Login failure",
-            "Failed to login: Invalid response from the server"
-        );
-        return;
+        goto InvalidServerResponseError;
     }
 
     if ( ! data[ "token" ].is_string() ) {
-        HavocMessageBox(
-            QMessageBox::Critical,
-            "Login failure",
-            "Failed to login: Invalid response from the server"
-        );
-        return;
+        goto InvalidServerResponseError;
     }
 
     Profile.Token = data[ "token" ].get<std::string>();
+
+    /*
+     * create main window
+     */
+    MainWindows = new HavocMainWindow;
+    MainWindows->renderWindow();
+    MainWindows->setStyleSheet( getStyleSheet() );
 
     /*
      * now set up the event thread and dispatcher
@@ -183,9 +188,20 @@ auto HavocClient::Main(
     QObject::connect( Events.Worker, &EventWorker::availableEvent, this, &HavocClient::eventHandle );
     QObject::connect( Events.Worker, &EventWorker::socketClosed, this, &HavocClient::eventClosed );
 
+    /* fire up the even thread that is going to
+     * process events and emit signals to the main gui thread */
     Events.Thread->start();
 
     QApplication::exec();
+
+    return;
+
+InvalidServerResponseError:
+    HavocMessageBox(
+        QMessageBox::Critical,
+        "Login failure",
+        "Failed to login: Invalid response from the server"
+    );
 }
 
 auto HavocClient::Exit() -> void {
@@ -212,6 +228,17 @@ auto HavocClient::eventHandle(
 ) -> void {
 
 }
+
+auto HavocClient::getStyleSheet(
+    void
+) -> QByteArray {
+    if ( QFile::exists( "theme.css" ) ) {
+        return HavocFileRead( "theme.css" );
+    }
+
+    return HavocFileRead( ":/style/default" );
+}
+
 
 
 

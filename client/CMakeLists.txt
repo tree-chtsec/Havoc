@@ -13,6 +13,7 @@ set( QT_VERSION 5 )
 set( REQUIRED_LIBS Core Gui Widgets Network WebSockets )
 set( REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebSockets )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY .. )
+set( APP_ICON_RESOURCE_WINDOWS "data/Havoc.qrc" )
 
 ##
 ## compiler definition
@@ -45,8 +46,9 @@ set( HAVOC_INCLUDE
         include/core/Helper.h
         include/core/Events.h
 
-        include/ui/HavocConnect.h
+        include/ui/Connect.h
         include/ui/MainWindow.h
+        include/ui/PageAgent.h
 )
 
 ##
@@ -59,8 +61,11 @@ set( HAVOC_SRC
         src/core/Helper.cc
         src/core/Events.cc
 
-        src/ui/HavocConnect.cc
+        src/ui/Connect.cc
         src/ui/MainWindow.cc
+        src/ui/PageAgent.cc
+        src/ui/AgentConsole.cc
+        include/ui/AgentConsole.h
 )
 
 find_package(OpenSSL REQUIRED)
@@ -68,7 +73,7 @@ find_package(OpenSSL REQUIRED)
 ##
 ## build Havoc client executable
 ##
-add_executable( ${BINARY_NAME} ${HAVOC_INCLUDE} ${HAVOC_SRC} )
+add_executable( ${BINARY_NAME} ${HAVOC_INCLUDE} ${HAVOC_SRC} ${APP_ICON_RESOURCE_WINDOWS} )
 
 ##
 ## Linking

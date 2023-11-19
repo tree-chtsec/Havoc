@@ -9,4 +9,12 @@ auto HavocMessageBox(
     std::string text
 ) -> void;
 
+auto HavocFileRead(
+    const QString& FilePath
+) -> QByteArray;
+
+auto GrayScaleIcon(
+    QImage image
+) -> QIcon;
+
 #endif //HAVOCCLIENT_HELPER_H

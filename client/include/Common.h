@@ -3,6 +3,9 @@
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
+/* std libraries */
+#include <memory>
+
 /* Qt libraries */
 #include <QApplication>
 #include <QMainWindow>
