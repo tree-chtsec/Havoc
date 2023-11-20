@@ -1,0 +1,130 @@
+QMainWindow {
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+QStackedWidget {
+    background-color: #313342;
+    color: #f8f8f2;
+}
+
+.QTabWidget::pane {
+    border:none
+}
+
+QComboBox {
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+QAbstractItemView {
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+QTableWidget {
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+QTabBar::tab {
+    background-color: #313342;
+    color: #f8f8f2;
+    min-width: 150px;
+
+    border-top-left-radius:  8px;
+    border-top-right-radius: 8px;
+
+    margin-bottom: 2px;
+    margin-left:   2px;
+
+    padding: 5px;
+}
+
+QTabBar::close-button {
+    image: url(:/icons/tab-close-button);
+    subcontrol-position: right;
+}
+
+QTabBar::tab:selected {
+    background: #44475a;
+    color: #f8f8f2;
+    border-bottom-color: transparent;
+}
+
+QTabBar::close-button {
+    image: url(:/icons/tab-close-button);
+    subcontrol-position: right;
+}
+
+QTabBar::close-button:hover {
+    background: #282a36;
+}
+
+QTabBar::tab {
+    margin-left: 2px;
+    background: #313342;
+    color: #f8f8f2;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid #44475A;
+    border-top-left-radius:  2px;
+    border-top-right-radius: 2px;
+    margin-top: 3px;
+    border-bottom-color: transparent;
+}
+
+QTabBar::tab:selected {
+    background: #44475A;
+    color: #f8f8f2;
+    border: 1px solid #6272A4;
+    border-bottom-color: transparent;
+}
+
+QTabBar::close-button {
+    image: url(:/icons/tab-close-button);
+    subcontrol-position: right;
+}
+
+QTabBar::close-button:hover {
+    background: #282a36;
+}
+
+QLabel {
+    color: #f8f8f2;
+}
+
+QLabel[objectName^="AgentDisplayer"] {
+    border-radius: 2px;
+    border:  1px solid #6272a4;
+    padding: 2px 6px 2px 6px;
+    background-color: #282a36;
+    font-weight: bold;
+}
+
+QPushButton[objectName="SideHavoc"] {
+    border: 0px;
+    background-color: #282a36;
+    color: #f8f8f2;
+    margin-left: 6px;
+    padding-top: 10px;
+    padding-right: 2px;
+    padding-bottom: 10px;
+}
+
+QPushButton[objectName^="SideButton"] {
+    border: 0;
+    background-color: #282a36;
+    color: #f8f8f2;
+    margin-left: 0;
+}
+
+QPushButton[HavocButtonUsed="true"] {
+    border: 0 solid #f8f8f2;
+    border-left-width: 2px;
+}
+
+QPushButton[HavocButtonUsed="false"] {
+    border: 0 solid #282a36;
+    border-left-width: 2px;
+}

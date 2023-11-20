@@ -1,0 +1,65 @@
+<!DOCTYPE RCC><RCC version="1.0">
+
+    <qresource prefix="/icons">
+
+        <file alias="havoc-white">../data/icons/havoc.png</file>
+
+
+        <file alias="32px-nocturn">../data/icons/32px-nocturn.png</file>
+        <file alias="32px-nocturn-white">../data/icons/32px-nocturn-white.png</file>
+
+        <file alias="tab-close-button">../data/icons/close-icon.png</file>
+
+        <file alias="16px-question-mark">../data/icons/16px-question-mark.png</file>
+        <file alias="16px-question-mark-white">../data/icons/16px-question-mark-white.png</file>
+
+        <file alias="16px-hosting">../data/icons/16px-hosting.png</file>
+        <file alias="16px-hosting-white">../data/icons/16px-hosting-white.png</file>
+
+        <file alias="32px-hosting">../data/icons/32px-hosting.png</file>
+        <file alias="32px-hosting-white">../data/icons/32px-hosting-white.png</file>
+
+        <file alias="16px-user">../data/icons/16px-user.png</file>
+        <file alias="16px-user-white">../data/icons/16px-user-white.png</file>
+
+        <file alias="16px-fingerprint">../data/icons/16px-fingerprint.png</file>
+        <file alias="16px-fingerprint-white">../data/icons/16px-fingerprint-white.png</file>
+
+        <file alias="16px-blind">../data/icons/16px-blind.png</file>
+        <file alias="16px-blind-white">../data/icons/16px-blind-white.png</file>
+
+        <file alias="16px-eye">../data/icons/16px-eye.png</file>
+        <file alias="16px-eye-white">../data/icons/16px-eye-white.png</file>
+
+        <file alias="16px-add">../data/icons/16px-add.png</file>
+        <file alias="16px-add-white">../data/icons/16px-add-white.png</file>
+
+        <file alias="16px-connection">../data/icons/16px-connection.png</file>
+        <file alias="16px-connection-white">../data/icons/16px-connection-white.png</file>
+
+        <file alias="32px-connection">../data/icons/32px-connection.png</file>
+        <file alias="32px-connection-white">../data/icons/32px-connection-white.png</file>
+
+        <file alias="32px-settings">../data/icons/32px-settings.png</file>
+        <file alias="32px-settings-white">../data/icons/32px-settings-white.png</file>
+
+        <file alias="32px-script">../data/icons/32px-script.png</file>
+        <file alias="32px-script-white">../data/icons/32px-script-white.png</file>
+
+        <file alias="32px-payload">../data/icons/32px-mine.png</file>
+        <file alias="32px-payload-white">../data/icons/32px-mine-white.png</file>
+
+        <file alias="32px-listener">../data/icons/32px-satellite.png</file>
+        <file alias="32px-listener-white">../data/icons/32px-satellite-white.png</file>
+
+    </qresource>
+
+    <qresource prefix="/style">
+        <file alias="default">../data/Default.css</file>
+    </qresource>
+
+    <qresource prefix="/font">
+        <file alias="monaco">../data/fonts/Monaco.ttf</file>
+    </qresource>
+
+</RCC>
