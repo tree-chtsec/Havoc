@@ -294,7 +294,7 @@ func (s *Service) dispatch(response map[string]map[string]any, client *ClientSer
 				err           error
 			)
 
-			logger.Debug(RegisterInfo)
+			logger.Debug("%v", RegisterInfo)
 
 			if val, ok := response["Body"]["AgentHeader"].(map[string]any)["Size"]; ok {
 				if Size, err = strconv.Atoi(val.(string)); err != nil {
@@ -324,7 +324,7 @@ func (s *Service) dispatch(response map[string]map[string]any, client *ClientSer
 			Header.AgentID = int(AgentID64)
 			Header.MagicValue = int(MagicValue64)
 
-			logger.Debug(Header)
+			logger.Debug("%v", Header)
 
 			AgentInstance = agent.RegisterInfoToInstance(Header, RegisterInfo)
 
@@ -341,7 +341,7 @@ func (s *Service) dispatch(response map[string]map[string]any, client *ClientSer
 
 		case BodyAgentResponse:
 			logger.Debug("BodyAgentResponse")
-			logger.Debug(response)
+			logger.Debug("%v", response)
 
 			var RandID string
 
@@ -352,7 +352,7 @@ func (s *Service) dispatch(response map[string]map[string]any, client *ClientSer
 				return
 			}
 
-			logger.Debug(s.clients)
+			logger.Debug("%v", s.clients)
 			for _, c := range s.clients {
 
 				if channel, ok := c.Responses[RandID]; ok {

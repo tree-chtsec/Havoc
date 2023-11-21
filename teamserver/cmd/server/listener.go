@@ -396,7 +396,7 @@ func (t *Teamserver) ListenerStartNotify(Listener map[string]any) {
 		}
 	)
 
-	logger.Debug(Listener)
+	logger.Debug("%v", Listener)
 
 	if val, ok := Listener["Name"]; ok {
 		ListenerName = val.(string)

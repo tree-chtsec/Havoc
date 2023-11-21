@@ -5,12 +5,6 @@
 Client/Build
 **/cmake-build-debug/
 
-# dont commit your loot
-Teamserver/data/loot/
-
-# dont commit your secrets
-Client/Data/database.db
-
 # ignore go stuff
 Teamserver/go.sum
 
@@ -25,7 +19,7 @@ Teamserver/data/x86_64-w64-mingw32-cross/
 havoc
 
 # ignore data directory
-data/
+./data/
 
 # ignore client directories
 client/Build/

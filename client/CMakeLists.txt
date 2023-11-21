@@ -49,6 +49,7 @@ set( HAVOC_INCLUDE
         include/ui/Connect.h
         include/ui/MainWindow.h
         include/ui/PageAgent.h
+        include/ui/AgentConsole.h
 )
 
 ##
@@ -65,7 +66,6 @@ set( HAVOC_SRC
         src/ui/MainWindow.cc
         src/ui/PageAgent.cc
         src/ui/AgentConsole.cc
-        include/ui/AgentConsole.h
 )
 
 find_package(OpenSSL REQUIRED)

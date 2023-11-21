@@ -75,8 +75,8 @@ func handleDemonAgent(Teamserver agent.TeamServer, Header agent.Header, External
 		// while we can read a command and request id, parse new packages
 		first_iter := true
 		asked_for_jobs := false
-		for (Header.Data.CanIRead(([]parser.ReadType{parser.ReadInt32, parser.ReadInt32}))) {
-			Command   = uint32(Header.Data.ParseInt32())
+		for Header.Data.CanIRead(([]parser.ReadType{parser.ReadInt32, parser.ReadInt32})) {
+			Command = uint32(Header.Data.ParseInt32())
 			RequestID = uint32(Header.Data.ParseInt32())
 
 			/* check if this is a 'reconnect' request */
@@ -89,7 +89,7 @@ func handleDemonAgent(Teamserver agent.TeamServer, Header agent.Header, External
 
 				_, err = Response.Write(Build)
 				if err != nil {
-					logger.Error(err)
+					logger.Error(err.Error())
 					return Response, false
 				}
 				logger.Debug(fmt.Sprintf("reconnected %x", Build))
@@ -288,7 +288,7 @@ func handleDemonAgent(Teamserver agent.TeamServer, Header agent.Header, External
 
 			_, err = Response.Write(Build)
 			if err != nil {
-				logger.Error(err)
+				logger.Error(err.Error())
 				return Response, false
 			}
 
@@ -327,12 +327,12 @@ func handleServiceAgent(Teamserver agent.TeamServer, Header agent.Header, Extern
 	if Agent != nil {
 		AgentData = Agent.ToMap()
 	}
-	
+
 	// Update Callback time
 	if Teamserver.AgentExist(Header.AgentID) {
 		Agent.UpdateLastCallback(Teamserver)
 	}
-	
+
 	Task = Teamserver.ServiceAgent(Header.MagicValue).SendResponse(AgentData, Header)
 	//logger.Debug("Response:\n", hex.Dump(Task))
 

@@ -2,10 +2,6 @@ package server
 
 import "C"
 import (
-	"Havoc/pkg/agent"
-	"Havoc/pkg/db"
-	"Havoc/pkg/service"
-	"Havoc/pkg/webhook"
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
@@ -21,13 +17,17 @@ import (
 	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/sha3"
 
+	"Havoc/pkg/agent"
 	"Havoc/pkg/colors"
 	"Havoc/pkg/common"
+	"Havoc/pkg/db"
 	"Havoc/pkg/events"
 	"Havoc/pkg/handlers"
 	"Havoc/pkg/logger"
 	"Havoc/pkg/packager"
 	"Havoc/pkg/profile"
+	"Havoc/pkg/service"
+	"Havoc/pkg/webhook"
 )
 
 func NewTeamserver(DatabasePath string) *Teamserver {
@@ -162,15 +162,17 @@ func (t *Teamserver) Start() {
 		os.Exit(0)
 	}(t.Flags.Server.Host, t.Flags.Server.Port)*/
 
+	// generate a new plugin system instance
+	t.Plugins = NewPluginSystem()
+	t.Plugins.RegisterPlugin("../plugins/plugin.so")
+
 	// start the api server
 	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, TeamserverPath+"/data", &ServerFinished)
 
 	t.WebHooks = webhook.NewWebHook()
 	t.Listeners = []*Listener{}
 
-	TeamserverWs = "wss://" + t.Flags.Server.Host + ":" + t.Flags.Server.Port
-
-	logger.Info("Starting Teamserver on " + colors.BlueUnderline(TeamserverWs))
+	logger.Info("Starting Teamserver on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
 
 	/* if we specified a webhook then lets use it. */
 	if t.Profile.Config.WebHook != nil {
@@ -572,7 +574,7 @@ func (t *Teamserver) handleRequest(id string) {
 		return
 	} else {
 
-		logger.Good("User <" + colors.Blue(pk.Body.Info["User"].(string)) + "> " + colors.Green("Authenticated"))
+		logger.Info("User \"%v\" Authenticated", colors.Blue(pk.Body.Info["User"].(string)))
 
 		client.Authenticated = true
 		client.ClientID = id

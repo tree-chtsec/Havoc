@@ -312,7 +312,7 @@ func (b *Builder) Build() bool {
 	for _, dir := range b.compilerOptions.SourceDirs {
 		files, err := os.ReadDir(b.sourcePath + "/" + dir)
 		if err != nil {
-			logger.Error(err)
+			logger.Error(err.Error())
 		}
 
 		for _, f := range files {
@@ -576,7 +576,7 @@ func (b *Builder) PatchConfig() ([]byte, error) {
 		err                error
 	)
 
-	logger.Debug(b.config.Config)
+	logger.Debug("%v", b.config.Config)
 
 	if val, ok := b.config.Config["Sleep"].(string); ok {
 		ConfigSleep, err = strconv.Atoi(val)

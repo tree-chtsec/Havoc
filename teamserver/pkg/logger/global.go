@@ -1,69 +1,60 @@
 package logger
 
 import (
-    "io"
-    "log"
-    "os"
+	"io"
+	"log"
+	"os"
 )
 
 var LoggerInstance *Logger
 
 func init() {
-    LoggerInstance = NewLogger(os.Stdout)
+	LoggerInstance = NewLogger(os.Stdout)
 }
 
 func NewLogger(StdOut io.Writer) *Logger {
-    var logger = new(Logger)
+	var logger = new(Logger)
 
-    logger.STDOUT = os.Stdout
-    logger.STDERR = os.Stderr
-    logger.showTime = true
-    logger.debug = false
-    logger.log = log.New(StdOut, "", 0)
+	logger.STDOUT = os.Stdout
+	logger.STDERR = os.Stderr
+	logger.debug = false
+	logger.log = log.New(StdOut, "", 0)
 
-    return logger
+	return logger
 }
 
-func Info(args ...interface{}) {
-    LoggerInstance.Info(args...)
+func Info(fmt string, args ...any) {
+	LoggerInstance.Info(fmt, args...)
 }
 
-func Good(args ...interface{}) {
-    LoggerInstance.Good(args...)
+func Debug(fmt string, args ...any) {
+	LoggerInstance.Debug(fmt, args...)
 }
 
-func Debug(args ...interface{}) {
-    LoggerInstance.Debug(args...)
+func DebugError(fmt string, args ...any) {
+	LoggerInstance.DebugError(fmt, args...)
 }
 
-func DebugError(args ...interface{}) {
-    LoggerInstance.DebugError(args...)
+func Warn(fmt string, args ...any) {
+	LoggerInstance.Warn(fmt, args...)
 }
 
-func Warn(args ...interface{}) {
-    LoggerInstance.Warn(args...)
+func Error(fmt string, args ...any) {
+	LoggerInstance.Error(fmt, args...)
 }
 
-func Error(args ...interface{}) {
-    LoggerInstance.Error(args...)
+func Fatal(fmt string, args ...any) {
+	LoggerInstance.Fatal(fmt, args...)
 }
 
-func Fatal(args ...interface{}) {
-    LoggerInstance.Fatal(args...)
-}
-
-func Panic(args ...interface{}) {
-    LoggerInstance.Panic(args...)
+func Panic(fmt string, args ...any) {
+	LoggerInstance.Panic(fmt, args...)
 }
 
 func SetDebug(enable bool) {
-    LoggerInstance.SetDebug(enable)
-}
-
-func ShowTime(time bool) {
-    LoggerInstance.ShowTime(time)
+	LoggerInstance.SetDebug(enable)
 }
 
 func SetStdOut(w io.Writer) {
-    LoggerInstance.log.SetOutput(w)
+	LoggerInstance.log.SetOutput(w)
 }

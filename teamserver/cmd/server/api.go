@@ -210,6 +210,8 @@ func (api *ServerApi) event(ctx *gin.Context) {
 // endpoint and send the token it previously got from the /api/login
 // endpoint. After all of this the teamserver is going to register
 // the client as officially logged in.
+//
+//	socket *websocket.Conn
 func (api *ServerApi) handleEventClient(socket *websocket.Conn) {
 	var (
 		body  []byte

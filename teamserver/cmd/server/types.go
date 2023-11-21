@@ -99,4 +99,5 @@ type Teamserver struct {
 
 	// rewrite
 	clients sync.Map
+	Plugins *PluginSystem
 }

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"time"
 
@@ -59,9 +58,7 @@ var CobraServer = &cobra.Command{
 			logger.Debug("Debug mode enabled")
 		}
 
-		logger.ShowTime(flags.Server.Verbose)
-
-		logger.Info(fmt.Sprintf("Havoc Framework [Version: %v] [CodeName: %v]", VersionNumber, VersionName))
+		logger.Info("%v [Version: %v %v]", colors.BoldWhite("Havoc Framework"), VersionNumber, VersionName)
 
 		if flags.Server.Default {
 			Server.SetProfile(DirPath + "/data/havoc.yaotl")
