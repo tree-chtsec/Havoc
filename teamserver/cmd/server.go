@@ -58,7 +58,7 @@ var CobraServer = &cobra.Command{
 			logger.Debug("Debug mode enabled")
 		}
 
-		logger.Info("%v [Version: %v %v]", colors.BoldWhite("Havoc Framework"), VersionNumber, VersionName)
+		logger.Info("%v [Version: %v %v]", colors.BoldWhite("Havoc Framework"), server.Version, server.CodeName)
 
 		if flags.Server.Default {
 			Server.SetProfile(DirPath + "/data/havoc.yaotl")

@@ -11,13 +11,11 @@ import (
 )
 
 var (
-	VersionNumber = "0.8"
-	VersionName   = "Killer Queen"
-	DatabasePath  = "data/teamserver.db"
+	DatabasePath = "data/teamserver.db"
 
 	HavocCli = &cobra.Command{
 		Use:          "havoc",
-		Short:        fmt.Sprintf("Havoc Framework [Version: %v] [CodeName: %v]", VersionNumber, VersionName),
+		Short:        fmt.Sprintf("Havoc Framework [Version: %v] [CodeName: %v]", server.Version, server.CodeName),
 		SilenceUsage: true,
 		RunE:         teamserverFunc,
 	}

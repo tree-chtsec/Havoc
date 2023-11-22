@@ -3,12 +3,13 @@ package server
 import (
 	"Havoc/pkg/common/certs"
 	"Havoc/pkg/logger"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"io"
 	"net/http"
 	"os"
@@ -23,6 +24,8 @@ const (
 type teamserver interface {
 	UserAuthenticate(username, password string) bool
 	UserLogin(token string, login any, socket *websocket.Conn)
+	UserLogoutByToken(user string) error
+	UserNameByToken(token string) (string, error)
 	UserStatus(username string) int
 }
 
@@ -38,7 +41,7 @@ type ServerApi struct {
 	// wait queue for websockets to send
 	// the access token to register the
 	// event endpoint
-	WaitQueue sync.Map
+	waitQueue sync.Map
 }
 
 func NewServerApi(teamserver teamserver) (*ServerApi, error) {
@@ -172,7 +175,7 @@ func (api *ServerApi) login(ctx *gin.Context) {
 	})
 
 	// store the token inside the wait queue
-	api.WaitQueue.Store(token, login)
+	api.waitQueue.Store(token, login)
 
 	return
 
@@ -228,18 +231,18 @@ func (api *ServerApi) handleEventClient(socket *websocket.Conn) {
 
 	// try to read the token from socket
 	if _, body, err = socket.ReadMessage(); err != nil {
-		logger.DebugError("Failed reading message from socket: " + err.Error())
+		logger.DebugError("failed reading message from socket: " + err.Error())
 		goto ERROR
 	}
 
 	if len(body) < ApiTokenLength {
-		logger.DebugError("Invalid socket request. closing connection")
+		logger.DebugError("invalid socket request. closing connection")
 		goto ERROR
 	}
 
 	// unmarshal the body to a map
 	if err = json.Unmarshal(body, &data); err != nil {
-		logger.DebugError("Failed unmarshal message from socket: " + err.Error())
+		logger.DebugError("failed unmarshal message from socket: " + err.Error())
 		goto ERROR
 	}
 
@@ -248,13 +251,13 @@ func (api *ServerApi) handleEventClient(socket *websocket.Conn) {
 	case string:
 		token = data["token"].(string)
 	default:
-		logger.DebugError("Failed retrieve token: invalid type")
+		logger.DebugError("failed retrieve token: invalid type")
 		goto ERROR
 	}
 
 	// check if is inside the wait queue
-	if login, ok = api.WaitQueue.Load(token); !ok {
-		logger.DebugError("Failed retrieve token from map: token entry not found")
+	if login, ok = api.waitQueue.Load(token); !ok {
+		logger.DebugError("failed retrieve token from map: token entry not found")
 		goto ERROR
 	}
 
@@ -262,7 +265,31 @@ func (api *ServerApi) handleEventClient(socket *websocket.Conn) {
 	// we're going to register the user to the teamserver
 	api.teamserver.UserLogin(token, login, socket)
 
-	return
+	// delete the token from the wait queue
+	api.waitQueue.Delete(token)
+
+	// this loop is just there to check the state of the connection
+	// and if the client somehow disconnected from the connection.
+	// if the user disconnected then handle it by close the resources
+	// related to that user session
+	for {
+		// check if any error arrived from reading any message or
+		// checking the state of the connection
+		if _, _, err = socket.ReadMessage(); err == nil {
+			continue
+		}
+
+		logger.Debug("user connection closed [token: %v] -> %v", token, err)
+
+		// log out the connected user client and send
+		// a broadcast event to every connected client
+		if err = api.teamserver.UserLogoutByToken(token); err != nil {
+			logger.DebugError("failed to logout user by token: %v", err)
+		}
+
+		break
+	}
+
 ERROR:
 	socket.Close()
 }

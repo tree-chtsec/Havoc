@@ -97,7 +97,11 @@ type Teamserver struct {
 		Nasm       string
 	}
 
-	// rewrite
+	events struct {
+		mutex sync.Mutex
+		list  []map[string]any
+	}
+
 	clients sync.Map
 	Plugins *PluginSystem
 }

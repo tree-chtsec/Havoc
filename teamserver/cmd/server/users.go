@@ -2,6 +2,8 @@ package server
 
 import (
 	"Havoc/pkg/logger"
+	"encoding/json"
+	"errors"
 	"github.com/gorilla/websocket"
 )
 
@@ -11,6 +13,7 @@ const (
 )
 
 func (t *Teamserver) UserAuthenticate(username, password string) bool {
+
 	if t.Profile.Config.Operators != nil {
 		for _, User := range t.Profile.Config.Operators.Users {
 			if User.Name == username && User.Password == password {
@@ -24,15 +27,18 @@ func (t *Teamserver) UserAuthenticate(username, password string) bool {
 
 func (t *Teamserver) UserLogin(token string, login any, socket *websocket.Conn) {
 	var (
-		username string
+		user string
+		err  error
 	)
 
+	// get the username of the login data
+	// sanity check if it's the right types
 	switch login.(type) {
 	case map[string]any:
 
 		switch login.(map[string]any)["username"].(type) {
 		case string:
-			username = login.(map[string]any)["username"].(string)
+			user = login.(map[string]any)["username"].(string)
 			break
 		default:
 			logger.DebugError("UserLogin: invalid login username type")
@@ -49,8 +55,56 @@ func (t *Teamserver) UserLogin(token string, login any, socket *websocket.Conn) 
 	// store the token and client data & socket into the sync map
 	t.clients.Store(token, HavocUser{
 		socket:   socket,
-		username: username,
+		username: user,
 	})
+
+	// retrieve all saved events
+	// and send them to the logged-in user
+	t.events.mutex.Lock()
+	for _, event := range t.events.list {
+		if err = t.UserSend(user, event); err != nil {
+			logger.DebugError("failed to send user event: %v", err)
+			return
+		}
+	}
+	t.events.mutex.Unlock()
+
+	// broadcast that we have new client connected
+	t.UserBroadcast(true, t.EventCreate(EventUserLogin, map[string]any{
+		"username": user,
+	}))
+}
+
+func (t *Teamserver) UserLogoutByToken(token string) error {
+	var (
+		value any
+		ok    bool
+		user  HavocUser
+		err   error
+	)
+
+	if value, ok = t.clients.Load(token); !ok {
+		return errors.New("user was not found by token")
+	}
+
+	user = value.(HavocUser)
+
+	// close the socket connection in
+	// case it's not closed already
+	if err = user.socket.Close(); err != nil {
+		return err
+	}
+
+	// broadcast to every connected client
+	// that this user has been disconnected
+	t.UserBroadcast(true, t.EventCreate(EventUserLogout, map[string]any{
+		"username": user.username,
+	}))
+
+	// delete the user from the client map
+	t.clients.Delete(token)
+
+	return nil
 }
 
 func (t *Teamserver) UserStatus(username string) int {
@@ -65,4 +119,99 @@ func (t *Teamserver) UserStatus(username string) int {
 	})
 
 	return status
+}
+
+func (t *Teamserver) UserNameByToken(token string) (string, error) {
+	var (
+		name string
+		err  error
+	)
+
+	err = errors.New("user not found by token")
+
+	t.clients.Range(func(key, value any) bool {
+		var user = value.(HavocUser)
+		if key == token {
+			name = user.username
+			err = nil
+			return false
+		}
+
+		return true
+	})
+
+	return name, err
+}
+
+func (t *Teamserver) UserSend(username string, event map[string]any) error {
+	var (
+		user HavocUser
+		err  error
+		data []byte
+	)
+
+	// default message
+	err = errors.New("user not found")
+
+	// iterate over connected users/clients
+	t.clients.Range(func(key, value any) bool {
+		user = value.(HavocUser)
+
+		// check if the connected client user
+		// is the one we are searching for
+		if user.username == username {
+			// marshal the event map into a json byte array
+			if data, err = json.Marshal(event); err != nil {
+				return false
+			}
+
+			// write the message to the specified user
+			if err = user.socket.WriteMessage(websocket.BinaryMessage, data); err != nil {
+				return false
+			}
+
+			// no error received so overwrite the one
+			// we specified at the beginning of the function
+			err = nil
+
+			return false
+		}
+
+		return true
+	})
+
+	return err
+}
+
+func (t *Teamserver) UserBroadcast(save bool, event map[string]any) {
+	var (
+		user HavocUser
+		err  error
+		data []byte
+	)
+
+	// iterate over connected users/clients
+	t.clients.Range(func(key, value any) bool {
+		user = value.(HavocUser)
+
+		// marshal the event map into a json byte array
+		if data, err = json.Marshal(event); err != nil {
+			return false
+		}
+
+		// write the message to the user
+		if err = user.socket.WriteMessage(websocket.BinaryMessage, data); err != nil {
+			return false
+		}
+
+		return true
+	})
+
+	// if the caller specified to save the event
+	// then append it to the event list
+	if save {
+		t.events.mutex.Lock()
+		t.events.list = append(t.events.list, event)
+		t.events.mutex.Unlock()
+	}
 }

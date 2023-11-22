@@ -26,8 +26,12 @@ import (
 	"Havoc/pkg/logger"
 	"Havoc/pkg/packager"
 	"Havoc/pkg/profile"
-	"Havoc/pkg/service"
 	"Havoc/pkg/webhook"
+)
+
+var (
+	Version  = "0.8"
+	CodeName = "Killer Queen"
 )
 
 func NewTeamserver(DatabasePath string) *Teamserver {
@@ -47,16 +51,16 @@ func (t *Teamserver) SetServerFlags(flags TeamserverFlags) {
 
 func (t *Teamserver) Start() {
 	var (
-		ServerFinished      chan bool
-		TeamserverWs        string
-		TeamserverPath, err = os.Getwd()
-		ListenerCount       int
-		KillDate            int64
+		ServerFinished chan bool
+		TeamserverPath string
+		ListenerCount  int
+		KillDate       int64
+		err            error
 	)
 
-	logger.Debug("Starting teamserver...")
+	t.Listeners = []*Listener{}
 
-	if err != nil {
+	if TeamserverPath, err = os.Getwd(); err != nil {
 		logger.Error("Couldn't get the current directory: " + err.Error())
 		return
 	}
@@ -74,103 +78,14 @@ func (t *Teamserver) Start() {
 		return
 	}
 
-	/*gin.SetMode(gin.ReleaseMode)
-	t.Server.Engine = gin.New()
-
-	t.Server.Engine.GET("/", func(context *gin.Context) {
-		context.Redirect(http.StatusMovedPermanently, "home/")
-	})
-
-	// Catch me if you can
-	t.Server.Engine.GET("/havoc/", func(context *gin.Context) {
-
-		var (
-			upgrade   websocket.Upgrader
-			WebSocket *websocket.Conn
-			ClientID  = utils.GenerateID(6)
-		)
-
-		if WebSocket, err = upgrade.Upgrade(context.Writer, context.Request, nil); err != nil {
-			logger.Error("Failed upgrading request: " + err.Error())
-			return
-		}
-
-		t.Clients.Store(ClientID,
-			&Client{
-				Username:      "",
-				GlobalIP:      WebSocket.RemoteAddr().String(),
-				Connection:    WebSocket,
-				ClientVersion: "",
-				Packager:      packager.NewPackager(),
-				Authenticated: false,
-			})
-
-		// Handle connections in a new goroutine.
-		go t.handleRequest(ClientID)
-	})
-
-	// TODO: pass this as a profile/command line flag
-	t.Server.Engine.Static("/home", "./bin/static")
-
-	t.Server.Engine.POST("/:endpoint", func(context *gin.Context) {
-		var endpoint = context.Request.RequestURI[1:]
-
-		if len(t.Endpoints) > 0 {
-			for i := range t.Endpoints {
-				if t.Endpoints[i].Endpoint == endpoint {
-					t.Endpoints[i].Function(context)
-				}
-			}
-		}
-	})
-
-	// start the teamserver websocket connection
-	go func(Host, Port string) {
-		var (
-			certPath = TeamserverPath + "/data/server.cert"
-			keyPath  = TeamserverPath + "/data/server.key"
-
-			Cert []byte
-			Key  []byte
-		)
-
-		Cert, Key, err = certs.HTTPSGenerateRSACertificate(Host)
-		if err != nil {
-			logger.Error("Failed to generate server certificates: " + err.Error())
-			os.Exit(0)
-		}
-
-		err = os.WriteFile(certPath, Cert, 0644)
-		if err != nil {
-			logger.Error("Couldn't save server cert file: " + err.Error())
-			os.Exit(0)
-		}
-
-		err = os.WriteFile(keyPath, Key, 0644)
-		if err != nil {
-			logger.Error("Couldn't save server cert file: " + err.Error())
-			os.Exit(0)
-		}
-
-		// start the teamserver
-		if err = t.Server.Engine.RunTLS(Host+":"+Port, certPath, keyPath); err != nil {
-			logger.Error("Failed to start websocket: " + err.Error())
-		}
-
-		ServerFinished <- true
-
-		os.Exit(0)
-	}(t.Flags.Server.Host, t.Flags.Server.Port)*/
-
 	// generate a new plugin system instance
-	t.Plugins = NewPluginSystem()
-	t.Plugins.RegisterPlugin("../plugins/plugin.so")
+	t.Plugins = NewPluginSystem(t)
+	if err = t.Plugins.RegisterPlugin("../HavocPlugins/plugin.hp"); err != nil {
+		logger.Error("failed to load plugin: %v", err)
+	}
 
 	// start the api server
 	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, TeamserverPath+"/data", &ServerFinished)
-
-	t.WebHooks = webhook.NewWebHook()
-	t.Listeners = []*Listener{}
 
 	logger.Info("Starting Teamserver on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
 
@@ -191,26 +106,9 @@ func (t *Teamserver) Start() {
 			}
 
 			if len(t.Profile.Config.WebHook.Discord.WebHook) > 0 {
+				t.WebHooks = webhook.NewWebHook()
 				t.WebHooks.SetDiscord(AvatarUrl, UserName, t.Profile.Config.WebHook.Discord.WebHook)
 			}
-		}
-	}
-
-	// start teamserver service
-	if t.Profile.Config.Service != nil {
-		logger.Warn("Service api has been disabled for this version.")
-
-		// 3rd Party Agent Support Enabled
-		t.Service = service.NewService(t.Server.Engine)
-		t.Service.Teamserver = t
-		t.Service.Data.ServerAgents = &t.Agents
-		t.Service.Config = *t.Profile.Config.Service
-
-		if len(t.Service.Config.Endpoint) > 0 {
-			t.Service.Start()
-			logger.Info(fmt.Sprintf("%v starting service handle on %v", "["+colors.BoldWhite("SERVICE")+"]", colors.BlueUnderline(TeamserverWs+"/"+t.Service.Config.Endpoint)))
-		} else {
-			logger.Error("Teamserver service error: Endpoint not specified")
 		}
 	}
 
@@ -500,6 +398,15 @@ func (t *Teamserver) Start() {
 	logger.Debug("Wait til the server shutdown")
 
 	<-ServerFinished
+}
+
+// Version
+// get the current server version
+func (*Teamserver) Version() map[string]string {
+	return map[string]string{
+		"version":  Version,
+		"codename": CodeName,
+	}
 }
 
 func (t *Teamserver) handleRequest(id string) {
@@ -803,7 +710,6 @@ func (t *Teamserver) RemoveClient(ClientID string) {
 }
 
 func (t *Teamserver) EventAppend(event packager.Package) []packager.Package {
-
 	// some sanity check
 	if event.Head.Event == 0 {
 		return t.EventsList

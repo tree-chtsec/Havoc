@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"plugin"
+	"reflect"
 	"sync"
 )
 
@@ -20,11 +21,24 @@ type HavocListenerCtx struct {
 	handle any
 }
 
+type HavocInterface interface {
+	LogInfo(fmt string, args ...any)
+	LogError(fmt string, args ...any)
+	LogWarn(fmt string, args ...any)
+	LogFatal(fmt string, args ...any)
+	LogPanic(fmt string, args ...any)
+	LogDebug(fmt string, args ...any)
+	LogDebugError(fmt string, args ...any)
+
+	Version() map[string]string
+}
+
 type BasicInterface interface {
-	Register() map[string]any
+	Register(havoc any) map[string]any
 }
 
 type ListenerInterface interface {
+	ListenerRegister() map[string]any
 	ListenerStart(config map[string]any) (map[string]any, error)
 	ListenerEdit(config map[string]any) (map[string]any, error)
 	ListenerStop(name string) error
@@ -46,6 +60,10 @@ type Plugin struct {
 }
 
 type PluginSystem struct {
+	// havoc teamserver instance that is
+	// going to be passed to every loaded plugin
+	havoc HavocInterface
+
 	// loaded havoc plugins
 	// those plugins have been
 	// registered and are safe to use
@@ -54,18 +72,25 @@ type PluginSystem struct {
 
 // NewPluginSystem
 // create a new plugin system instance
-func NewPluginSystem() *PluginSystem {
-	return new(PluginSystem)
+func NewPluginSystem(havoc HavocInterface) *PluginSystem {
+	var ps = new(PluginSystem)
+
+	ps.havoc = havoc
+
+	return ps
 }
 
 // RegisterPlugin is going to register a specified havoc plugin
 func (s *PluginSystem) RegisterPlugin(path string) error {
 	var (
-		err      error
-		open     *plugin.Plugin
-		lookup   plugin.Symbol
-		inter    BasicInterface
-		register map[string]any
+		err        error
+		open       *plugin.Plugin
+		lookup     plugin.Symbol
+		inter      BasicInterface
+		register   map[string]any
+		ext        *Plugin
+		reflection reflect.Type
+		ok         bool
 	)
 
 	// try to open plugin
@@ -79,87 +104,163 @@ func (s *PluginSystem) RegisterPlugin(path string) error {
 		return err
 	}
 
+	// reflect the method and
+	// check if it's a valid interface
+	reflection = reflect.TypeOf(lookup)
+	logger.Debug("reflection: %v", reflection.NumMethod())
+	if _, ok = reflection.MethodByName("Register"); !ok {
+		return errors.New("method \"Register\" not found inside of plugin")
+	}
+
 	// cast the looked up symbol to
 	// the HavocPlugin interface
 	inter = lookup.(BasicInterface)
 
 	// try to register the plugin
-	register = inter.Register()
+	register = inter.Register(s.havoc)
 
 	logger.Debug("register: %v\n", register)
 
 	// add plugin to the internal sync
 	// map and make it available
-	if err = s.AddPlugin(register, lookup); err != nil {
-		return fmt.Errorf("failed to register plugin: %v", err.Error())
+	if ext, err = s.AddPlugin(register, lookup); err != nil {
+		return err
 	}
 
-	return err
+	logger.Info("successfully loaded plugin: %v", ext.Name)
+
+	return nil
 }
 
 // AddPlugin the registered plugin to see if there
 // wasn't given any faulty or lacking info and
 // creates a havoc Plugin object
-func (s *PluginSystem) AddPlugin(register map[string]any, inter any) error {
+func (s *PluginSystem) AddPlugin(register map[string]any, inter any) (*Plugin, error) {
 	var (
-		extension = new(Plugin)
+		ext = new(Plugin)
+		err error
 	)
 
 	if len(register) == 0 {
-		return errors.New("register is empty")
+		return nil, errors.New("register is empty")
 	}
 
 	// get the name of the registered plugin
 	switch register["name"].(type) {
 	case string:
-
 		// check if the name is empty.
 		// if yes then return an error
 		if len(register["name"].(string)) == 0 {
-			return errors.New("register.name is empty")
+			return nil, errors.New("register.name is empty")
 		}
 
 		// set the name of the extension/plugin
-		extension.Name = register["name"].(string)
-
+		ext.Name = register["name"].(string)
 		break
 
 	default:
-		return errors.New("register.name is invalid type: excepted string")
+		return nil, errors.New("register.name is not a string")
 	}
 
 	// get the type of the registered plugin
 	switch register["type"].(type) {
 	case string:
-		switch register["type"].(string) {
-		case PluginTypeListener:
-			extension.ListenerInterface = inter.(ListenerInterface)
-
-			a, e := extension.ListenerStart(map[string]any{})
-
-			logger.Debug("a: %v -> e: %v\n", a, e)
-
-			break
-		case PluginTypeAgent:
-			extension.AgentInterface = inter.(AgentInterface)
-			break
-		case PluginTypeManagement:
-			extension.ManagementInterface = inter.(ManagementInterface)
-			break
-		default:
-			return errors.New("invalid register type")
+		// check if the type is empty.
+		// if yes then return an error
+		if len(register["type"].(string)) == 0 {
+			return nil, errors.New("register.type is empty")
 		}
 
-		extension.Type = register["type"].(string)
+		// set the name of the extension/plugin
+		ext.Type = register["type"].(string)
+	default:
+		return nil, errors.New("register.type is not a string")
+	}
+
+	// sanity check interface and insert it into the plugin
+	if err = s.CheckAndInsertInterface(ext, inter); err != nil {
+		return nil, err
+	}
+
+	// add the ext to the sync map
+	s.loaded.Store(utils.GenerateID(32), ext)
+
+	return ext, nil
+}
+
+// CheckAndInsertInterface
+// this method checks if a specific plugin is exporting all the
+// needed methods for the returned plugin type, if it does then
+// cast the right interface to the plugin object
+func (s *PluginSystem) CheckAndInsertInterface(extension *Plugin, inter any) error {
+	var (
+		reflection = reflect.TypeOf(inter)
+		ok         bool
+	)
+
+	switch extension.Type {
+	case PluginTypeAgent:
+		break
+
+	case PluginTypeListener:
+
+		// sanity check if the method exist
+		if _, ok = reflection.MethodByName("ListenerRegister"); !ok {
+			return fmt.Errorf("ListenerRegister not found")
+		}
+
+		// sanity check if the method exist
+		if _, ok = reflection.MethodByName("ListenerStart"); !ok {
+			return fmt.Errorf("ListenerStart not found")
+		}
+
+		// sanity check if the method exist
+		if _, ok = reflection.MethodByName("ListenerEdit"); !ok {
+			return fmt.Errorf("ListenerEdit not found")
+		}
+
+		// sanity check if the method exist
+		if _, ok = reflection.MethodByName("ListenerStop"); !ok {
+			return fmt.Errorf("ListenerStop not found")
+		}
+
+		// cast the interface
+		// we found everything we searched for
+		extension.ListenerInterface = inter.(ListenerInterface)
 
 		break
 
+	case PluginTypeManagement:
+		break
+
 	default:
-		return errors.New("register.type is invalid type: excepted string")
+		return fmt.Errorf("invalid plugin type: \"%v\" not found", extension.Type)
 	}
 
-	// add the extension to the sync map
-	s.loaded.Store(utils.GenerateID(32), extension)
+	return nil
+}
+
+// interactPlugin
+// interact with plugin by calling the plugin
+// register function for the type of plugin
+func (s *PluginSystem) interactPlugin(extension *Plugin) error {
+
+	switch extension.Type {
+	case PluginTypeAgent:
+		break
+
+	case PluginTypeListener:
+
+		logger.Debug("ListenerRegister(): %v", extension.ListenerRegister())
+
+		break
+
+	case PluginTypeManagement:
+		break
+
+	default:
+		return fmt.Errorf("invalid plugin type: \"%v\" not found", extension.Type)
+	}
 
 	return nil
 }
