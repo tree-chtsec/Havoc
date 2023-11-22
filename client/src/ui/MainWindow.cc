@@ -107,7 +107,7 @@ HavocMainWindow::HavocMainWindow() {
 
     /* create page objects */
     PageAgent    = new HavocPageAgent;
-    PageListener = new QWidget;
+    PageListener = new HavocPageListener;
     PagePayload  = new QWidget;
     PageServer   = new QWidget;
     PageScripts  = new QWidget;

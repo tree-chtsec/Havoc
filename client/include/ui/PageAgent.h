@@ -20,16 +20,27 @@ class HavocPageAgent : public QWidget
     bool SplitterMoveToggle = false;
 
 public:
-    QGridLayout*  gridLayout             = nullptr;
-    QComboBox*    ComboAgentView         = nullptr;
-    QSplitter*    Splitter               = nullptr;
-    QTableWidget* AgentTable             = nullptr;
-    QTabWidget*   AgentTab               = nullptr;
-    QLabel*       AgentDisplayerElevated = nullptr;
-    QLabel*       AgentDisplayerSessions = nullptr;
-    QLabel*       AgentDisplayerTargets  = nullptr;
-    QLabel*       AgentDisplayerPivots   = nullptr;
-    QSpacerItem*  horizontalSpacer       = nullptr;
+    QGridLayout*      gridLayout             = nullptr;
+    QComboBox*        ComboAgentView         = nullptr;
+    QSplitter*        Splitter               = nullptr;
+    QTableWidget*     AgentTable             = nullptr;
+    QTabWidget*       AgentTab               = nullptr;
+    QLabel*           AgentDisplayerElevated = nullptr;
+    QLabel*           AgentDisplayerSessions = nullptr;
+    QLabel*           AgentDisplayerTargets  = nullptr;
+    QLabel*           AgentDisplayerPivots   = nullptr;
+    QSpacerItem*      horizontalSpacer       = nullptr;
+    QTableWidgetItem* TitleAgentID           = nullptr;
+    QTableWidgetItem* TitleInternal          = nullptr;
+    QTableWidgetItem* TitleUsername          = nullptr;
+    QTableWidgetItem* TitleHostname          = nullptr;
+    QTableWidgetItem* TitleSystem            = nullptr;
+    QTableWidgetItem* TitleProcessID         = nullptr;
+    QTableWidgetItem* TitleProcessName       = nullptr;
+    QTableWidgetItem* TitleProcessArch       = nullptr;
+    QTableWidgetItem* TitleThreadID          = nullptr;
+    QTableWidgetItem* TitleNote              = nullptr;
+    QTableWidgetItem* TitleLastCallback      = nullptr;
 
     explicit HavocPageAgent( QWidget* parent = nullptr );
     ~HavocPageAgent();

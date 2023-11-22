@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HavocMainWindow</class>
+ <widget class="QMainWindow" name="HavocMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1175</width>
+    <height>688</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="CentralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="3">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Pivots: 0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Targets: 1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Beacons: 1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="0">
+     <widget class="QComboBox" name="comboBox">
+      <item>
+       <property name="text">
+        <string>Session Table</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Session Graph</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Elevated: 0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Havoc Framework [Version: 0.7] [CodeName: Bite The Dust]</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="7">
+     <widget class="QSplitter" name="SplitterTopBottom">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QSplitter" name="SplitterLeftRight">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QStackedWidget" name="StackedWidget">
+        <widget class="QWidget" name="page"/>
+        <widget class="QWidget" name="page_2"/>
+       </widget>
+       <widget class="QTabWidget" name="TabbedWidgetTop"/>
+      </widget>
+      <widget class="QTabWidget" name="TabbedWidgetBottom">
+       <property name="currentIndex">
+        <number>-1</number>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1175</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHavoc">
+    <property name="title">
+     <string>Havoc</string>
+    </property>
+   </widget>
+   <addaction name="menuHavoc"/>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

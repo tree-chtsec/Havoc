@@ -184,7 +184,7 @@ auto HavocClient::Main(
     Events.Worker->moveToThread( Events.Thread );
 
     /* connect events */
-    QObject::connect( Events.Thread, &QThread::started, Events.Worker, &::EventWorker::run );
+    QObject::connect( Events.Thread, &QThread::started, Events.Worker, &EventWorker::run );
     QObject::connect( Events.Worker, &EventWorker::availableEvent, this, &HavocClient::eventHandle );
     QObject::connect( Events.Worker, &EventWorker::socketClosed, this, &HavocClient::eventClosed );
 
@@ -224,8 +224,20 @@ auto HavocClient::getServer()      -> std::string { return Profile.Host + ":" + 
 auto HavocClient::getServerToken() -> std::string { return Profile.Token; }
 
 auto HavocClient::eventHandle(
-    const QByteArray &event
+    const QByteArray& request
 ) -> void {
+    auto event = json::parse( request.toStdString() );
+
+    /* check if we managed to parse the json event
+     * if yes then dispatch it but if not then dismiss it */
+    if ( ! event.is_discarded() ) {
+        eventDispatch( event );
+    } else {
+        spdlog::error( "failed to parse event" );
+        /* what now ?
+         * I guess ignore since its not valid event
+         * or debug print it I guess */
+    }
 
 }
 

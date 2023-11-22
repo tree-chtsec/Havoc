@@ -29,25 +29,25 @@ class HavocMainWindow : public QMainWindow
 {
 
 public:
-    QWidget*        MainWidget      = nullptr;
-    QGridLayout*    gridLayout      = nullptr;
-    QGridLayout*    gridLayout_2    = nullptr;
-    QWidget*        SideBarWidget   = nullptr;
-    HavocButton*    ButtonHavoc     = nullptr;
-    HavocButton*    ButtonListeners = nullptr;
-    HavocButton*    ButtonSettings  = nullptr;
-    HavocButton*    ButtonScripts   = nullptr;
-    HavocButton*    ButtonAgents    = nullptr;
-    HavocButton*    ButtonServer    = nullptr;
-    HavocButton*    ButtonPayload   = nullptr;
-    QSpacerItem*    Spacer          = nullptr;
-    QStackedWidget* StackedWidget   = nullptr;
-    HavocPageAgent* PageAgent       = nullptr;
-    QWidget*        PageListener    = nullptr;
-    QWidget*        PagePayload     = nullptr;
-    QWidget*        PageServer      = nullptr;
-    QWidget*        PageScripts     = nullptr;
-    QWidget*        PageSettings    = nullptr;
+    QWidget*            MainWidget      = nullptr;
+    QGridLayout*        gridLayout      = nullptr;
+    QGridLayout*        gridLayout_2    = nullptr;
+    QWidget*            SideBarWidget   = nullptr;
+    HavocButton*        ButtonHavoc     = nullptr;
+    HavocButton*        ButtonListeners = nullptr;
+    HavocButton*        ButtonSettings  = nullptr;
+    HavocButton*        ButtonScripts   = nullptr;
+    HavocButton*        ButtonAgents    = nullptr;
+    HavocButton*        ButtonServer    = nullptr;
+    HavocButton*        ButtonPayload   = nullptr;
+    QSpacerItem*        Spacer          = nullptr;
+    QStackedWidget*     StackedWidget   = nullptr;
+    HavocPageAgent*     PageAgent       = nullptr;
+    HavocPageListener*  PageListener    = nullptr;
+    QWidget*            PagePayload     = nullptr;
+    QWidget*            PageServer      = nullptr;
+    QWidget*            PageScripts     = nullptr;
+    QWidget*            PageSettings    = nullptr;
 
     explicit HavocMainWindow( );
 

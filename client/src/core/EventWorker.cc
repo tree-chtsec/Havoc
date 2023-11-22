@@ -1,5 +1,5 @@
 #include <Havoc.h>
-#include <core/Events.h>
+#include <core/EventWorker.h>
 
 EventWorker::EventWorker()  = default;
 EventWorker::~EventWorker() = default;

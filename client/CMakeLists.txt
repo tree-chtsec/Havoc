@@ -42,14 +42,16 @@ include_directories( extern/http )
 set( HAVOC_INCLUDE
         include/Common.h
         include/Havoc.h
+        include/Events.h
 
         include/core/Helper.h
-        include/core/Events.h
+        include/core/EventWorker.h
 
         include/ui/Connect.h
         include/ui/MainWindow.h
-        include/ui/PageAgent.h
         include/ui/AgentConsole.h
+        include/ui/PageAgent.h
+        include/ui/PageListener.h
 )
 
 ##
@@ -58,14 +60,16 @@ set( HAVOC_INCLUDE
 set( HAVOC_SRC
         src/Main.cc
         src/Havoc.cc
+        src/Events.cc
 
         src/core/Helper.cc
-        src/core/Events.cc
+        src/core/EventWorker.cc
 
         src/ui/Connect.cc
         src/ui/MainWindow.cc
-        src/ui/PageAgent.cc
         src/ui/AgentConsole.cc
+        src/ui/PageAgent.cc
+        src/ui/PageListener.cc
 )
 
 find_package(OpenSSL REQUIRED)

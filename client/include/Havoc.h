@@ -2,12 +2,14 @@
 #define HAVOCCLIENT_HAVOC_H
 
 #include <Common.h>
+#include <Events.h>
 
 /* Havoc include */
 #include <core/Helper.h>
-#include <core/Events.h>
+#include <core/EventWorker.h>
 
 #include <ui/PageAgent.h>
+#include <ui/PageListener.h>
 #include <ui/MainWindow.h>
 #include <ui/Connect.h>
 
@@ -58,7 +60,12 @@ public:
     auto getServerToken() -> std::string;
 
     /* signals */
-    auto eventHandle( const QByteArray& event ) -> void;
+    auto eventHandle(
+        const QByteArray& request
+    ) -> void;
+    auto eventDispatch(
+        const json& event
+    ) -> void;
     auto eventClosed() -> void;
 
     /*
