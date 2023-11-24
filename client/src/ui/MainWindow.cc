@@ -144,13 +144,13 @@ HavocMainWindow::HavocMainWindow() {
     } );
 
     connect( ButtonSettings, &QPushButton::clicked, this, [&] () {
-        switchPageScripts();
+        switchPageSettings();
     } );
 
     retranslateUi();
     unusedSideButtons();
 
-    /* defeault button is the Agent */
+    /* default button is the Agent */
     useSideButton( ButtonAgents, "connection" );
 
     /* Side panel stuff */
