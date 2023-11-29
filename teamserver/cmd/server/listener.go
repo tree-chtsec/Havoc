@@ -16,6 +16,18 @@ import (
 	"github.com/fatih/structs"
 )
 
+func (t *Teamserver) ListenerRegister(listener map[string]any) {
+	var protocol Handler
+
+	t.protocols = append(t.protocols, protocol)
+
+}
+
+//
+// below is the old implementation
+// which is going to be removed and replaced
+//
+
 func (t *Teamserver) ListenerStart(ListenerType int, info any) error {
 
 	var (

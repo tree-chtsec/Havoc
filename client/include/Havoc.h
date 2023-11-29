@@ -10,6 +10,7 @@
 
 #include <ui/PageAgent.h>
 #include <ui/PageListener.h>
+#include <ui/DialogListener.h>
 #include <ui/MainWindow.h>
 #include <ui/Connect.h>
 

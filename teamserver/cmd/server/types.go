@@ -75,6 +75,12 @@ type Endpoint struct {
 	Function func(ctx *gin.Context)
 }
 
+type Handler struct {
+	Name    string
+	Type    string
+	Options map[string]any
+}
+
 type Teamserver struct {
 	Flags      TeamserverFlags
 	Profile    *profile.Profile
@@ -102,6 +108,8 @@ type Teamserver struct {
 		list  []map[string]any
 	}
 
-	clients sync.Map
-	Plugins *PluginSystem
+	clients   sync.Map
+	plugins   *PluginSystem
+	protocols []Handler // available handlers/listeners to use
+	listener  []Handler // started listeners
 }

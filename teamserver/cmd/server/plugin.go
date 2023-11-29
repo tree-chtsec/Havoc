@@ -31,6 +31,8 @@ type HavocInterface interface {
 	LogDebugError(fmt string, args ...any)
 
 	Version() map[string]string
+
+	ListenerRegister(listener map[string]any)
 }
 
 type BasicInterface interface {
@@ -41,7 +43,7 @@ type ListenerInterface interface {
 	ListenerRegister() map[string]any
 	ListenerStart(config map[string]any) (map[string]any, error)
 	ListenerEdit(config map[string]any) (map[string]any, error)
-	ListenerStop(name string) error
+	ListenerStop(wname string) error
 }
 
 type AgentInterface interface{}
@@ -83,14 +85,13 @@ func NewPluginSystem(havoc HavocInterface) *PluginSystem {
 // RegisterPlugin is going to register a specified havoc plugin
 func (s *PluginSystem) RegisterPlugin(path string) error {
 	var (
-		err        error
-		open       *plugin.Plugin
-		lookup     plugin.Symbol
-		inter      BasicInterface
-		register   map[string]any
-		ext        *Plugin
-		reflection reflect.Type
-		ok         bool
+		err      error
+		open     *plugin.Plugin
+		lookup   plugin.Symbol
+		inter    BasicInterface
+		register map[string]any
+		ext      *Plugin
+		ok       bool
 	)
 
 	// try to open plugin
@@ -106,9 +107,7 @@ func (s *PluginSystem) RegisterPlugin(path string) error {
 
 	// reflect the method and
 	// check if it's a valid interface
-	reflection = reflect.TypeOf(lookup)
-	logger.Debug("reflection: %v", reflection.NumMethod())
-	if _, ok = reflection.MethodByName("Register"); !ok {
+	if _, ok = reflect.TypeOf(lookup).MethodByName("Register"); !ok {
 		return errors.New("method \"Register\" not found inside of plugin")
 	}
 
@@ -251,7 +250,7 @@ func (s *PluginSystem) interactPlugin(extension *Plugin) error {
 
 	case PluginTypeListener:
 
-		logger.Debug("ListenerRegister(): %v", extension.ListenerRegister())
+		s.havoc.ListenerRegister(extension.ListenerRegister())
 
 		break
 

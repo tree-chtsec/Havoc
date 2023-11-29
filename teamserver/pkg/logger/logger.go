@@ -51,7 +51,7 @@ func (logger *Logger) Debug(fmt string, args ...any) {
 	var Trace, Line = FunctionTrace()
 	var Functions = strings.Split(Trace, "/")
 	if logger.debug {
-		logger.log.SetPrefix("[" + logger.time() + " " + colors.BoldYellow("DBUG") + " (" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + ")] ")
+		logger.log.SetPrefix("[" + logger.time() + " " + colors.BoldYellow("DBUG") + "] (" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + ") ")
 		logger.log.Printf(fmt+"\n", args...)
 	}
 }
@@ -60,7 +60,7 @@ func (logger *Logger) DebugError(fmt string, args ...any) {
 	var Trace, Line = FunctionTrace()
 	var Functions = strings.Split(Trace, "/")
 	if logger.debug {
-		logger.log.SetPrefix("[" + logger.time() + " " + colors.BoldRed("DBER") + " (" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + ")] ")
+		logger.log.SetPrefix("[" + logger.time() + " " + colors.BoldRed("DBER") + "] (" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + ") ")
 		logger.log.Printf(fmt+"\n", args...)
 	}
 }

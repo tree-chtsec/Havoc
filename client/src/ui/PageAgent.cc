@@ -7,12 +7,8 @@ HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
         setObjectName( QString::fromUtf8( "PageAgent" ) );
     }
 
-    setStyleSheet( Havoc->getStyleSheet() );
-
     gridLayout = new QGridLayout( this );
     gridLayout->setObjectName( "gridLayout" );
-
-
 
     ComboAgentView = new QComboBox( this );
     ComboAgentView->setObjectName( "ComboAgentView" );
@@ -36,8 +32,9 @@ HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
     TitleNote         = new QTableWidgetItem( "Note" );
     TitleLastCallback = new QTableWidgetItem( "Last" );
 
-    if ( AgentTable->columnCount() < 11 )
+    if ( AgentTable->columnCount() < 11 ) {
         AgentTable->setColumnCount( 11 );
+    }
 
     /* TODO: get how we should add this from the settings
      * for now we just do a default one */
@@ -106,11 +103,12 @@ HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
 HavocPageAgent::~HavocPageAgent() = default;
 
 auto HavocPageAgent::retranslateUi() -> void {
+    setStyleSheet( Havoc->getStyleSheet() );
+
     AgentDisplayerElevated->setText( "Elevated: 0" );
     AgentDisplayerSessions->setText( "Beacons: 0" );
     AgentDisplayerTargets->setText( "Targets: 0" );
     AgentDisplayerPivots->setText( "Pivots: 0" );
-
     ComboAgentView->addItems( QStringList() << "Sessions" << "Sessions Graph" << "Targets" );
 }
 

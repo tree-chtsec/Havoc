@@ -132,4 +132,14 @@ QPushButton[HavocButtonUsed="false"] {
 QPushButton[ClickButton="true"] {
     background-color: #bd93f9;
     color: #282a36;
+
+    border: 1px solid #bd93f9;
+    border-radius: 2px;
+    padding: 4px 8px 4px 8px;
+}
+
+QPushButton:pressed[ClickButton="true"] {
+    border: 1px solid #bd93f9;
+    background-color: #282A36;
+    color: #f8f8f2;
 }

@@ -52,6 +52,7 @@ set( HAVOC_INCLUDE
         include/ui/AgentConsole.h
         include/ui/PageAgent.h
         include/ui/PageListener.h
+        include/ui/DialogListener.h
 )
 
 ##
@@ -70,6 +71,7 @@ set( HAVOC_SRC
         src/ui/AgentConsole.cc
         src/ui/PageAgent.cc
         src/ui/PageListener.cc
+        src/ui/DialogListener.cc
 )
 
 find_package(OpenSSL REQUIRED)

@@ -79,8 +79,8 @@ func (t *Teamserver) Start() {
 	}
 
 	// generate a new plugin system instance
-	t.Plugins = NewPluginSystem(t)
-	if err = t.Plugins.RegisterPlugin("../HavocPlugins/plugin.hp"); err != nil {
+	t.plugins = NewPluginSystem(t)
+	if err = t.plugins.RegisterPlugin("../HavocPlugins/http.hp/http.hp"); err != nil {
 		logger.Error("failed to load plugin: %v", err)
 	}
 
