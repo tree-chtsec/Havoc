@@ -39,8 +39,16 @@ struct Protocol {
     QGridLayout*                 layout;
 };
 
+enum ListenerState {
+    None,
+    Saved,
+    Closed
+};
+
 class HavocListener : public QDialog
 {
+    ListenerState   State            = None;
+
 public:
     QGridLayout*    gridLayout       = nullptr;
     QLabel*         LabelName        = nullptr;
@@ -48,6 +56,10 @@ public:
     QLabel*         LabelProtocol    = nullptr;
     QComboBox*      ComboProtocol    = nullptr;
     QStackedWidget* StackedProtocols = nullptr;
+    QPushButton*    ButtonSave       = nullptr;
+    QPushButton*    ButtonClose      = nullptr;
+    QSpacerItem*    horizontal[ 4 ]  = {};
+
 
     Protocol*             Previous           = nullptr;
     std::vector<Protocol> Protocols          = {};
@@ -74,6 +86,8 @@ public:
     ) -> void;
 
     auto getOptions() -> json;
+    auto getCloseState() -> ListenerState;
+
     auto changeProtocol(
         const QString& text
     ) -> void;

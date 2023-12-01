@@ -50,7 +50,6 @@ auto HavocClient::eventDispatch(
             return;
         }
 
-        spdlog::debug( "Event::listener::add -> {}", data.dump() );
         MainWindows->PageListener->Protocols.push_back(
             data
         );

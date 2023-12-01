@@ -11,6 +11,81 @@
 
 QT_BEGIN_NAMESPACE
 
+class HxWidgetFile : public QWidget {
+    QString      FilePath      = {};
+
+public:
+    QGridLayout* gridLayout    = nullptr;
+    QLabel*      LabelFilePath = nullptr;
+    QPushButton* ButtonAdd     = nullptr;
+    QPushButton* ButtonRemove  = nullptr;
+
+    explicit HxWidgetFile( QWidget* parent ) : QWidget( parent )
+    {
+        auto buttonSizeMax = QSize( 70, 16777215 );
+        auto buttonSizeMin = QSize( 70, 0 );
+
+        setContentsMargins( 0, 0, 0, 0 );
+
+        gridLayout = new QGridLayout( this );
+        gridLayout->setObjectName( "gridLayout" );
+        gridLayout->setContentsMargins( 0, 0, 0, 0 );
+
+        LabelFilePath = new QLabel( this );
+        LabelFilePath->setObjectName( "LabelFilePath" );
+        LabelFilePath->setProperty( "labelDisplay", "true" );
+
+        ButtonAdd = new QPushButton( this );
+        ButtonAdd->setObjectName( "ButtonAdd" );
+        ButtonAdd->setMaximumSize( buttonSizeMax );
+        ButtonAdd->setMinimumSize( buttonSizeMin );
+        ButtonAdd->setProperty( "ClickButton", "true" );
+
+        ButtonRemove = new QPushButton( this );
+        ButtonRemove->setObjectName( "ButtonRemove" );
+        ButtonRemove->setMaximumSize( buttonSizeMax );
+        ButtonRemove->setMinimumSize( buttonSizeMin );
+        ButtonRemove->setProperty( "ClickButton", "true" );
+
+        gridLayout->addWidget( LabelFilePath, 0, 0, 1, 1 );
+        gridLayout->addWidget( ButtonAdd,     0, 1, 1, 1 );
+        gridLayout->addWidget( ButtonRemove,  0, 2, 1, 1 );
+
+        retranslateUi();
+
+        connect( ButtonAdd,    &QPushButton::clicked, this, &HxWidgetFile::buttonAdd    );
+        connect( ButtonRemove, &QPushButton::clicked, this, &HxWidgetFile::buttonRemove );
+
+        QMetaObject::connectSlotsByName( this );
+    }
+
+    auto buttonAdd() -> void {
+        auto FileDialog = new QFileDialog;
+
+        FileDialog->setStyleSheet( Havoc->getStyleSheet() );
+        FileDialog->setAcceptMode( QFileDialog::AcceptOpen );
+
+        if ( FileDialog->exec() == QFileDialog::Accepted ) {
+            FilePath = FileDialog->selectedUrls().value( 0 ).toLocalFile();
+            LabelFilePath->setText( FilePath );
+        }
+
+        delete FileDialog;
+    }
+
+    auto buttonRemove() -> void {
+        FilePath = "";
+        LabelFilePath->setText( "(empty)" );
+    }
+
+    auto retranslateUi( ) -> void {
+        setStyleSheet( Havoc->getStyleSheet() );
+        LabelFilePath->setText( "(empty)" );
+        ButtonAdd->setText( "Add" );
+        ButtonRemove->setText( "Remove" );
+    }
+};
+
 class HxWidgetList : public QWidget
 {
 public:
@@ -40,11 +115,13 @@ public:
         ButtonAdd->setMaximumSize( buttonSize );
         ButtonAdd->setMinimumSize( buttonSize );
         ButtonAdd->setStyleSheet( "margin-top: 2px" );
+        ButtonAdd->setProperty( "ClickButton", "true" );
 
         ButtonClear = new QPushButton( this );
         ButtonClear->setObjectName( "ButtonClear" );
         ButtonClear->setMaximumSize( buttonSize );
         ButtonClear->setMinimumSize( buttonSize );
+        ButtonClear->setProperty( "ClickButton", "true" );
 
         gridLayout->addWidget( ListWidget,  0, 0, 3, 1 );
         gridLayout->addWidget( ButtonAdd,   0, 1, 1, 1 );
@@ -124,17 +201,47 @@ HavocListener::HavocListener() {
     StackedProtocols->setObjectName( QString::fromUtf8( "StackedProtocols" ) );
     StackedProtocols->setProperty( "protocol", "true" );
 
+    ButtonSave = new QPushButton( this );
+    ButtonSave->setObjectName( "ButtonClose" );
+    ButtonSave->setProperty( "ClickButton", "true" );
+
+    ButtonClose = new QPushButton( this );
+    ButtonClose->setObjectName( "ButtonClose" );
+    ButtonClose->setProperty( "ClickButton", "true" );
+
     gridLayout->addWidget( LabelName,        0, 0, 1, 1 );
-    gridLayout->addWidget( InputName,        0, 1, 1, 1 );
+    gridLayout->addWidget( InputName,        0, 1, 1, 5 );
     gridLayout->addWidget( LabelProtocol,    1, 0, 1, 1 );
-    gridLayout->addWidget( ComboProtocol,    1, 1, 1, 1 );
-    gridLayout->addWidget( StackedProtocols, 2, 0, 1, 2 );
+    gridLayout->addWidget( ComboProtocol,    1, 1, 1, 5 );
+    gridLayout->addWidget( StackedProtocols, 2, 0, 1, 6 );
+
+    horizontal[ 0 ] = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    horizontal[ 1 ] = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    horizontal[ 2 ] = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    horizontal[ 3 ] = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+
+    gridLayout->addWidget( ButtonSave,  3, 2, 1, 1 );
+    gridLayout->addWidget( ButtonClose, 3, 3, 1, 1 );
+
+    gridLayout->addItem( horizontal[ 0 ], 3, 0, 1, 1 );
+    gridLayout->addItem( horizontal[ 2 ], 3, 1, 1, 1 );
+    gridLayout->addItem( horizontal[ 3 ], 3, 4, 1, 1 );
+    gridLayout->addItem( horizontal[ 1 ], 3, 5, 1, 1 );
 
     retranslateUi();
 
     QMetaObject::connectSlotsByName( this );
 
     connect( ComboProtocol, &QComboBox::currentTextChanged, this, &HavocListener::changeProtocol );
+    connect( ButtonSave, &QPushButton::clicked, this, [&]() {
+        State = Saved;
+        close();
+    } );
+
+    connect( ButtonClose, &QPushButton::clicked, this, [&]() {
+        State = Closed;
+        close();
+    } );
 
     retranslateUi();
 
@@ -147,6 +254,8 @@ auto HavocListener::retranslateUi() -> void {
 
     LabelName->setText( "Name:      " );
     LabelProtocol->setText( "Protocol:  " );
+    ButtonSave->setText( "Save" );
+    ButtonClose->setText( "Close" );
 }
 
 auto HavocListener::addProtocol(
@@ -175,8 +284,6 @@ auto HavocListener::addProtocol(
         spdlog::error( "failed to add protocol: \"protocol\" field is not string" );
         return;
     }
-
-
 
     protocol.type = QString( handler[ "protocol" ].get<std::string>().c_str() );
     protocol.data = handler;
@@ -564,6 +671,47 @@ auto HavocListener::addOption(
         option.widget = ( QWidget* ) spacer;
 
         tab.layout->addItem( spacer, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
+
+    } else if ( option.type == "file" ) {
+        auto file  = new HxWidgetFile( this );
+        auto place = std::vector<int>();
+
+        option.widget = file;
+
+        if ( option.option.contains( "name" ) ) {
+            if ( option.option[ "name" ].is_string() ) {
+                file->setObjectName( option.option[ "name" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"name\" field is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"name\" field not found" );
+            return;
+        }
+
+        if ( option.option.contains( "css" ) ) {
+            if ( option.option[ "css" ].is_string() ) {
+                file->setStyleSheet( option.option[ "css" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"css\" field is not string" );
+                return;
+            }
+        }
+
+        if ( option.option.contains( "place" ) ) {
+            if ( option.option[ "place" ].is_array() ) {
+                place = option.option[ "place" ].get<std::vector<int>>();
+            } else {
+                spdlog::error( "failed to add option: \"place\" field is not an array" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"place\" field not found" );
+            return;
+        }
+
+        tab.layout->addWidget( file, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
     } else {
         spdlog::debug( "[error] option.type \"{}\" not found", option.type );
     }
@@ -573,9 +721,6 @@ auto HavocListener::addOption(
 auto HavocListener::changeProtocol(
     const QString &text
 ) -> void {
-
-    auto size = std::vector<int>();
-
     spdlog::debug( "changeProtocol( \"{}\" );", text.toStdString() );
 
     for ( int i = 0; i < Protocols.size(); i++ ) {
@@ -585,46 +730,10 @@ auto HavocListener::changeProtocol(
             break;
         }
     }
-
-    /*if ( Previous ) {
-        for ( auto& option : Previous->options ) {
-            delete option.widget;
-        }
-    }
-
-    for ( auto & protocol : Protocols ) {
-        if ( protocol.type.compare( text ) == 0 ) {
-
-            if ( protocol.data.contains( "resize" ) ) {
-                if ( protocol.data[ "resize" ].is_array() ) {
-                    size = protocol.data[ "resize" ].get<std::vector<int>>();
-
-                    spdlog::debug( "size: {} {}", size[0], size[1] );
-
-                    resize( size[ 0 ], size[ 1 ] );
-                }
-            }
-
-            //
-            // add widgets fields to the group box
-            //
-            for ( auto & option : protocol.options ) {
-                addOption( option );
-            }
-
-            Previous = & protocol;
-            break;
-        }
-    }*/
-
 }
 
-auto HavocListener::start() -> void
-{
-    ComboProtocol->setCurrentIndex( 0 );
-
-    exec();
-}
+auto HavocListener::getCloseState() -> ListenerState { return State; }
+auto HavocListener::start()         -> void { ComboProtocol->setCurrentIndex( 0 ); exec(); }
 
 
 

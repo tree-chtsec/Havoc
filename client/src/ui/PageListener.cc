@@ -10,6 +10,7 @@ HavocPageListener::HavocPageListener() {
 
     ActiveLabel = new QLabel( this );
     ActiveLabel->setObjectName( QString::fromUtf8("LabelDisplayListenerActive" ) );
+    ActiveLabel->setProperty( "labelDisplay", "true" );
 
     horizontalSpacer  = new QSpacerItem( 1157, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     ButtonNewListener = new QPushButton( this );
