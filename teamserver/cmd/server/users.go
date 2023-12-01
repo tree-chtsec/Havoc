@@ -190,6 +190,10 @@ func (t *Teamserver) UserBroadcast(save bool, event map[string]any) {
 		data []byte
 	)
 
+	if event == nil {
+		return
+	}
+
 	// iterate over connected users/clients
 	t.clients.Range(func(key, value any) bool {
 		user = value.(HavocUser)

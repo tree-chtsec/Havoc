@@ -32,7 +32,7 @@ type HavocInterface interface {
 
 	Version() map[string]string
 
-	ListenerRegister(listener map[string]any)
+	ListenerRegister(name string, listener map[string]any) error
 }
 
 type BasicInterface interface {
@@ -118,7 +118,7 @@ func (s *PluginSystem) RegisterPlugin(path string) error {
 	// try to register the plugin
 	register = inter.Register(s.havoc)
 
-	logger.Debug("register: %v\n", register)
+	logger.Debug("register: %v", register)
 
 	// add plugin to the internal sync
 	// map and make it available
@@ -178,6 +178,10 @@ func (s *PluginSystem) AddPlugin(register map[string]any, inter any) (*Plugin, e
 
 	// sanity check interface and insert it into the plugin
 	if err = s.CheckAndInsertInterface(ext, inter); err != nil {
+		return nil, err
+	}
+
+	if err = s.interactPlugin(ext); err != nil {
 		return nil, err
 	}
 
@@ -250,7 +254,9 @@ func (s *PluginSystem) interactPlugin(extension *Plugin) error {
 
 	case PluginTypeListener:
 
-		s.havoc.ListenerRegister(extension.ListenerRegister())
+		if err := s.havoc.ListenerRegister(extension.Name, extension.ListenerRegister()); err != nil {
+			return err
+		}
 
 		break
 

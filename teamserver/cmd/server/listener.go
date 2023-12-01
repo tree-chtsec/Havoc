@@ -16,11 +16,35 @@ import (
 	"github.com/fatih/structs"
 )
 
-func (t *Teamserver) ListenerRegister(listener map[string]any) {
-	var protocol Handler
+// ListenerRegister
+// register a listener to the server and
+// notify clients to a newly available handler.
+func (t *Teamserver) ListenerRegister(name string, listener map[string]any) error {
+	var (
+		protocol Handler
+		data     []byte
+		err      error
+	)
 
+	protocol = Handler{
+		Name: name,
+		Data: listener,
+	}
+
+	// add the listener to the
+	// available protocols lists
 	t.protocols = append(t.protocols, protocol)
 
+	// convert the object to a json
+	if data, err = json.Marshal(protocol); err != nil {
+		return err
+	}
+
+	// broadcast to all connected clients
+	// and any future clients
+	t.UserBroadcast(true, t.EventCreateJson(EventListenerRegister, data))
+
+	return nil
 }
 
 //
@@ -29,7 +53,6 @@ func (t *Teamserver) ListenerRegister(listener map[string]any) {
 //
 
 func (t *Teamserver) ListenerStart(ListenerType int, info any) error {
-
 	var (
 		ListenerConfig any
 		ListenerName   string

@@ -76,9 +76,8 @@ type Endpoint struct {
 }
 
 type Handler struct {
-	Name    string
-	Type    string
-	Options map[string]any
+	Name string         `json:"name"`
+	Data map[string]any `json:"data"`
 }
 
 type Teamserver struct {
