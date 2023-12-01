@@ -11,18 +11,46 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QStackedWidget>
 
 QT_BEGIN_NAMESPACE
+
+struct ProtclOption {
+    std::string name;
+    std::string type;
+    QWidget*    widget;
+    json        option;
+};
+
+struct ProtclTabOption {
+    std::string               name;
+    std::vector<ProtclOption> options;
+    QWidget*                  tab;
+    QGridLayout*              layout;
+};
+
+struct Protocol {
+    QString                      type;
+    std::vector<ProtclTabOption> tabs;
+    json                         data;
+    QSize                        resize;
+    QWidget*                     page;
+    QTabWidget*                  tabWidget;
+    QGridLayout*                 layout;
+};
 
 class HavocListener : public QDialog
 {
 public:
-    QGridLayout* gridLayout         = nullptr;
-    QLabel*      LabelListenerName  = nullptr;
-    QLabel*      LabelProtocol      = nullptr;
-    QLineEdit*   InputListenerName  = nullptr;
-    QComboBox*   ComboProtocol      = nullptr;
-    QGroupBox*   GroupOptions       = nullptr;
+    QGridLayout*    gridLayout       = nullptr;
+    QLabel*         LabelName        = nullptr;
+    QLineEdit*      InputName        = nullptr;
+    QLabel*         LabelProtocol    = nullptr;
+    QComboBox*      ComboProtocol    = nullptr;
+    QStackedWidget* StackedProtocols = nullptr;
+
+    Protocol*             Previous           = nullptr;
+    std::vector<Protocol> Protocols          = {};
 
     explicit HavocListener();
 
@@ -30,8 +58,27 @@ public:
         const json& data
     ) -> void;
 
-    auto getOptions() -> json;
+    auto insertPage(
+        Protocol& protocol
+    ) -> void;
 
+    auto insertTab(
+        Protocol&          protocol,
+        const std::string& name,
+        std::vector<json>& widgets
+    ) -> void;
+
+    auto addOption(
+        ProtclTabOption& tab,
+        ProtclOption&    option
+    ) -> void;
+
+    auto getOptions() -> json;
+    auto changeProtocol(
+        const QString& text
+    ) -> void;
+
+    auto start() -> void;
     auto retranslateUi() -> void;
 };
 

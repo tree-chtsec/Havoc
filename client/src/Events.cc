@@ -23,10 +23,20 @@ auto HavocClient::eventDispatch(
 
     if ( type == Event::user::login )
     {
+        if ( data.empty() ) {
+            spdlog::error( "user::login: invalid package (data emtpy)" );
+            return;
+        }
+
         spdlog::debug( "user login: {}", data[ "username" ].get<std::string>() );
     }
     else if ( type == Event::user::logout )
     {
+        if ( data.empty() ) {
+            spdlog::error( "user::logout: invalid package (data emtpy)" );
+            return;
+        }
+
         spdlog::debug( "user logout: {}", data[ "username" ].get<std::string>() );
     }
     else if ( type == Event::user::message )
@@ -35,7 +45,15 @@ auto HavocClient::eventDispatch(
     }
     else if ( type == Event::listener::add )
     {
+        if ( data.empty() ) {
+            spdlog::error( "listener::register: invalid package (data emtpy)" );
+            return;
+        }
 
+        spdlog::debug( "Event::listener::add -> {}", data.dump() );
+        MainWindows->PageListener->Protocols.push_back(
+            data
+        );
     }
     else if ( type == Event::listener::start )
     {
@@ -80,9 +98,7 @@ auto HavocClient::eventDispatch(
     else if ( type == Event::agent::remove )
     {
 
-    }
-
-    else {
+    } else {
         spdlog::debug( "invalid event: {} not found", type );
     }
 

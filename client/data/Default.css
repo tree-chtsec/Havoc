@@ -8,17 +8,32 @@ QStackedWidget {
     color: #f8f8f2;
 }
 
+QStackedWidget[protocol="true"] {
+    background-color: #282A36;
+    color: #f8f8f2;
+    border: 1px solid #313342;
+    margin-top: 10px;
+}
+
+QWidget[dark="true"] {
+    background: #282A36;
+}
+
+QTabWidget {
+    background: #282a36;
+}
+
 .QTabWidget::pane {
     border:none
 }
 
 QComboBox {
-    background-color: #282a36;
+    background-color: #44475a;
     color: #f8f8f2;
 }
 
 QAbstractItemView {
-    background-color: #282a36;
+    background-color: #44475a;
     color: #f8f8f2;
 }
 
@@ -28,57 +43,18 @@ QTableWidget {
 }
 
 QTabBar::tab {
-    background-color: #313342;
-    color: #f8f8f2;
-    min-width: 150px;
-
-    border-top-left-radius:  8px;
-    border-top-right-radius: 8px;
-
-    margin-bottom: 2px;
-    margin-left:   2px;
-
-    padding: 5px;
-}
-
-QTabBar::close-button {
-    image: url(:/icons/tab-close-button);
-    subcontrol-position: right;
-}
-
-QTabBar::tab:selected {
-    background: #44475a;
-    color: #f8f8f2;
-    border-bottom-color: transparent;
-}
-
-QTabBar::close-button {
-    image: url(:/icons/tab-close-button);
-    subcontrol-position: right;
-}
-
-QTabBar::close-button:hover {
-    background: #282a36;
-}
-
-QTabBar::tab {
-    margin-left: 2px;
     background: #313342;
     color: #f8f8f2;
-    padding-left: 10px;
-    padding-right: 10px;
-    border: 1px solid #44475A;
     border-top-left-radius:  2px;
     border-top-right-radius: 2px;
-    margin-top: 3px;
-    border-bottom-color: transparent;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 QTabBar::tab:selected {
     background: #44475A;
     color: #f8f8f2;
     border: 1px solid #6272A4;
-    border-bottom-color: transparent;
 }
 
 QTabBar::close-button {
@@ -91,6 +67,28 @@ QTabBar::close-button:hover {
 }
 
 QLabel {
+    background: #282a36;
+    color: #f8f8f2;
+}
+
+QGroupBox {
+    background: #282a36;
+    color: #f8f8f2;
+}
+
+QLineEdit {
+    border-radius: 2px;
+    padding: 2px 6px 2px 6px;
+    background-color: #44475A;
+    color: #f8f8f2;
+}
+
+QDialog {
+    background: #282a36;
+    color: #f8f8f2;
+}
+
+QLabel {
     color: #f8f8f2;
 }
 
@@ -98,6 +96,11 @@ QLabel[objectName^="LabelDisplay"] {
     border-radius: 2px;
     border:  1px solid #6272a4;
     padding: 2px 6px 2px 6px;
+    background-color: #282a36;
+    font-weight: bold;
+}
+
+QLabel[listenerLabel="true"] {
     background-color: #282a36;
     font-weight: bold;
 }

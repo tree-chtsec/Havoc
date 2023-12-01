@@ -85,10 +85,10 @@ auto HavocPageListener::buttonAddListener() -> void {
     /* add registered protocols
      * to the dialog listener */
     for ( auto& p : Protocols ) {
-        Dialog->addProtocol( p.Data );
+        Dialog->addProtocol( p );
     }
 
-    Dialog->exec();
+    Dialog->start();
 
     delete Dialog;
 }

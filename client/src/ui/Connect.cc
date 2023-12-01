@@ -45,7 +45,7 @@ HavocConnect::HavocConnect() {
     InputUsername->setMinimumSize( QSize( 0, 30 ) );
 
     InputPassword->setObjectName( QString::fromUtf8( "InputPassword" ) );
-    InputPassword->setMinimumSize(QSize(0, 30));
+    InputPassword->setMinimumSize( QSize( 0, 30 ) );
 
     ButtonConnect->setObjectName( QString::fromUtf8( "ButtonConnect" ) );
     ButtonConnect->setMinimumSize( QSize( 0, 30 ) );

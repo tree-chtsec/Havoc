@@ -12,6 +12,7 @@ HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
 
     ComboAgentView = new QComboBox( this );
     ComboAgentView->setObjectName( "ComboAgentView" );
+    ComboAgentView->view()->setProperty( "ComboBox", "true" );
 
     Splitter = new QSplitter( this );
     Splitter->setObjectName( QString::fromUtf8( "Splitter" ) );

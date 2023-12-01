@@ -15,28 +15,23 @@
 
 QT_BEGIN_NAMESPACE
 
-struct Protocol {
-    QString               Name;
-    std::vector<QWidget*> Widgets;
-    json                  Data;
-};
 
 class HavocPageListener : public QWidget
 {
 public:
-    QGridLayout*          gridLayout        = nullptr;
-    QLabel*               ActiveLabel       = nullptr;
-    QSpacerItem*          horizontalSpacer  = nullptr;
-    QPushButton*          ButtonNewListener = nullptr;
-    QSplitter*            Splitter          = nullptr;
-    QTableWidget*         TableWidget       = nullptr;
-    QTabWidget*           TabWidget         = nullptr;
-    QTableWidgetItem*     TitleName         = nullptr;
-    QTableWidgetItem*     TitleType         = nullptr;
-    QTableWidgetItem*     TitleHost         = nullptr;
-    QTableWidgetItem*     TitlePort         = nullptr;
-    QTableWidgetItem*     TitleStatus       = nullptr;
-    std::vector<Protocol> Protocols         = {};
+    QGridLayout*      gridLayout        = nullptr;
+    QLabel*           ActiveLabel       = nullptr;
+    QSpacerItem*      horizontalSpacer  = nullptr;
+    QPushButton*      ButtonNewListener = nullptr;
+    QSplitter*        Splitter          = nullptr;
+    QTableWidget*     TableWidget       = nullptr;
+    QTabWidget*       TabWidget         = nullptr;
+    QTableWidgetItem* TitleName         = nullptr;
+    QTableWidgetItem* TitleType         = nullptr;
+    QTableWidgetItem* TitleHost         = nullptr;
+    QTableWidgetItem* TitlePort         = nullptr;
+    QTableWidgetItem* TitleStatus       = nullptr;
+    std::vector<json> Protocols         = {};
 
     explicit HavocPageListener();
     auto retranslateUi() -> void;
