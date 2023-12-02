@@ -45,6 +45,15 @@ enum ListenerState {
     Closed
 };
 
+const std::string ListenerWidgetTypeLabel = "label";
+const std::string ListenerWidgetTypeInput = "input";
+const std::string ListenerWidgetTypeCombo = "combo";
+const std::string ListenerWidgetTypeSpacer = "spacer";
+const std::string ListenerWidgetTypeList = "list";
+const std::string ListenerWidgetTypeToggle = "toggle";
+const std::string ListenerWidgetTypeFile = "file";
+const std::string ListenerWidgetTypeText = "text";
+
 class HavocListener : public QDialog
 {
     ListenerState   State            = None;
@@ -59,7 +68,6 @@ public:
     QPushButton*    ButtonSave       = nullptr;
     QPushButton*    ButtonClose      = nullptr;
     QSpacerItem*    horizontal[ 4 ]  = {};
-
 
     Protocol*             Previous           = nullptr;
     std::vector<Protocol> Protocols          = {};

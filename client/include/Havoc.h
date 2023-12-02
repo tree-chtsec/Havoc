@@ -14,8 +14,8 @@
 #include <ui/MainWindow.h>
 #include <ui/Connect.h>
 
-#define HAVOC_VERSION  "0.7"
-#define HAVOC_CODENAME "Bite The Dust"
+#define HAVOC_VERSION  "0.8"
+#define HAVOC_CODENAME "Killer Queen"
 
 class HavocClient : public QWidget {
 

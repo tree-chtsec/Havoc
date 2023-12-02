@@ -8,6 +8,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QTextEdit>
 
 QT_BEGIN_NAMESPACE
 
@@ -78,6 +79,8 @@ public:
         LabelFilePath->setText( "(empty)" );
     }
 
+    auto getFilePath() -> QString { return FilePath; }
+
     auto retranslateUi( ) -> void {
         setStyleSheet( Havoc->getStyleSheet() );
         LabelFilePath->setText( "(empty)" );
@@ -146,6 +149,16 @@ public:
         FormLayout->setWidget( InputList.size(), QFormLayout::FieldRole, Item );
 
         InputList.push_back( Item );
+    }
+
+    auto getListStrings() -> std::vector<std::string> {
+        auto array = std::vector<std::string>();
+
+        for ( auto& input : InputList ) {
+            array.push_back( input->text().toStdString() );
+        }
+
+        return array;
     }
 
     auto retranslateUi() -> void {
@@ -235,6 +248,9 @@ HavocListener::HavocListener() {
     connect( ComboProtocol, &QComboBox::currentTextChanged, this, &HavocListener::changeProtocol );
     connect( ButtonSave, &QPushButton::clicked, this, [&]() {
         State = Saved;
+
+        spdlog::debug( "options -> {}", getOptions().dump() );
+
         close();
     } );
 
@@ -422,17 +438,13 @@ auto HavocListener::insertTab(
     protocol.tabs.push_back( tab );
 }
 
-auto HavocListener::getOptions() -> json {
-    return {};
-}
-
 auto HavocListener::addOption(
     ProtclTabOption& tab,
     ProtclOption&    option
 ) -> void {
     spdlog::debug( "option: [name: {}] [option: {}]", option.name, option.option.dump() );
 
-    if ( option.type == "label" ) {
+    if ( option.type == ListenerWidgetTypeLabel ) {
         auto label = new QLabel( this );
         auto place = std::vector<int>();
 
@@ -484,7 +496,7 @@ auto HavocListener::addOption(
         option.widget = label;
 
         tab.layout->addWidget( label, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
-    } else if ( option.type == "list" ) {
+    } else if ( option.type == ListenerWidgetTypeList ) {
         auto list  = new HxWidgetList( this );
         auto place = std::vector<int>();
 
@@ -532,9 +544,9 @@ auto HavocListener::addOption(
         option.widget = list;
 
         tab.layout->addWidget( list, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
-    } else if ( option.type == "toggle" ) {
+    } else if ( option.type == ListenerWidgetTypeToggle ) {
 
-    } else if ( option.type == "input" ) {
+    } else if ( option.type == ListenerWidgetTypeInput ) {
         auto input = new QLineEdit( this );
         auto place = std::vector<int>();
 
@@ -583,7 +595,7 @@ auto HavocListener::addOption(
         option.widget = input;
 
         tab.layout->addWidget( input, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
-    } else if ( option.type == "combo" ) {
+    } else if ( option.type == ListenerWidgetTypeCombo ) {
         auto combo = new QComboBox( this );
         auto place = std::vector<int>();
 
@@ -634,9 +646,56 @@ auto HavocListener::addOption(
         option.widget = combo;
 
         tab.layout->addWidget( combo, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
-    } else if ( option.type == "text" ) {
+    } else if ( option.type == ListenerWidgetTypeText ) {
+        auto text  = new QTextEdit;
+        auto place = std::vector<int>();
 
-    } else if ( option.type == "spacer" ) {
+        if ( option.option.contains( "name" ) ) {
+            if ( option.option[ "name" ].is_string() ) {
+                text->setObjectName( option.option[ "name" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"name\" field is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"name\" field not found" );
+            return;
+        }
+
+        if ( option.option.contains( "readonly" ) ) {
+            if ( option.option[ "readonly" ].is_boolean() ) {
+                text->setReadOnly( option.option[ "readonly" ].get<bool>() );
+            } else {
+                spdlog::error( "failed to add option: \"readonly\" field is not boolean" );
+                return;
+            }
+        }
+
+        if ( option.option.contains( "css" ) ) {
+            if ( option.option[ "css" ].is_string() ) {
+                text->setStyleSheet( option.option[ "css" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"css\" field is not string" );
+                return;
+            }
+        }
+
+        if ( option.option.contains( "place" ) ) {
+            if ( option.option[ "place" ].is_array() ) {
+                place = option.option[ "place" ].get<std::vector<int>>();
+            } else {
+                spdlog::error( "failed to add option: \"place\" field is not an array" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"place\" field not found" );
+            return;
+        }
+
+        option.widget = text;
+
+        tab.layout->addWidget( text, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
+    } else if ( option.type == ListenerWidgetTypeSpacer ) {
         auto spacer   = ( QSpacerItem* ) nullptr;
         auto place    = std::vector<int>();
         auto vertical = false;
@@ -672,7 +731,7 @@ auto HavocListener::addOption(
 
         tab.layout->addItem( spacer, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
 
-    } else if ( option.type == "file" ) {
+    } else if ( option.type == ListenerWidgetTypeFile ) {
         auto file  = new HxWidgetFile( this );
         auto place = std::vector<int>();
 
@@ -716,6 +775,39 @@ auto HavocListener::addOption(
         spdlog::debug( "[error] option.type \"{}\" not found", option.type );
     }
 
+}
+
+auto HavocListener::getOptions() -> json {
+    auto index = StackedProtocols->currentIndex();
+    auto data  = json();
+
+    if ( Protocols.size() <= index ) {
+        return {};
+    }
+
+    for ( auto& tab : Protocols[ index ].tabs ) {
+        data[ tab.name ] = json();
+
+        for ( auto& option : tab.options ) {
+            if ( option.type == ListenerWidgetTypeLabel ) {
+                data[ tab.name ][ option.name ] = ( ( QLabel* ) option.widget )->text().toStdString();
+            } else if ( option.type == ListenerWidgetTypeInput ) {
+                data[ tab.name ][ option.name ] = ( ( QLineEdit* ) option.widget )->text().toStdString();
+            } else if ( option.type == ListenerWidgetTypeCombo ) {
+                data[ tab.name ][ option.name ] = ( ( QComboBox* ) option.widget )->currentText().toStdString();
+            } else if ( option.type == ListenerWidgetTypeList ) {
+                data[ tab.name ][ option.name ] = ( ( HxWidgetList* ) option.widget )->getListStrings();
+            } else if ( option.type == ListenerWidgetTypeToggle ) {
+                data[ tab.name ][ option.name ] = json();
+            } else if ( option.type == ListenerWidgetTypeFile ) {
+                data[ tab.name ][ option.name ] = ( ( HxWidgetFile* ) option.widget )->getFilePath().toStdString();
+            } else if ( option.type == ListenerWidgetTypeText ) {
+                data[ tab.name ][ option.name ] = ( ( QTextEdit* ) option.widget )->toPlainText().toStdString();
+            }
+        }
+    }
+
+    return data;
 }
 
 auto HavocListener::changeProtocol(

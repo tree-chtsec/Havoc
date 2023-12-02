@@ -103,6 +103,11 @@ QLabel[listenerLabel="true"] {
     font-weight: bold;
 }
 
+QTextEdit {
+    background-color: #44475A;
+    color: #f8f8f2;
+}
+
 QPushButton[objectName="SideHavoc"] {
     border: 0px;
     background-color: #282a36;
