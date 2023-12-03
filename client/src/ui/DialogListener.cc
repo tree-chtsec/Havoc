@@ -246,14 +246,7 @@ HavocListener::HavocListener() {
     QMetaObject::connectSlotsByName( this );
 
     connect( ComboProtocol, &QComboBox::currentTextChanged, this, &HavocListener::changeProtocol );
-    connect( ButtonSave, &QPushButton::clicked, this, [&]() {
-        State = Saved;
-
-        spdlog::debug( "options -> {}", getOptions().dump() );
-
-        close();
-    } );
-
+    connect( ButtonSave,  &QPushButton::clicked, this, &HavocListener::save );
     connect( ButtonClose, &QPushButton::clicked, this, [&]() {
         State = Closed;
         close();
@@ -427,6 +420,15 @@ auto HavocListener::insertTab(
         } else {
             spdlog::error( "failed to add protocol: \"type\" field not found" );
             return;
+        }
+
+        if ( widget.contains( "optional" ) ) {
+            if ( widget[ "optional" ].is_boolean() ) {
+                option.optional = widget[ "optional" ].get<bool>();
+            } else {
+                spdlog::error( "failed to add protocol: \"optional\" field is not string" );
+                return;
+            }
         }
 
         addOption( tab, option );
@@ -778,8 +780,9 @@ auto HavocListener::addOption(
 }
 
 auto HavocListener::getOptions() -> json {
-    auto index = StackedProtocols->currentIndex();
-    auto data  = json();
+    auto index    = StackedProtocols->currentIndex();
+    auto data     = json();
+    auto listener = json();
 
     if ( Protocols.size() <= index ) {
         return {};
@@ -807,7 +810,11 @@ auto HavocListener::getOptions() -> json {
         }
     }
 
-    return data;
+    listener[ "name" ]     = InputName->text().toStdString();
+    listener[ "protocol" ] = ComboProtocol->currentText().toStdString();
+    listener[ "data" ]     = data;
+
+    return listener;
 }
 
 auto HavocListener::changeProtocol(
@@ -826,6 +833,141 @@ auto HavocListener::changeProtocol(
 
 auto HavocListener::getCloseState() -> ListenerState { return State; }
 auto HavocListener::start()         -> void { ComboProtocol->setCurrentIndex( 0 ); exec(); }
+
+auto HavocListener::save() -> void {
+    auto Result = httplib::Result();
+    auto data   = json();
+
+    if ( ! sanityCheckOptions() ) {
+        return;
+    }
+
+    spdlog::debug( "options -> {}", getOptions().dump() );
+
+    State  = Error;
+    Result = Havoc->ApiSend( "/api/listener/start", getOptions() );
+
+    if ( Result->status != 200 ) {
+        if ( ! Result->body.empty() ) {
+            if ( ( data = json::parse( Result->body ) ).is_discarded() ) {
+                goto InvalidServerResponseError;
+            }
+
+            if ( ! data.contains( "error" ) ) {
+                goto InvalidServerResponseError;
+            }
+
+            if ( ! data[ "error" ].is_string() ) {
+                goto InvalidServerResponseError;
+            }
+
+            HavocMessageBox(
+                QMessageBox::Critical,
+                "Listener failure",
+                QString( "Failed to start listener: %1" ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
+            );
+        } else {
+            goto InvalidServerResponseError;
+        }
+    } else {
+        State = Saved;
+        close();
+        return;
+    }
+
+InvalidServerResponseError:
+    HavocMessageBox(
+        QMessageBox::Critical,
+        "Listener failure",
+        "Failed to start listener: Invalid response from the server"
+    );
+
+    close();
+}
+
+auto HavocListener::sanityCheckOptions() -> bool {
+    auto index = StackedProtocols->currentIndex();
+    
+    if ( InputName->text().isEmpty() ) {
+        HavocMessageBox(
+            QMessageBox::Critical,
+            "Listener failure",
+            "Invalid option: Name is emtpy"
+        );
+        return false;
+    }
+
+    if ( ComboProtocol->currentText().isEmpty() && Protocols.empty() ) {
+        HavocMessageBox(
+            QMessageBox::Critical,
+            "Listener failure",
+            "Invalid option: Protocol is emtpy"
+        );
+        return false;
+    }
+
+    if ( Protocols.size() <= index ) {
+        HavocMessageBox(
+            QMessageBox::Critical,
+            "Listener failure",
+            "Invalid option: Protocol is out of index"
+        );
+        return false;
+    }
+
+    for ( auto& tab : Protocols[ index ].tabs ) {
+        for ( auto& option : tab.options ) {
+            if ( option.type == ListenerWidgetTypeInput && ! option.optional ) {
+                if ( ( ( QLineEdit* ) option.widget )->text().isEmpty() ) {
+                    HavocMessageBox(
+                        QMessageBox::Critical,
+                        "Listener failure",
+                        QString( "Invalid option: %1 is empty" ).arg( option.name.c_str() ).toStdString()
+                    );
+                    return false;
+                }
+            } else if ( option.type == ListenerWidgetTypeCombo && ! option.optional ) {
+                if ( ( ( QComboBox* ) option.widget )->currentText().isEmpty() ) {
+                    HavocMessageBox(
+                        QMessageBox::Critical,
+                        "Listener failure",
+                        QString( "Invalid option: %1 is empty" ).arg( option.name.c_str() ).toStdString()
+                    );
+                    return false;
+                }
+            } else if ( option.type == ListenerWidgetTypeList && ! option.optional ) {
+                if ( ( ( HxWidgetList* ) option.widget )->getListStrings().empty() ) {
+                    HavocMessageBox(
+                        QMessageBox::Critical,
+                        "Listener failure",
+                        QString( "Invalid option: %1 is empty" ).arg( option.name.c_str() ).toStdString()
+                    );
+                    return false;
+                }
+            } if ( option.type == ListenerWidgetTypeFile && ! option.optional ) {
+                if ( ( ( HxWidgetFile* ) option.widget )->getFilePath().isEmpty() ) {
+                    HavocMessageBox(
+                        QMessageBox::Critical,
+                        "Listener failure",
+                        QString( "Invalid option: %1 is empty" ).arg( option.name.c_str() ).toStdString()
+                    );
+                    return false;
+                }
+            } else if ( option.type == ListenerWidgetTypeText && ! option.optional ) {
+                if ( ( ( QTextEdit* ) option.widget )->toPlainText().isEmpty() ) {
+                    HavocMessageBox(
+                        QMessageBox::Critical,
+                        "Listener failure",
+                        QString( "Invalid option: %1 is empty" ).arg( option.name.c_str() ).toStdString()
+                    );
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
 
 
 

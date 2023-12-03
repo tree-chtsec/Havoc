@@ -1,3 +1,4 @@
+#include <Havoc.h>
 #include <core/Helper.h>
 
 auto HavocMessageBox(
@@ -7,6 +8,7 @@ auto HavocMessageBox(
 ) -> void {
     auto box = QMessageBox();
 
+    box.setStyleSheet( Havoc->getStyleSheet() );
     box.setWindowTitle( title.c_str() );
     box.setText( text.c_str() );
     box.setIcon( icon );

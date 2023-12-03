@@ -18,6 +18,7 @@ QT_BEGIN_NAMESPACE
 struct ProtclOption {
     std::string name;
     std::string type;
+    bool        optional;
     QWidget*    widget;
     json        option;
 };
@@ -42,17 +43,18 @@ struct Protocol {
 enum ListenerState {
     None,
     Saved,
-    Closed
+    Closed,
+    Error
 };
 
-const std::string ListenerWidgetTypeLabel = "label";
-const std::string ListenerWidgetTypeInput = "input";
-const std::string ListenerWidgetTypeCombo = "combo";
+const std::string ListenerWidgetTypeLabel  = "label";
+const std::string ListenerWidgetTypeInput  = "input";
+const std::string ListenerWidgetTypeCombo  = "combo";
 const std::string ListenerWidgetTypeSpacer = "spacer";
-const std::string ListenerWidgetTypeList = "list";
+const std::string ListenerWidgetTypeList   = "list";
 const std::string ListenerWidgetTypeToggle = "toggle";
-const std::string ListenerWidgetTypeFile = "file";
-const std::string ListenerWidgetTypeText = "text";
+const std::string ListenerWidgetTypeFile   = "file";
+const std::string ListenerWidgetTypeText   = "text";
 
 class HavocListener : public QDialog
 {
@@ -95,6 +97,8 @@ public:
 
     auto getOptions() -> json;
     auto getCloseState() -> ListenerState;
+    auto sanityCheckOptions() -> bool;
+    auto save() -> void;
 
     auto changeProtocol(
         const QString& text

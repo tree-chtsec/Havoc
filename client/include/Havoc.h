@@ -76,8 +76,8 @@ public:
 
     /* send request to api endpoint */
     auto ApiSend(
-        const std::string endpoint,
-        const json&       body
+        const std::string& endpoint,
+        const json&        body
     ) -> httplib::Result;
 };
 

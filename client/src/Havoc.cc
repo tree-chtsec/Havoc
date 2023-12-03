@@ -135,6 +135,7 @@ auto HavocClient::Main(
                 "Login failure",
                 QString( "Failed to login: %1" ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
             );
+
             return;
         }
 
@@ -209,10 +210,85 @@ auto HavocClient::Exit() -> void {
 }
 
 auto HavocClient::ApiSend(
-    const std::string endpoint,
-    const json&       body
+    const std::string& endpoint,
+    const json&        body
 ) -> httplib::Result {
-    return {};
+    /* create http client */
+    auto Http   = httplib::Client( "https://" + Profile.Host + ":" + Profile.Port );
+    auto Result = httplib::Result();
+    auto Error  = std::string( "Failed to send login request: " );
+
+    Http.enable_server_certificate_verification( false );
+
+    /* send request */
+    Result = Http.Post( endpoint, body.dump(), "application/json" );
+
+    switch ( Result.error() ) {
+        case httplib::Error::Unknown:
+            spdlog::error( Error + "Unknown" );
+            goto END;
+
+        case httplib::Error::Connection:
+            spdlog::error( Error + "Connection" );
+            goto END;
+
+        case httplib::Error::BindIPAddress:
+            spdlog::error( Error + "BindIPAddress" );
+            goto END;
+
+        case httplib::Error::Read:
+            spdlog::error( Error + "Read" );
+            goto END;
+
+        case httplib::Error::Write:
+            spdlog::error( Error + "Write" );
+            goto END;
+
+        case httplib::Error::ExceedRedirectCount:
+            spdlog::error( Error + "ExceedRedirectCount" );
+            goto END;
+
+        case httplib::Error::Canceled:
+            spdlog::error( Error + "Canceled" );
+            goto END;
+
+        case httplib::Error::SSLConnection:
+            spdlog::error( Error + "SSLConnection" );
+            goto END;
+
+        case httplib::Error::SSLLoadingCerts:
+            spdlog::error( Error + "SSLLoadingCerts" );
+            goto END;
+
+        case httplib::Error::SSLServerVerification:
+            spdlog::error( Error + "SSLServerVerification" );
+            goto END;
+
+        case httplib::Error::UnsupportedMultipartBoundaryChars:
+            spdlog::error( Error + "UnsupportedMultipartBoundaryChars" );
+            goto END;
+
+        case httplib::Error::Compression:
+            spdlog::error( Error + "Compression" );
+            goto END;
+
+        case httplib::Error::ConnectionTimeout:
+            spdlog::error( Error + "ConnectionTimeout" );
+            goto END;
+
+        case httplib::Error::ProxyConnection:
+            spdlog::error( Error + "ProxyConnection" );
+            goto END;
+
+        case httplib::Error::SSLPeerCouldBeClosed_:
+            spdlog::error( Error + "SSLPeerCouldBeClosed_" );
+            goto END;
+
+        default: break;
+    }
+
+END:
+    return Result;
 }
 
 auto HavocClient::eventClosed() -> void {
@@ -238,7 +314,6 @@ auto HavocClient::eventHandle(
          * I guess ignore since its not valid event
          * or debug print it I guess */
     }
-
 }
 
 auto HavocClient::getStyleSheet(
