@@ -7,26 +7,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
+	"github.com/gorilla/websocket"
+	"golang.org/x/crypto/sha3"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
-
-	"github.com/gorilla/websocket"
-	"golang.org/x/crypto/sha3"
 
 	"Havoc/pkg/agent"
 	"Havoc/pkg/colors"
-	"Havoc/pkg/common"
 	"Havoc/pkg/db"
 	"Havoc/pkg/events"
-	"Havoc/pkg/handlers"
 	"Havoc/pkg/logger"
 	"Havoc/pkg/packager"
 	"Havoc/pkg/profile"
-	"Havoc/pkg/webhook"
 )
 
 var (
@@ -53,8 +47,6 @@ func (t *Teamserver) Start() {
 	var (
 		ServerFinished chan bool
 		TeamserverPath string
-		ListenerCount  int
-		KillDate       int64
 		err            error
 	)
 
@@ -89,8 +81,8 @@ func (t *Teamserver) Start() {
 
 	logger.Info("Starting Teamserver on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
 
-	/* if we specified a webhook then lets use it. */
-	if t.Profile.Config.WebHook != nil {
+	// if we specified a webhook then lets use it.
+	/*if t.Profile.Config.WebHook != nil {
 		if t.Profile.Config.WebHook.Discord != nil {
 			var (
 				AvatarUrl string
@@ -112,7 +104,7 @@ func (t *Teamserver) Start() {
 		}
 	}
 
-	/* now load up our db or start a new one if none exist */
+	// now load up our db or start a new one if none exist
 	DBPath := t.DB.Path()
 	if t.DB, err = db.DatabaseNew(TeamserverPath + "/" + DBPath); err != nil {
 		logger.SetStdOut(os.Stderr)
@@ -128,10 +120,8 @@ func (t *Teamserver) Start() {
 
 	ListenerCount = t.DB.ListenerCount()
 
-	/* start listeners from the specified yaotl profile */
 	if t.Profile.Config.Listener != nil {
 
-		/* Start all HTTP/s listeners */
 		for _, listener := range t.Profile.Config.Listener.ListenerHTTP {
 			if listener.KillDate != "" {
 				t, err := time.Parse("2006-01-02 15:04:05", listener.KillDate)
@@ -191,7 +181,6 @@ func (t *Teamserver) Start() {
 			}
 		}
 
-		/* Start all SMB listeners */
 		for _, listener := range t.Profile.Config.Listener.ListenerSMB {
 			if listener.KillDate != "" {
 				t, err := time.Parse("2006-01-02 15:04:05", listener.KillDate)
@@ -217,7 +206,6 @@ func (t *Teamserver) Start() {
 			}
 		}
 
-		/* Start all ExternalC2 listeners */
 		for _, listener := range t.Profile.Config.Listener.ListenerExternal {
 			var HandlerData = handlers.ExternalConfig{
 				Name:     listener.Name,
@@ -270,7 +258,6 @@ func (t *Teamserver) Start() {
 				continue
 			}
 
-			/* set config of http listener */
 			HandlerData.Hosts = strings.Split(Data["Hosts"].(string), ", ")
 			HandlerData.HostBind = Data["HostBind"].(string)
 			HandlerData.HostRotation = Data["HostRotation"].(string)
@@ -301,7 +288,6 @@ func (t *Teamserver) Start() {
 				}
 			}
 
-			/* also ignore if we already have a listener running */
 			if err := t.ListenerStart(handlers.LISTENER_HTTP, HandlerData); err != nil && err.Error() != "listener already exists" {
 				logger.SetStdOut(os.Stderr)
 				logger.Error("Failed to start listener from db: " + err.Error())
@@ -392,7 +378,7 @@ func (t *Teamserver) Start() {
 		logger.Info(fmt.Sprintf("Restored %v agents from last session", colors.Green(len(Agents))))
 	}
 
-	t.EventAppend(events.SendProfile(t.Profile))
+	t.EventAppend(events.SendProfile(t.Profile))*/
 
 	// This should hold the Teamserver as long as the WebSocket Server is running
 	logger.Debug("Wait til the server shutdown")
@@ -406,135 +392,6 @@ func (*Teamserver) Version() map[string]string {
 	return map[string]string{
 		"version":  Version,
 		"codename": CodeName,
-	}
-}
-
-func (t *Teamserver) handleRequest(id string) {
-	value, isok := t.Clients.Load(id)
-
-	if !isok {
-		return
-	}
-
-	client := value.(*Client)
-	_, NewClient, err := client.Connection.ReadMessage()
-
-	if err != nil {
-		if err != io.EOF {
-			logger.Error("Error reading 2:", err.Error())
-			if strings.Contains(err.Error(), "connection reset by peer") {
-				err := client.Connection.Close()
-				if err != nil {
-					logger.Error("Error while closing Client connection: " + err.Error())
-				}
-			}
-		}
-		t.Clients.Delete(id)
-		return
-	}
-
-	pk := client.Packager.CreatePackage(string(NewClient))
-
-	if t.Profile != nil {
-		var found = false
-		for _, UserNames := range t.Profile.ListOfUsernames() {
-			if UserNames == pk.Head.User {
-				found = true
-			}
-		}
-		if !found {
-			err := t.SendEvent(id, events.UserDoNotExists())
-			if err != nil {
-				logger.Error("Error while sending package to " + colors.Red(id) + "")
-			}
-			t.RemoveClient(id)
-			return
-		}
-	}
-
-	isExist := false
-	t.Clients.Range(func(key, value any) bool {
-		if client.Username == pk.Head.User {
-			err := t.SendEvent(id, events.UserAlreadyExits())
-			if err != nil {
-				logger.Error("couldn't send event to client "+colors.Yellow(id)+":", err)
-			}
-			t.RemoveClient(id)
-			isExist = true
-			return false
-		}
-		return true
-	})
-	if isExist {
-		return
-	}
-	if !t.ClientAuthenticate(pk) {
-		logger.Error("Client [User: " + pk.Body.Info["User"].(string) + "] failed to Authenticate! (" + colors.Red(client.GlobalIP) + ")")
-		err := t.SendEvent(id, events.Authenticated(false))
-		if err != nil {
-			logger.Error("client (" + colors.Red(id) + ") error while sending authenticate message: " + colors.Red(err))
-		}
-		err = client.Connection.Close()
-		if err != nil {
-			logger.Error("Failed to close client (" + id + ") socket")
-		}
-		return
-	} else {
-
-		logger.Info("User \"%v\" Authenticated", colors.Blue(pk.Body.Info["User"].(string)))
-
-		client.Authenticated = true
-		client.ClientID = id
-
-		err := t.SendEvent(id, events.Authenticated(true))
-		if err != nil {
-			logger.Error("client (" + colors.Red(id) + ") error while sending authenticate message:" + colors.Red(err))
-		}
-	}
-
-	client.Username = pk.Body.Info["User"].(string)
-	packageNewUser := events.ChatLog.NewUserConnected(client.Username)
-	t.EventAppend(packageNewUser)
-	t.EventBroadcast(id, packageNewUser)
-
-	t.SendAllPackagesToNewClient(id)
-
-	for {
-		value, isok := t.Clients.Load(id)
-		if !isok {
-			return
-		}
-		client = value.(*Client)
-		_, EventPackage, err := client.Connection.ReadMessage()
-
-		if err != nil {
-			if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
-				logger.Warn("User <" + colors.Blue(client.Username) + "> " + colors.Red("Disconnected"))
-
-				t.EventAppend(events.ChatLog.UserDisconnected(client.Username))
-				t.RemoveClient(id)
-
-				return
-			} else {
-				logger.Error("Error reading :", err.Error())
-			}
-
-			err := client.Connection.Close()
-			if err != nil {
-				logger.Error("Socket Error:", err.Error())
-			}
-
-			t.EventAppend(events.ChatLog.UserDisconnected(client.Username))
-			t.RemoveClient(id)
-
-			return
-		}
-
-		pk := client.Packager.CreatePackage(string(EventPackage))
-		pk.Head.Time = time.Now().Format("02/01/2006 15:04:05")
-
-		t.EventAppend(pk)
-		t.DispatchEvent(pk)
 	}
 }
 

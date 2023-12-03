@@ -1,19 +1,7 @@
 package server
 
 import (
-	"Havoc/pkg/colors"
-	"Havoc/pkg/events"
-	"Havoc/pkg/handlers"
-	"Havoc/pkg/logger"
-	"Havoc/pkg/packager"
-	"Havoc/pkg/service"
 	"encoding/json"
-	"errors"
-	"fmt"
-	"strings"
-	"time"
-
-	"github.com/fatih/structs"
 )
 
 // ListenerRegister
@@ -47,11 +35,32 @@ func (t *Teamserver) ListenerRegister(name string, listener map[string]any) erro
 	return nil
 }
 
+func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any) error {
+	var err error
+
+	for _, prot := range t.protocols {
+
+		if val, ok := prot.Data["protocol"]; ok {
+			if val.(string) == protocol {
+
+				if err = t.plugins.ListenerStart(name, protocol, options); err != nil {
+					return err
+				}
+
+				break
+			}
+		}
+
+	}
+
+	return nil
+}
+
 //
 // below is the old implementation
 // which is going to be removed and replaced
 //
-
+/*
 func (t *Teamserver) ListenerStart(ListenerType int, info any) error {
 	var (
 		ListenerConfig any
@@ -272,12 +281,10 @@ func (t *Teamserver) ListenerAdd(FromUser string, Type int, Config any) packager
 		Protocol = handlers.AGENT_HTTP
 		Name = Info["Name"].(string)
 
-		/* Now set the config/info */
 		Info["Hosts"] = strings.Join(Config.(*handlers.HTTP).Config.Hosts, ", ")
 		Info["Headers"] = strings.Join(Config.(*handlers.HTTP).Config.Headers, ", ")
 		Info["Uris"] = strings.Join(Config.(*handlers.HTTP).Config.Uris, ", ")
 
-		/* proxy settings */
 		Info["Proxy Enabled"] = Config.(*handlers.HTTP).Config.Proxy.Enabled
 		Info["Proxy Type"] = Config.(*handlers.HTTP).Config.Proxy.Type
 		Info["Proxy Host"] = Config.(*handlers.HTTP).Config.Proxy.Host
@@ -317,7 +324,6 @@ func (t *Teamserver) ListenerAdd(FromUser string, Type int, Config any) packager
 		}
 		Info["Hosts"] = Host
 
-		/* we get an error just do nothing */
 		ConfigJson, _ = json.Marshal(Info)
 
 		break
@@ -333,7 +339,6 @@ func (t *Teamserver) ListenerAdd(FromUser string, Type int, Config any) packager
 
 		delete(Info, "Name")
 
-		/* we get an error just do nothing */
 		ConfigJson, _ = json.Marshal(Info)
 
 		break
@@ -349,7 +354,6 @@ func (t *Teamserver) ListenerAdd(FromUser string, Type int, Config any) packager
 
 		delete(Info, "Name")
 
-		/* we get an error just do nothing */
 		ConfigJson, _ = json.Marshal(Info)
 
 		break
@@ -497,4 +501,4 @@ func (t *Teamserver) ListenerStartNotify(Listener map[string]any) {
 	t.EventBroadcast("", pk)
 
 	logger.Info(fmt.Sprintf("Started \"%v\" listener", colors.Green(ListenerName)))
-}
+}*/

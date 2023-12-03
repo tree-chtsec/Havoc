@@ -16,9 +16,10 @@ const (
 	PluginTypeManagement = "management"
 )
 
-type HavocListenerCtx struct {
-	name   string
-	handle any
+type PluginListener struct {
+	Name    string
+	Type    string
+	Options map[string]any
 }
 
 type HavocInterface interface {
@@ -41,9 +42,9 @@ type BasicInterface interface {
 
 type ListenerInterface interface {
 	ListenerRegister() map[string]any
-	ListenerStart(config map[string]any) (map[string]any, error)
+	ListenerStart(name string, options map[string]any) error
 	ListenerEdit(config map[string]any) (map[string]any, error)
-	ListenerStop(wname string) error
+	ListenerStop(name string) error
 }
 
 type AgentInterface interface{}
@@ -268,4 +269,25 @@ func (s *PluginSystem) interactPlugin(extension *Plugin) error {
 	}
 
 	return nil
+}
+
+func (s *PluginSystem) ListenerStart(name, protocol string, options map[string]any) error {
+	var (
+		err error
+		ext *Plugin
+	)
+
+	s.loaded.Range(func(key, value any) bool {
+		ext = value.(*Plugin)
+
+		if protocol == ext.ListenerRegister()["protocol"].(string) {
+			err = ext.ListenerStart(name, options)
+
+			return false
+		}
+
+		return true
+	})
+
+	return err
 }

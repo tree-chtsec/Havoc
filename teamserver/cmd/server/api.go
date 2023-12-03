@@ -27,6 +27,8 @@ type teamserver interface {
 	UserLogoutByToken(user string) error
 	UserNameByToken(token string) (string, error)
 	UserStatus(username string) int
+
+	ListenerStart(name, protocol string, options map[string]any) error
 }
 
 type ServerApi struct {
@@ -54,6 +56,11 @@ func NewServerApi(teamserver teamserver) (*ServerApi, error) {
 
 	// set api endpoints
 	api.Engine.POST("/api/login", api.login)
+
+	// listeners
+	api.Engine.POST("/api/listener/start", api.listenerStart)
+	api.Engine.POST("/api/listener/stop", api.listenerStop)
+	api.Engine.POST("/api/listener/edit", api.listenerEdit)
 
 	// websocket event endpoint
 	api.Engine.GET("/api/event", api.event)
@@ -202,6 +209,79 @@ func (api *ServerApi) event(ctx *gin.Context) {
 	// handle socket channel.
 	// check if the token is available
 	go api.handleEventClient(socket)
+}
+
+func (api *ServerApi) listenerStart(ctx *gin.Context) {
+	var (
+		body     []byte
+		err      error
+		listener map[string]any
+		name     string
+		protocol string
+		options  map[string]any
+	)
+
+	// read from request the login data
+	if body, err = io.ReadAll(io.LimitReader(ctx.Request.Body, ApiMaxRequestRead)); err != nil {
+		logger.DebugError("Failed to read from server api login request: " + err.Error())
+		goto ERROR
+	}
+
+	logger.Debug("got request on /api/listener/start:" + fmt.Sprintf("%s", string(body)))
+
+	// unmarshal the bytes into a map
+	if err = json.Unmarshal(body, &listener); err != nil {
+		logger.DebugError("Failed to unmarshal bytes to map: " + err.Error())
+		return
+	}
+
+	// get name from listener start request
+	switch listener["name"].(type) {
+	case string:
+		name = listener["name"].(string)
+	default:
+		logger.DebugError("Failed retrieve name: invalid type")
+		goto ERROR
+	}
+
+	// get protocol from listener start request
+	switch listener["name"].(type) {
+	case string:
+		protocol = listener["protocol"].(string)
+	default:
+		logger.DebugError("Failed retrieve protocol: invalid type")
+		goto ERROR
+	}
+
+	// get options from listener start request
+	switch listener["data"].(type) {
+	case map[string]any:
+		options = listener["data"].(map[string]any)
+	default:
+		logger.DebugError("Failed retrieve data: invalid type")
+		goto ERROR
+	}
+
+	if err = api.teamserver.ListenerStart(name, protocol, options); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.AbortWithStatus(http.StatusOK)
+	return
+
+ERROR:
+	ctx.AbortWithStatus(http.StatusInternalServerError)
+}
+
+func (api *ServerApi) listenerStop(ctx *gin.Context) {
+
+}
+
+func (api *ServerApi) listenerEdit(ctx *gin.Context) {
+
 }
 
 // handleEventClient
