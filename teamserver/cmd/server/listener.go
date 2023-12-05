@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 )
 
 // ListenerRegister
@@ -39,10 +40,8 @@ func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any
 	var err error
 
 	for _, prot := range t.protocols {
-
 		if val, ok := prot.Data["protocol"]; ok {
 			if val.(string) == protocol {
-
 				if err = t.plugins.ListenerStart(name, protocol, options); err != nil {
 					return err
 				}
@@ -50,10 +49,32 @@ func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any
 				break
 			}
 		}
-
 	}
 
 	return nil
+}
+
+func (t *Teamserver) ListenerEvent(protocol string, event map[string]any) (map[string]any, error) {
+	var (
+		err  error
+		resp map[string]any
+	)
+
+	err = errors.New("protocol not found")
+
+	for _, prot := range t.protocols {
+		if val, ok := prot.Data["protocol"]; ok {
+			if val.(string) == protocol {
+				if resp, err = t.plugins.ListenerEvent(protocol, event); err != nil {
+					return nil, err
+				}
+
+				break
+			}
+		}
+	}
+
+	return resp, err
 }
 
 //

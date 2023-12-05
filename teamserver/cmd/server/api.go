@@ -29,6 +29,7 @@ type teamserver interface {
 	UserStatus(username string) int
 
 	ListenerStart(name, protocol string, options map[string]any) error
+	ListenerEvent(protocol string, event map[string]any) (map[string]any, error)
 }
 
 type ServerApi struct {
@@ -61,6 +62,7 @@ func NewServerApi(teamserver teamserver) (*ServerApi, error) {
 	api.Engine.POST("/api/listener/start", api.listenerStart)
 	api.Engine.POST("/api/listener/stop", api.listenerStop)
 	api.Engine.POST("/api/listener/edit", api.listenerEdit)
+	api.Engine.POST("/api/listener/event", api.listenerEvent)
 
 	// websocket event endpoint
 	api.Engine.GET("/api/event", api.event)
@@ -245,7 +247,7 @@ func (api *ServerApi) listenerStart(ctx *gin.Context) {
 	}
 
 	// get protocol from listener start request
-	switch listener["name"].(type) {
+	switch listener["protocol"].(type) {
 	case string:
 		protocol = listener["protocol"].(string)
 	default:
@@ -282,6 +284,52 @@ func (api *ServerApi) listenerStop(ctx *gin.Context) {
 
 func (api *ServerApi) listenerEdit(ctx *gin.Context) {
 
+}
+
+func (api *ServerApi) listenerEvent(ctx *gin.Context) {
+	var (
+		body     []byte
+		err      error
+		event    map[string]any
+		protocol string
+	)
+
+	// read from request the event data
+	if body, err = io.ReadAll(io.LimitReader(ctx.Request.Body, ApiMaxRequestRead)); err != nil {
+		logger.DebugError("Failed to read from server api login request: " + err.Error())
+		goto ERROR
+	}
+
+	logger.Debug("got request on /api/listener/event:" + fmt.Sprintf("%s", string(body)))
+
+	// unmarshal the bytes into a map
+	if err = json.Unmarshal(body, &event); err != nil {
+		logger.DebugError("Failed to unmarshal bytes to map: " + err.Error())
+		return
+	}
+
+	// get protocol from listener start request
+	switch event["protocol"].(type) {
+	case string:
+		protocol = event["protocol"].(string)
+	default:
+		logger.DebugError("Failed retrieve protocol: invalid type")
+		goto ERROR
+	}
+
+	// process listener event
+	if event, err = api.teamserver.ListenerEvent(protocol, event); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, event)
+	return
+
+ERROR:
+	ctx.AbortWithStatus(http.StatusInternalServerError)
 }
 
 // handleEventClient
