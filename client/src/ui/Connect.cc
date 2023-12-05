@@ -1,4 +1,4 @@
-#include <Common.h>
+#include <Havoc.h>
 #include <core/Helper.h>
 #include <ui/Connect.h>
 
@@ -49,9 +49,11 @@ HavocConnect::HavocConnect() {
 
     ButtonConnect->setObjectName( QString::fromUtf8( "ButtonConnect" ) );
     ButtonConnect->setMinimumSize( QSize( 0, 30 ) );
+    ButtonConnect->setProperty( "ClickButton", "true" );
 
     ButtonAdd->setObjectName( QString::fromUtf8( "ButtonAdd" ) );
     ButtonAdd->setMinimumSize( QSize( 0, 30 ) );
+    ButtonAdd->setProperty( "ClickButton", "true" );
 
     ListConnection->setObjectName( QString::fromUtf8( "ListConnection" ) );
     ListConnection->setMaximumSize( QSize( 240, 16777215 ) );
@@ -109,6 +111,7 @@ HavocConnect::~HavocConnect() {
 
 void HavocConnect::retranslateUi() {
     setWindowTitle( QCoreApplication::translate( "HavocConnect", "Havoc Connect", nullptr ) );
+    setStyleSheet( Havoc->getStyleSheet() );
     LabelHavoc->setText( QCoreApplication::translate( "HavocConnect", "<html><head/><body><p><span style=\" font-size:12pt;\">Havoc [ welcome back ]</span></p></body></html>", nullptr ) );
     InputProfileName->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Profile Name", nullptr ) );
     InputHost->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Host", nullptr ) );

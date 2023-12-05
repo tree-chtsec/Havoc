@@ -18,6 +18,7 @@ QT_BEGIN_NAMESPACE
 struct ProtclOption {
     std::string name;
     std::string type;
+    int         event;
     bool        optional;
     QWidget*    widget;
     json        option;
@@ -55,6 +56,12 @@ const std::string ListenerWidgetTypeList   = "list";
 const std::string ListenerWidgetTypeToggle = "toggle";
 const std::string ListenerWidgetTypeFile   = "file";
 const std::string ListenerWidgetTypeText   = "text";
+const std::string ListenerWidgetTypeButton = "button";
+
+const int ListenerEventNone   = 0b00000000;
+const int ListenerEventEnter  = 0b00000001;
+const int ListenerEventChange = 0b00000010;
+const int ListenerEventAll    = 0b10000000;
 
 class HavocListener : public QDialog
 {
@@ -96,6 +103,27 @@ public:
     ) -> void;
 
     auto getOptions() -> json;
+    auto setOption(
+        const ProtclOption* option,
+        const json&         values
+    ) -> void;
+    auto getOption(
+        const std::string& name
+    ) -> ProtclOption*;
+
+    auto getOptionValue(
+        const std::string& name
+    ) -> json;
+
+    auto eventProcess(
+        const json& data
+    ) -> void;
+    auto eventProcess(
+        const ProtclOption* option
+    ) -> void;
+    auto eventProcess() -> void;
+
+    auto getCurrentProtocol() -> Protocol*;
     auto getCloseState() -> ListenerState;
     auto sanityCheckOptions() -> bool;
     auto save() -> void;

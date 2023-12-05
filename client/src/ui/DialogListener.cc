@@ -9,6 +9,9 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QTextEdit>
+#include <QMetaMethod>
+#include <QRegularExpressionValidator>
+#include <QRegularExpression>
 
 QT_BEGIN_NAMESPACE
 
@@ -431,6 +434,15 @@ auto HavocListener::insertTab(
             }
         }
 
+        if ( widget.contains( "event" ) ) {
+            if ( widget[ "event" ].is_number_integer() ) {
+                option.event = widget[ "event" ].get<int>();
+            } else {
+                spdlog::error( "failed to add protocol: \"event\" field is not int" );
+                return;
+            }
+        }
+
         addOption( tab, option );
 
         tab.options.push_back( option );
@@ -569,6 +581,18 @@ auto HavocListener::addOption(
                 input->setText( option.option[ "value" ].get<std::string>().c_str() );
             } else {
                 spdlog::error( "failed to add option: \"value\" field is not string" );
+                return;
+            }
+        }
+
+        if ( option.option.contains( "regex" ) ) {
+            if ( option.option[ "regex" ].is_string() ) {
+                input->setValidator( new QRegularExpressionValidator(
+                    QRegularExpression( option.option[ "regex" ].get<std::string>().c_str() ),
+                    input
+                ) );
+            } else {
+                spdlog::error( "failed to add option: \"regex\" field is not string" );
                 return;
             }
         }
@@ -773,10 +797,153 @@ auto HavocListener::addOption(
         }
 
         tab.layout->addWidget( file, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
+    } else if ( option.type == ListenerWidgetTypeButton ) {
+        auto button  = new QPushButton( this );
+        auto place   = std::vector<int>();
+        auto objects = std::vector<std::string>();
+
+        button->setProperty( "ClickButton", "true" );
+        option.widget = button;
+
+        if ( option.option.contains( "name" ) ) {
+            if ( option.option[ "name" ].is_string() ) {
+                button->setObjectName( option.option[ "name" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"name\" field is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"name\" field not found" );
+            return;
+        }
+
+        if ( option.option.contains( "text" ) ) {
+            if ( option.option[ "text" ].is_string() ) {
+                button->setText( option.option[ "text" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"text\" field is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"text\" field not found" );
+            return;
+        }
+
+        if ( option.option.contains( "css" ) ) {
+            if ( option.option[ "css" ].is_string() ) {
+                button->setStyleSheet( option.option[ "css" ].get<std::string>().c_str() );
+            } else {
+                spdlog::error( "failed to add option: \"css\" field is not string" );
+                return;
+            }
+        }
+
+        if ( option.option.contains( "place" ) ) {
+            if ( option.option[ "place" ].is_array() ) {
+                place = option.option[ "place" ].get<std::vector<int>>();
+            } else {
+                spdlog::error( "failed to add option: \"place\" field is not an array" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"place\" field not found" );
+            return;
+        }
+
+        if ( option.option.contains( "events" ) ) {
+            if ( option.option[ "events" ].is_array() ) {
+                connect( button, &QPushButton::clicked, this, [&]() {
+                    auto option  = getOption( sender()->objectName().toStdString() );
+                    auto widgets = json::array();
+
+                    for ( auto& event : option->option[ "events" ].get<std::vector<std::string>>() ) {
+                        auto v = json();
+                        auto o = getOption( event );
+
+                        if ( ! o ) continue;
+
+                        if ( o->type == ListenerWidgetTypeLabel ) {
+                            v = ( ( QLabel* ) o->widget )->text().toStdString();
+                        } else if ( o->type == ListenerWidgetTypeInput ) {
+                            v = ( ( QLineEdit* ) o->widget )->text().toStdString();
+                        } else if ( o->type == ListenerWidgetTypeCombo ) {
+                            v = ( ( QComboBox* ) o->widget )->currentText().toStdString();
+                        } else if ( o->type == ListenerWidgetTypeList ) {
+                            v = ( ( HxWidgetList* ) o->widget )->getListStrings();
+                        } else if ( o->type == ListenerWidgetTypeToggle ) {
+                            v = json();
+                        } else if ( o->type == ListenerWidgetTypeFile ) {
+                            v = ( ( HxWidgetFile* ) o->widget )->getFilePath().toStdString();
+                        } else if ( o->type == ListenerWidgetTypeText ) {
+                            v = ( ( QTextEdit* ) o->widget )->toPlainText().toStdString();
+                        }
+
+                        widgets.push_back( { o->name, v } );
+                    }
+
+                    eventProcess( json {
+                        { option->name, widgets }
+                    } );
+                } );
+            } else {
+                spdlog::error( "failed to add option: \"events\" field is not an array" );
+                return;
+            }
+        } else {
+            spdlog::error( "failed to add option: \"events\" field not found" );
+            return;
+        }
+
+        tab.layout->addWidget( button, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
     } else {
         spdlog::debug( "[error] option.type \"{}\" not found", option.type );
     }
 
+}
+
+auto HavocListener::getOption(
+    const std::string& name
+) -> ProtclOption* {
+    auto index = StackedProtocols->currentIndex();
+
+    if ( Protocols.size() <= index ) {
+        return nullptr;
+    }
+
+    for ( auto& tab : Protocols[ index ].tabs ) {
+        for ( auto & option : tab.options ) {
+            if ( option.name == name ) {
+                return & option;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+auto HavocListener::setOption(
+    const ProtclOption* option,
+    const json&         values
+) -> void {
+    if ( ! option ) {
+        return;
+    }
+
+    if ( option->type == ListenerWidgetTypeLabel ) {
+        ( ( QLabel* ) option->widget )->setText( values.get<std::string>().c_str() );
+    } else if ( option->type == ListenerWidgetTypeInput ) {
+        ( ( QLineEdit* ) option->widget )->setText( values.get<std::string>().c_str() );
+    } else if ( option->type == ListenerWidgetTypeCombo ) {
+        // TODO: handle it
+    } else if ( option->type == ListenerWidgetTypeList ) {
+        // TODO: handle it
+    } else if ( option->type == ListenerWidgetTypeToggle ) {
+        // TODO: handle it
+    } else if ( option->type == ListenerWidgetTypeFile ) {
+        // TODO: handle it
+    } else if ( option->type == ListenerWidgetTypeText ) {
+        ( ( QTextEdit* ) option->widget )->setText( values.get<std::string>().c_str() );
+    }
 }
 
 auto HavocListener::getOptions() -> json {
@@ -886,8 +1053,6 @@ InvalidServerResponseError:
 }
 
 auto HavocListener::sanityCheckOptions() -> bool {
-    auto index = StackedProtocols->currentIndex();
-    
     if ( InputName->text().isEmpty() ) {
         HavocMessageBox(
             QMessageBox::Critical,
@@ -906,7 +1071,7 @@ auto HavocListener::sanityCheckOptions() -> bool {
         return false;
     }
 
-    if ( Protocols.size() <= index ) {
+    if ( Protocols.size() <= StackedProtocols->currentIndex() ) {
         HavocMessageBox(
             QMessageBox::Critical,
             "Listener failure",
@@ -915,7 +1080,7 @@ auto HavocListener::sanityCheckOptions() -> bool {
         return false;
     }
 
-    for ( auto& tab : Protocols[ index ].tabs ) {
+    for ( auto& tab : getCurrentProtocol()->tabs ) {
         for ( auto& option : tab.options ) {
             if ( option.type == ListenerWidgetTypeInput && ! option.optional ) {
                 if ( ( ( QLineEdit* ) option.widget )->text().isEmpty() ) {
@@ -968,6 +1133,97 @@ auto HavocListener::sanityCheckOptions() -> bool {
 
     return true;
 }
+
+auto HavocListener::eventProcess(
+    const ProtclOption* option
+) -> void {
+    auto body   = json::array();
+    auto result = httplib::Result();
+
+    if ( option->type == ListenerWidgetTypeInput ) {
+        body.push_back( {
+            { "name", option->name },
+            { "type", option->type },
+            { "text", ( ( QLineEdit* ) option->widget )->text().toStdString() }
+        } );
+    } else {
+        spdlog::debug( "[error] option type not found: {}", option->type );
+        return;
+    }
+
+    result = Havoc->ApiSend( "/api/listener/event", json {
+        { "protocol", getCurrentProtocol()->type.toStdString() },
+        { "events",   body }
+    } );
+
+    spdlog::debug( "result : {} {}", result->status, result->body );
+
+    if ( ( body = json::parse( result->body ) ).is_discarded() ) {
+        spdlog::debug( "[error] failed to process event response: invalid server response" );
+        return;
+    }
+}
+
+auto HavocListener::eventProcess(
+    const json& data
+) -> void {
+    auto result = httplib::Result();
+    auto body   = json();
+
+    result = Havoc->ApiSend( "/api/listener/event", json {
+        { "protocol", getCurrentProtocol()->type.toStdString() },
+        { "events",   data }
+    } );
+
+    spdlog::debug( "result : {} {}", result->status, result->body );
+
+    if ( ( body = json::parse( result->body ) ).is_discarded() ) {
+        spdlog::debug( "[error] failed to process event response: invalid server response" );
+        return;
+    }
+
+    for ( auto& item : body.items() ) {
+        spdlog::debug( "{} : {}", item.key(), item.value().get<std::string>() );
+
+        setOption( getOption( item.key() ), item.value() );
+
+        if ( auto option = getOption( item.key() ) ) {
+
+        }
+    }
+
+}
+
+auto HavocListener::eventProcess() -> void {
+
+}
+
+auto HavocListener::getOptionValue(
+    const std::string& name
+) -> json {
+    for ( auto& tab : getCurrentProtocol()->tabs ) {
+        for ( auto& option : tab.options ) {
+            if ( option.type == ListenerWidgetTypeLabel ) {
+                return ( ( QLabel* ) option.widget )->text().toStdString();
+            } else if ( option.type == ListenerWidgetTypeInput ) {
+                return ( ( QLineEdit* ) option.widget )->text().toStdString();
+            } else if ( option.type == ListenerWidgetTypeCombo ) {
+                return ( ( QComboBox* ) option.widget )->currentText().toStdString();
+            } else if ( option.type == ListenerWidgetTypeList ) {
+                return ( ( HxWidgetList* ) option.widget )->getListStrings();
+            } else if ( option.type == ListenerWidgetTypeToggle ) {
+                return json();
+            } else if ( option.type == ListenerWidgetTypeFile ) {
+                return ( ( HxWidgetFile* ) option.widget )->getFilePath().toStdString();
+            } else if ( option.type == ListenerWidgetTypeText ) {
+                return ( ( QTextEdit* ) option.widget )->toPlainText().toStdString();
+            }
+        }
+    }
+}
+
+auto HavocListener::getCurrentProtocol() -> Protocol* { return & Protocols[ StackedProtocols->currentIndex() ]; }
+
 
 
 
