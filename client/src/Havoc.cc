@@ -111,7 +111,7 @@ auto HavocClient::Main(
     if ( Result->status == 401 ) {
 
         if ( Result->body.empty() ) {
-            HavocMessageBox(
+            Helper::MessageBox(
                 QMessageBox::Critical,
                 "Login failure",
                 "Failed to login: Unauthorized"
@@ -130,7 +130,7 @@ auto HavocClient::Main(
                 goto InvalidServerResponseError;
             }
 
-            HavocMessageBox(
+            Helper::MessageBox(
                 QMessageBox::Critical,
                 "Login failure",
                 QString( "Failed to login: %1" ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
@@ -140,7 +140,7 @@ auto HavocClient::Main(
         }
 
     } else if ( Result->status != 200 ) {
-        HavocMessageBox(
+        Helper::MessageBox(
             QMessageBox::Critical,
             "Login failure",
             QString( "Unexpected response: Http status code %1" ).arg( Result->status ).toStdString()
@@ -198,7 +198,7 @@ auto HavocClient::Main(
     return;
 
 InvalidServerResponseError:
-    HavocMessageBox(
+    Helper::MessageBox(
         QMessageBox::Critical,
         "Login failure",
         "Failed to login: Invalid response from the server"
@@ -320,10 +320,10 @@ auto HavocClient::getStyleSheet(
     void
 ) -> QByteArray {
     if ( QFile::exists( "theme.css" ) ) {
-        return HavocFileRead( "theme.css" );
+        return Helper::FileRead( "theme.css" );
     }
 
-    return HavocFileRead( ":/style/default" );
+    return Helper::FileRead( ":/style/default" );
 }
 
 

@@ -1,7 +1,7 @@
 #include <Havoc.h>
 #include <core/Helper.h>
 
-auto HavocMessageBox(
+auto Helper::MessageBox(
     QMessageBox::Icon icon,
     std::string       title,
     std::string       text
@@ -15,7 +15,7 @@ auto HavocMessageBox(
     box.exec();
 }
 
-auto HavocFileRead(
+auto Helper::FileRead(
     const QString& FilePath
 ) -> QByteArray {
     auto Content = QByteArray( );
@@ -39,7 +39,7 @@ auto HavocFileRead(
     return Content;
 }
 
-auto GrayScaleIcon(
+auto Helper::GrayScaleIcon(
     QImage image
 ) -> QIcon {
     auto im = image.convertToFormat( QImage::Format_ARGB32 );

@@ -78,8 +78,8 @@ public:
     QPushButton*    ButtonClose      = nullptr;
     QSpacerItem*    horizontal[ 4 ]  = {};
 
-    Protocol*             Previous           = nullptr;
-    std::vector<Protocol> Protocols          = {};
+    Protocol*             Previous   = nullptr;
+    std::vector<Protocol> Protocols  = {};
 
     explicit HavocListener();
 
@@ -103,10 +103,12 @@ public:
     ) -> void;
 
     auto getOptions() -> json;
+
     auto setOption(
         const ProtclOption* option,
         const json&         values
     ) -> void;
+
     auto getOption(
         const std::string& name
     ) -> ProtclOption*;
@@ -118,10 +120,6 @@ public:
     auto eventProcess(
         const json& data
     ) -> void;
-    auto eventProcess(
-        const ProtclOption* option
-    ) -> void;
-    auto eventProcess() -> void;
 
     auto getCurrentProtocol() -> Protocol*;
     auto getCloseState() -> ListenerState;

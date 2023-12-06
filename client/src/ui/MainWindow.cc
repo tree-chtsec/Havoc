@@ -14,7 +14,7 @@ class Hover : public QObject
             } else if ( event->type() == QEvent::HoverLeave ) {
                 /* only apply icon if it's not used */
                 if ( ! ( ( HavocButton* ) button )->currentlyUsed() ) {
-                    button->setIcon( GrayScaleIcon( QImage( ":/icons/32px-" + Name + "-white" ) ) );
+                    button->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-" + Name + "-white" ) ) );
                     button->setIconSize( QSize( 32, 32 ) );
                 }
             }
@@ -174,32 +174,32 @@ auto HavocMainWindow::renderWindow() -> void {
 }
 
 auto HavocMainWindow::unusedSideButtons() -> void {
-    ButtonAgents->setIcon( GrayScaleIcon( QImage( ":/icons/32px-connection-white" ) ) );
+    ButtonAgents->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-connection-white" ) ) );
     ButtonAgents->setIconSize( QSize( 32, 32 ) );
     ButtonAgents->setToolTip( "Agents" );
     ButtonAgents->setUsed( false );
 
-    ButtonListeners->setIcon( GrayScaleIcon( QImage( ":/icons/32px-listener-white" ) ) );
+    ButtonListeners->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-listener-white" ) ) );
     ButtonListeners->setIconSize( QSize( 32, 32 ) );
     ButtonListeners->setToolTip( "Listeners" );
     ButtonListeners->setUsed( false );
 
-    ButtonPayload->setIcon( GrayScaleIcon( QImage( ":/icons/32px-payload-white" ) ) );
+    ButtonPayload->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-payload-white" ) ) );
     ButtonPayload->setIconSize( QSize( 32, 32 ) );
     ButtonPayload->setToolTip( "Payload" );
     ButtonPayload->setUsed( false );
 
-    ButtonServer->setIcon( GrayScaleIcon( QImage( ":/icons/32px-hosting-white" ) ) );
+    ButtonServer->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-hosting-white" ) ) );
     ButtonServer->setIconSize( QSize( 32, 32 ) );
     ButtonServer->setToolTip( "Server" );
     ButtonServer->setUsed( false );
 
-    ButtonScripts->setIcon( GrayScaleIcon( QImage( ":/icons/32px-script-white" ) ) );
+    ButtonScripts->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-script-white" ) ) );
     ButtonScripts->setIconSize( QSize( 32, 32 ) );
     ButtonScripts->setToolTip( "Scripts" );
     ButtonScripts->setUsed( false );
 
-    ButtonSettings->setIcon( GrayScaleIcon( QImage( ":/icons/32px-settings-white" ) ) );
+    ButtonSettings->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-settings-white" ) ) );
     ButtonSettings->setIconSize( QSize( 32, 32 ) );
     ButtonSettings->setToolTip( "Settings" );
     ButtonSettings->setUsed( false );

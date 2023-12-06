@@ -3,18 +3,20 @@
 
 #include <Common.h>
 
-auto HavocMessageBox(
-    QMessageBox::Icon Icon,
-    std::string title,
-    std::string text
-) -> void;
+namespace Helper {
+    auto MessageBox(
+        QMessageBox::Icon Icon,
+        std::string title,
+        std::string text
+    ) -> void;
 
-auto HavocFileRead(
-    const QString& FilePath
-) -> QByteArray;
+    auto FileRead(
+        const QString& FilePath
+    ) -> QByteArray;
 
-auto GrayScaleIcon(
-    QImage image
-) -> QIcon;
+    auto GrayScaleIcon(
+        QImage image
+    ) -> QIcon;
+};
 
 #endif //HAVOCCLIENT_HELPER_H

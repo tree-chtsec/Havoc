@@ -146,27 +146,27 @@ auto HavocConnect::start() -> json {
 auto HavocConnect::sanityCheckInput() -> bool {
 
     if ( InputProfileName->text().isEmpty() ) {
-        HavocMessageBox( QMessageBox::Critical, "Profile Error", "Profile field is emtpy." );
+        Helper::MessageBox( QMessageBox::Critical, "Profile Error", "Profile field is emtpy." );
         return false;
     }
 
     if ( InputHost->text().isEmpty() ) {
-        HavocMessageBox( QMessageBox::Critical, "Profile Error", "Host field is emtpy." );
+        Helper::MessageBox( QMessageBox::Critical, "Profile Error", "Host field is emtpy." );
         return false;
     }
 
     if ( InputPort->text().isEmpty() ) {
-        HavocMessageBox( QMessageBox::Critical, "Profile Error", "Port field is emtpy." );
+        Helper::MessageBox( QMessageBox::Critical, "Profile Error", "Port field is emtpy." );
         return false;
     }
 
     if ( InputUsername->text().isEmpty() ) {
-        HavocMessageBox( QMessageBox::Critical, "Profile Error", "Username field is emtpy." );
+        Helper::MessageBox( QMessageBox::Critical, "Profile Error", "Username field is emtpy." );
         return false;
     }
 
     if ( InputPassword->text().isEmpty() ) {
-        HavocMessageBox( QMessageBox::Critical, "Profile Error", "Password field is emtpy." );
+        Helper::MessageBox( QMessageBox::Critical, "Profile Error", "Password field is emtpy." );
         return false;
     }
 
