@@ -46,6 +46,13 @@ func NewLogr(Server, Path string) *Logr {
 		}
 	}
 
+	if _, err = os.Stat(logr.Path); os.IsNotExist(err) {
+		if err = os.MkdirAll(logr.Path, os.ModePerm); err != nil {
+			logger.Error("Failed to create Logr timestamp: " + err.Error())
+			return nil
+		}
+	}
+
 	if _, err = os.Stat(logr.AgentPath); os.IsNotExist(err) {
 		if err = os.MkdirAll(logr.AgentPath, os.ModePerm); err != nil {
 			logger.Error("Failed to create Logr agent folder: " + err.Error())

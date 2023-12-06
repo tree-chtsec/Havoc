@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	DatabasePath = "data/teamserver.db"
+	DatabasePath = "teamserver.db"
 
 	HavocCli = &cobra.Command{
 		Use:          "havoc",

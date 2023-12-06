@@ -93,7 +93,6 @@ type Teamserver struct {
 	Server *ServerApi
 
 	Agents    agent.Agents
-	Listeners []*Listener
 	Endpoints []*Endpoint
 
 	Settings struct {
@@ -102,7 +101,8 @@ type Teamserver struct {
 		Nasm       string
 	}
 
-	events struct {
+	configPath string
+	events     struct {
 		mutex sync.Mutex
 		list  []map[string]any
 	}

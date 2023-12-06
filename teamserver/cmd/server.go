@@ -21,7 +21,7 @@ var CobraServer = &cobra.Command{
 		var (
 			DirPath, _  = os.Getwd()
 			ServerTimer = time.Now()
-			LogrPath    = "data/loot/" + ServerTimer.Format("2006.01.02._15:04:05")
+			LogrPath    = "loot/" + ServerTimer.Format("2006.01.02._15:04:05")
 			Server      *server.Teamserver
 		)
 
@@ -33,10 +33,14 @@ var CobraServer = &cobra.Command{
 			os.Exit(0)
 		}
 
-		Server = server.NewTeamserver(DatabasePath)
+		if Server = server.NewTeamserver(DatabasePath); Server == nil {
+			logger.Error("failed to create server")
+			return nil
+		}
+
 		Server.SetServerFlags(flags)
 
-		logr.LogrInstance = logr.NewLogr(DirPath, LogrPath)
+		logr.LogrInstance = logr.NewLogr(Server.ConfigPath(), LogrPath)
 		if logr.LogrInstance == nil {
 			logger.Error("failed to create logr loot folder")
 			return nil

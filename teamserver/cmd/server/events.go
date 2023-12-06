@@ -17,6 +17,7 @@ const (
 	EventListenerStart    = "listener::start"
 	EventListenerEdit     = "listener::edit"
 	EventListenerStop     = "listener::stop"
+	EventListenerLog      = "listener::log"
 )
 
 const (

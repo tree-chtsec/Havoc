@@ -3,12 +3,10 @@ package server
 import "C"
 import (
 	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"golang.org/x/crypto/sha3"
 	"os"
 	"os/exec"
 	"strconv"
@@ -29,14 +27,25 @@ var (
 )
 
 func NewTeamserver(DatabasePath string) *Teamserver {
-	if d, err := db.DatabaseNew(DatabasePath); err != nil {
+	var (
+		server   = new(Teamserver)
+		err      error
+		database *db.DB
+	)
+
+	if database, err = db.DatabaseNew(DatabasePath); err != nil {
 		logger.Error("Failed to create a new db: " + err.Error())
 		return nil
-	} else {
-		return &Teamserver{
-			DB: d,
-		}
 	}
+
+	server.DB = database
+
+	if err = server.createConfigPath(); err != nil {
+		logger.Error("couldn't create config folder: %v", err.Error())
+		return nil
+	}
+
+	return server
 }
 
 func (t *Teamserver) SetServerFlags(flags TeamserverFlags) {
@@ -46,16 +55,8 @@ func (t *Teamserver) SetServerFlags(flags TeamserverFlags) {
 func (t *Teamserver) Start() {
 	var (
 		ServerFinished chan bool
-		TeamserverPath string
 		err            error
 	)
-
-	t.Listeners = []*Listener{}
-
-	if TeamserverPath, err = os.Getwd(); err != nil {
-		logger.Error("Couldn't get the current directory: " + err.Error())
-		return
-	}
 
 	if t.Flags.Server.Host == "" {
 		t.Flags.Server.Host = t.Profile.ServerHost()
@@ -77,308 +78,9 @@ func (t *Teamserver) Start() {
 	}
 
 	// start the api server
-	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, TeamserverPath+"/data", &ServerFinished)
+	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, t.ConfigPath(), &ServerFinished)
 
 	logger.Info("Starting Teamserver on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
-
-	// if we specified a webhook then lets use it.
-	/*if t.Profile.Config.WebHook != nil {
-		if t.Profile.Config.WebHook.Discord != nil {
-			var (
-				AvatarUrl string
-				UserName  string
-			)
-
-			if len(t.Profile.Config.WebHook.Discord.AvatarUrl) > 0 {
-				AvatarUrl = t.Profile.Config.WebHook.Discord.AvatarUrl
-			}
-
-			if len(t.Profile.Config.WebHook.Discord.UserName) > 0 {
-				UserName = t.Profile.Config.WebHook.Discord.UserName
-			}
-
-			if len(t.Profile.Config.WebHook.Discord.WebHook) > 0 {
-				t.WebHooks = webhook.NewWebHook()
-				t.WebHooks.SetDiscord(AvatarUrl, UserName, t.Profile.Config.WebHook.Discord.WebHook)
-			}
-		}
-	}
-
-	// now load up our db or start a new one if none exist
-	DBPath := t.DB.Path()
-	if t.DB, err = db.DatabaseNew(TeamserverPath + "/" + DBPath); err != nil {
-		logger.SetStdOut(os.Stderr)
-		logger.Error("Failed to create or open a database: " + err.Error())
-		return
-	}
-
-	if t.DB.Existed() {
-		logger.Info("Opens existing database: " + colors.Blue(DBPath))
-	} else {
-		logger.Info("Creates new database: " + colors.Blue(DBPath))
-	}
-
-	ListenerCount = t.DB.ListenerCount()
-
-	if t.Profile.Config.Listener != nil {
-
-		for _, listener := range t.Profile.Config.Listener.ListenerHTTP {
-			if listener.KillDate != "" {
-				t, err := time.Parse("2006-01-02 15:04:05", listener.KillDate)
-				if err != nil {
-					logger.Error("Failed to parse the kill date: " + err.Error())
-					return
-				}
-				KillDate = common.EpochTimeToSystemTime(t.Unix())
-			} else {
-				KillDate = 0
-			}
-
-			var HandlerData = handlers.HTTPConfig{
-				Name:         listener.Name,
-				KillDate:     KillDate,
-				WorkingHours: listener.WorkingHours,
-				Hosts:        listener.Hosts,
-				HostBind:     listener.HostBind,
-				Methode:      listener.Methode,
-				HostRotation: listener.HostRotation,
-				BehindRedir:  t.Profile.Config.Demon.TrustXForwardedFor,
-				PortBind:     strconv.Itoa(listener.PortBind),
-				PortConn:     strconv.Itoa(listener.PortConn),
-				UserAgent:    listener.UserAgent,
-				Headers:      listener.Headers,
-				Uris:         listener.Uris,
-				Secure:       listener.Secure,
-			}
-
-			if listener.Cert != nil {
-				var Found = true
-
-				if _, err = os.Stat(listener.Cert.Cert); !os.IsNotExist(err) {
-					HandlerData.Cert.Cert = listener.Cert.Cert
-				} else {
-					Found = false
-				}
-
-				if _, err = os.Stat(listener.Cert.Key); !os.IsNotExist(err) {
-					HandlerData.Cert.Key = listener.Cert.Key
-				} else {
-					Found = false
-				}
-
-				if !Found {
-					logger.Error("Failed to find Cert/Key Path for listener '" + listener.Name + "'. Using randomly generated certs")
-				}
-			}
-
-			if listener.Response != nil {
-				HandlerData.Response.Headers = listener.Response.Headers
-			}
-
-			if err := t.ListenerStart(handlers.LISTENER_HTTP, HandlerData); err != nil {
-				logger.Error("Failed to start listener from profile: " + err.Error())
-				return
-			}
-		}
-
-		for _, listener := range t.Profile.Config.Listener.ListenerSMB {
-			if listener.KillDate != "" {
-				t, err := time.Parse("2006-01-02 15:04:05", listener.KillDate)
-				if err != nil {
-					logger.Error("Failed to parse the kill date: " + err.Error())
-					return
-				}
-				KillDate = common.EpochTimeToSystemTime(t.Unix())
-			} else {
-				KillDate = 0
-			}
-
-			var HandlerData = handlers.SMBConfig{
-				Name:         listener.Name,
-				PipeName:     listener.PipeName,
-				KillDate:     KillDate,
-				WorkingHours: listener.WorkingHours,
-			}
-
-			if err := t.ListenerStart(handlers.LISTENER_PIVOT_SMB, HandlerData); err != nil {
-				logger.Error("Failed to start listener from profile: " + err.Error())
-				return
-			}
-		}
-
-		for _, listener := range t.Profile.Config.Listener.ListenerExternal {
-			var HandlerData = handlers.ExternalConfig{
-				Name:     listener.Name,
-				Endpoint: listener.Endpoint,
-			}
-
-			if err := t.ListenerStart(handlers.LISTENER_EXTERNAL, HandlerData); err != nil {
-				logger.Error("Failed to start listener from profile: " + err.Error())
-				return
-			}
-		}
-
-	}
-
-	if ListenerCount > 0 {
-		var TotalCount = 0
-		if DbName := t.DB.ListenerNames(); len(DbName) > 0 {
-			TotalCount = ListenerCount
-			for _, name := range DbName {
-				for _, listener := range t.Listeners {
-					if listener.Name == name {
-						TotalCount--
-						break
-					}
-				}
-			}
-		}
-
-		if TotalCount > 0 {
-			logger.Info(fmt.Sprintf("Starting %v listeners from last session", colors.Green(TotalCount)))
-		}
-	}
-
-	for _, listener := range t.DB.ListenerAll() {
-
-		switch listener["Protocol"] {
-
-		case handlers.AGENT_HTTP, handlers.AGENT_HTTPS:
-
-			var (
-				Data        = make(map[string]any)
-				HandlerData = handlers.HTTPConfig{
-					Name: listener["Name"],
-				}
-			)
-
-			err = json.Unmarshal([]byte(listener["Config"]), &Data)
-			if err != nil {
-				logger.Error("Failed to unmarshal json bytes to map: " + err.Error())
-				continue
-			}
-
-			HandlerData.Hosts = strings.Split(Data["Hosts"].(string), ", ")
-			HandlerData.HostBind = Data["HostBind"].(string)
-			HandlerData.HostRotation = Data["HostRotation"].(string)
-			HandlerData.PortBind = Data["PortBind"].(string)
-			HandlerData.UserAgent = Data["UserAgent"].(string)
-			HandlerData.Headers = strings.Split(Data["Headers"].(string), ", ")
-			HandlerData.Uris = strings.Split(Data["Uris"].(string), ", ")
-			HandlerData.BehindRedir = t.Profile.Config.Demon.TrustXForwardedFor
-
-			HandlerData.Secure = false
-			if Data["Secure"].(string) == "true" {
-				HandlerData.Secure = true
-			}
-
-			if Data["Response Headers"] != nil {
-
-				switch Data["Response Headers"].(type) {
-
-				case string:
-					HandlerData.Response.Headers = strings.Split(Data["Response Headers"].(string), ", ")
-					break
-
-				default:
-					for _, s := range Data["Response Headers"].([]interface{}) {
-						HandlerData.Response.Headers = append(HandlerData.Response.Headers, s.(string))
-					}
-
-				}
-			}
-
-			if err := t.ListenerStart(handlers.LISTENER_HTTP, HandlerData); err != nil && err.Error() != "listener already exists" {
-				logger.SetStdOut(os.Stderr)
-				logger.Error("Failed to start listener from db: " + err.Error())
-				return
-			}
-
-			break
-
-		case handlers.AGENT_EXTERNAL:
-
-			var (
-				Data        = make(map[string]any)
-				HandlerData = handlers.ExternalConfig{
-					Name: listener["Name"],
-				}
-			)
-
-			err := json.Unmarshal([]byte(listener["Config"]), &Data)
-			if err != nil {
-				logger.Debug("Failed to unmarshal json bytes to map: " + err.Error())
-				continue
-			}
-
-			HandlerData.Endpoint = Data["Endpoint"].(string)
-
-			if err := t.ListenerStart(handlers.LISTENER_EXTERNAL, HandlerData); err != nil && err.Error() != "listener already exists" {
-				logger.SetStdOut(os.Stderr)
-				logger.Error("Failed to start listener from db: " + err.Error())
-				return
-			}
-
-			break
-
-		case handlers.AGENT_PIVOT_SMB:
-
-			var (
-				Data        = make(map[string]any)
-				HandlerData = handlers.SMBConfig{
-					Name: listener["Name"],
-				}
-			)
-
-			err := json.Unmarshal([]byte(listener["Config"]), &Data)
-			if err != nil {
-				logger.Debug("Failed to unmarshal json bytes to map: " + err.Error())
-				continue
-			}
-
-			HandlerData.PipeName = Data["PipeName"].(string)
-
-			if err := t.ListenerStart(handlers.LISTENER_PIVOT_SMB, HandlerData); err != nil && err.Error() != "listener already exists" {
-				logger.SetStdOut(os.Stderr)
-				logger.Error("Failed to start listener from db: " + err.Error())
-				return
-			}
-
-			break
-
-		}
-
-	}
-
-	// load all existing Agents from the DB
-	Agents := t.DB.AgentAll()
-	for _, Agent := range Agents {
-		t.AgentAdd(Agent)
-	}
-
-	for _, Agent := range Agents {
-		// check if the agent has a parent
-		parentID, err := t.ParentOf(Agent)
-		if err == nil {
-			Agent.Pivots.Parent = t.AgentInstance(parentID)
-		}
-		// check if the agent has any links
-		AgentsIDs := t.LinksOf(Agent)
-		for _, AgentID := range AgentsIDs {
-			Agent.Pivots.Links = append(Agent.Pivots.Links, t.AgentInstance(AgentID))
-		}
-	}
-
-	// notify the clients
-	for _, Agent := range Agents {
-		t.AgentSendNotify(Agent)
-	}
-
-	if len(Agents) > 0 {
-		logger.Info(fmt.Sprintf("Restored %v agents from last session", colors.Green(len(Agents))))
-	}
-
-	t.EventAppend(events.SendProfile(t.Profile))*/
 
 	// This should hold the Teamserver as long as the WebSocket Server is running
 	logger.Debug("Wait til the server shutdown")
@@ -395,6 +97,26 @@ func (*Teamserver) Version() map[string]string {
 	}
 }
 
+func (t *Teamserver) createConfigPath() error {
+	var err error
+
+	if t.configPath, err = os.UserHomeDir(); err != nil {
+		return err
+	}
+
+	t.configPath += "/.havoc"
+
+	if err = os.MkdirAll(t.configPath, os.ModePerm); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *Teamserver) ConfigPath() string {
+	return t.configPath
+}
+
 func (t *Teamserver) SetProfile(path string) {
 	t.Profile = profile.NewProfile()
 	logger.LoggerInstance.STDERR = os.Stderr
@@ -404,59 +126,6 @@ func (t *Teamserver) SetProfile(path string) {
 		logger.Error("Profile error:", colors.Red(err))
 		os.Exit(1)
 	}
-}
-
-func (t *Teamserver) ClientAuthenticate(pk packager.Package) bool {
-	if pk.Head.Event == packager.Type.InitConnection.Type {
-		if pk.Body.SubEvent == packager.Type.InitConnection.OAuthRequest {
-			if t.Profile != nil {
-				if t.Profile.Config.Operators != nil {
-					var (
-						UserPassword string
-						UserName     string
-						PassHash     = sha3.New256()
-						UserFound    = false
-					)
-
-					// search for operator
-					for _, User := range t.Profile.Config.Operators.Users {
-						if User.Name == pk.Head.User {
-							UserName = User.Name
-							UserFound = true
-
-							PassHash.Write([]byte(User.Password))
-							UserPassword = hex.EncodeToString(PassHash.Sum(nil))
-
-							logger.Debug("Found User: " + User.Name)
-						}
-					}
-
-					// check if the operator was even found
-					if UserFound {
-						if pk.Body.Info["Password"].(string) == UserPassword {
-							logger.Debug("User " + colors.Red(UserName) + " is authenticated")
-							return true
-						}
-					} else {
-						logger.Debug("User not found")
-					}
-
-					logger.Debug("User not authenticated")
-				}
-
-				return false
-			} else {
-				return false
-			}
-		} else {
-			logger.Error("Wrong SubEvent :: " + strconv.Itoa(pk.Body.SubEvent))
-		}
-	} else {
-		logger.Error("Not a Authenticate request")
-	}
-
-	logger.Error("Client failed to authenticate with password hash :: " + pk.Body.Info["Password"].(string))
-	return false
 }
 
 func (t *Teamserver) EventBroadcast(ExceptClient string, pk packager.Package) {

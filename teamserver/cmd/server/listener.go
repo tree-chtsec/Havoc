@@ -77,6 +77,10 @@ func (t *Teamserver) ListenerEvent(protocol string, event map[string]any) (map[s
 	return resp, err
 }
 
+func (t *Teamserver) ListenerLog(name string, fmt string, args ...any) {
+
+}
+
 //
 // below is the old implementation
 // which is going to be removed and replaced

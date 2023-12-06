@@ -92,19 +92,20 @@ func (api *ServerApi) Start(host, port, certsPath string, finished *chan bool) {
 	err = os.WriteFile(certPath, Cert, 0644)
 	if err != nil {
 		logger.Error("Couldn't save server cert file: " + err.Error())
-		os.Exit(0)
+		return
 	}
 
 	// write the cert key path to disk
 	err = os.WriteFile(keyPath, Key, 0644)
 	if err != nil {
 		logger.Error("Couldn't save server cert file: " + err.Error())
-		os.Exit(0)
+		return
 	}
 
 	// start the api server
 	if err = api.Engine.RunTLS(host+":"+port, certPath, keyPath); err != nil {
 		logger.Error("Failed to start websocket: " + err.Error())
+		return
 	}
 
 	// signal that we finished
