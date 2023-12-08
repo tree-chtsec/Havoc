@@ -50,13 +50,16 @@ auto HavocClient::eventDispatch(
             return;
         }
 
-        MainWindows->PageListener->Protocols.push_back(
-            data
-        );
+        MainWindows->PageListener->Protocols.push_back( data );
     }
     else if ( type == Event::listener::start )
     {
+        if ( data.empty() ) {
+            spdlog::error( "Event::listener::start: invalid package (data emtpy)" );
+            return;
+        }
 
+        MainWindows->PageListener->addListener( data );
     }
     else if ( type == Event::listener::edit )
     {

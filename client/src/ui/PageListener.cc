@@ -1,4 +1,6 @@
 #include <Havoc.h>
+#include "ui/PageListener.h"
+
 
 HavocPageListener::HavocPageListener() {
     if ( objectName().isEmpty() ) {
@@ -92,4 +94,117 @@ auto HavocPageListener::buttonAddListener() -> void {
     Dialog->start();
 
     delete Dialog;
+}
+
+auto HavocPageListener::addListener(
+    const json& data
+) -> void {
+    auto name   = QString();
+    auto type   = QString();
+    auto host   = QString();
+    auto port   = QString();
+    auto status = QString();
+    auto item   = new Listener();
+
+    if ( data.contains( "name" ) ) {
+        if ( data[ "name" ].is_string() ) {
+            name = data[ "name" ].get<std::string>().c_str();
+        } else {
+            spdlog::error( "invalid listener: \"name\" is not string" );
+            return;
+        }
+    } else {
+        spdlog::error( "invalid listener: \"name\" is not found" );
+        return;
+    }
+
+    if ( data.contains( "protocol" ) ) {
+        if ( data[ "protocol" ].is_string() ) {
+            type = data[ "protocol" ].get<std::string>().c_str();
+        } else {
+            spdlog::error( "invalid listener: \"protocol\" is not string" );
+            return;
+        }
+    } else {
+        spdlog::error( "invalid listener: \"protocol\" is not found" );
+        return;
+    }
+
+    if ( data.contains( "host" ) ) {
+        if ( data[ "host" ].is_string() ) {
+            host = data[ "host" ].get<std::string>().c_str();
+        } else {
+            spdlog::error( "invalid listener: \"host\" is not string" );
+            return;
+        }
+    } else {
+        spdlog::error( "invalid listener: \"host\" is not found" );
+        return;
+    }
+
+    if ( data.contains( "port" ) ) {
+        if ( data[ "port" ].is_string() ) {
+            port = data[ "port" ].get<std::string>().c_str();
+        } else {
+            spdlog::error( "invalid listener: \"port\" is not string" );
+            return;
+        }
+    } else {
+        spdlog::error( "invalid listener: \"port\" is not found" );
+        return;
+    }
+
+    if ( data.contains( "status" ) ) {
+        if ( data[ "status" ].is_string() ) {
+            status = data[ "status" ].get<std::string>().c_str();
+        } else {
+            spdlog::error( "invalid listener: \"status\" is not string" );
+            return;
+        }
+    } else {
+        spdlog::error( "invalid listener: \"status\" is not found" );
+        return;
+    }
+
+    item->Name   = new QTableWidgetItem( name );
+    item->Type   = new QTableWidgetItem( type );
+    item->Host   = new QTableWidgetItem( host );
+    item->Port   = new QTableWidgetItem( port );
+    item->Status = new QTableWidgetItem( status );
+
+    item->Name->setFlags( item->Name->flags() ^ Qt::ItemIsEditable );
+    item->Type->setFlags( item->Type->flags() ^ Qt::ItemIsEditable );
+    item->Host->setFlags( item->Host->flags() ^ Qt::ItemIsEditable );
+    item->Port->setFlags( item->Port->flags() ^ Qt::ItemIsEditable );
+    item->Status->setFlags( item->Status->flags() ^ Qt::ItemIsEditable );
+
+    if ( TableWidget->rowCount() < 1 ) {
+        TableWidget->setRowCount( 1 );
+    } else {
+        TableWidget->setRowCount( TableWidget->rowCount() + 1 );
+    }
+
+    const bool isSortingEnabled = TableWidget->isSortingEnabled();
+    TableWidget->setSortingEnabled( false );
+
+    TableWidget->setItem( TableWidget->rowCount() - 1, 0, item->Name );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 1, item->Type );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 2, item->Host );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 3, item->Port );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 4, item->Status );
+
+    TableWidget->setSortingEnabled( isSortingEnabled );
+
+    TableEntries.push_back( item );
+
+    /* increase the number of listeners */
+    ListenersRunning++;
+
+    updateListenersRunningLabel( ListenersRunning );
+}
+
+auto HavocPageListener::updateListenersRunningLabel(
+    int value
+) const -> void {
+    ActiveLabel->setText( QString( "Active: %1" ).arg( value ) );
 }

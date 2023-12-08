@@ -15,9 +15,20 @@
 
 QT_BEGIN_NAMESPACE
 
-
 class HavocPageListener : public QWidget
 {
+    int ListenersRunning = 0;
+
+    typedef struct {
+        QTableWidgetItem* Name;
+        QTableWidgetItem* Type;
+        QTableWidgetItem* Host;
+        QTableWidgetItem* Port;
+        QTableWidgetItem* Status;
+    } Listener;
+
+    std::vector<Listener*> TableEntries  = {};
+
 public:
     QGridLayout*      gridLayout        = nullptr;
     QLabel*           ActiveLabel       = nullptr;
@@ -35,6 +46,14 @@ public:
 
     explicit HavocPageListener();
     auto retranslateUi() -> void;
+
+    auto addListener(
+        const json& data
+    ) -> void;
+
+    auto updateListenersRunningLabel(
+        int value
+    ) const -> void;
 
     auto buttonAddListener() -> void;
 };

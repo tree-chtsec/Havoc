@@ -970,7 +970,9 @@ auto HavocListener::getOptions() -> json {
             } else if ( option.type == ListenerWidgetTypeToggle ) {
                 data[ tab.name ][ option.name ] = json();
             } else if ( option.type == ListenerWidgetTypeFile ) {
-                data[ tab.name ][ option.name ] = ( ( HxWidgetFile* ) option.widget )->getFilePath().toStdString();
+                if ( ! ( ( HxWidgetFile* ) option.widget )->getFilePath().isEmpty() ) {
+                    data[ tab.name ][ option.name ] = Helper::FileRead( ( ( HxWidgetFile* ) option.widget )->getFilePath() ).toBase64().toStdString();
+                }
             } else if ( option.type == ListenerWidgetTypeText ) {
                 data[ tab.name ][ option.name ] = ( ( QTextEdit* ) option.widget )->toPlainText().toStdString();
             }
@@ -1011,36 +1013,42 @@ auto HavocListener::save() -> void {
 
     spdlog::debug( "options -> {}", getOptions().dump() );
 
-    State  = Error;
-    Result = Havoc->ApiSend( "/api/listener/start", getOptions() );
+    State = Error;
 
-    if ( Result->status != 200 ) {
-        if ( ! Result->body.empty() ) {
-            if ( ( data = json::parse( Result->body ) ).is_discarded() ) {
+    if ( ( Result = Havoc->ApiSend( "/api/listener/start", getOptions() ) ) ) {
+        if ( Result->status != 200 ) {
+            if ( ! Result->body.empty() ) {
+                if ( ( data = json::parse( Result->body ) ).is_discarded() ) {
+                    goto InvalidServerResponseError;
+                }
+
+                if ( ! data.contains( "error" ) ) {
+                    goto InvalidServerResponseError;
+                }
+
+                if ( ! data[ "error" ].is_string() ) {
+                    goto InvalidServerResponseError;
+                }
+
+                Helper::MessageBox(
+                    QMessageBox::Critical,
+                    "Listener failure",
+                    QString( "Failed to start listener: %1" ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
+                );
+
+                State = Error;
+                close();
+                return;
+            } else {
                 goto InvalidServerResponseError;
             }
-
-            if ( ! data.contains( "error" ) ) {
-                goto InvalidServerResponseError;
-            }
-
-            if ( ! data[ "error" ].is_string() ) {
-                goto InvalidServerResponseError;
-            }
-
-            Helper::MessageBox(
-                QMessageBox::Critical,
-                "Listener failure",
-                QString( "Failed to start listener: %1" ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
-            );
         } else {
-            goto InvalidServerResponseError;
+            State = Saved;
+            close();
+            return;
         }
-    } else {
-        State = Saved;
-        close();
-        return;
     }
+
 
 InvalidServerResponseError:
     Helper::MessageBox(

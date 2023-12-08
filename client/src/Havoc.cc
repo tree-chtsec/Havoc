@@ -216,7 +216,7 @@ auto HavocClient::ApiSend(
     /* create http client */
     auto Http   = httplib::Client( "https://" + Profile.Host + ":" + Profile.Port );
     auto Result = httplib::Result();
-    auto Error  = std::string( "Failed to send login request: " );
+    auto Error  = std::string( "Failed to send api request: " );
 
     Http.enable_server_certificate_verification( false );
 
