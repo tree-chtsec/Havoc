@@ -36,6 +36,22 @@ type HavocUser struct {
 	socket   *websocket.Conn
 }
 
+type HavocAgent struct {
+	// uuid this is the identifier
+	// for the teamserver to know
+	uuid string
+
+	// context member contains the context of the agent
+	// like to what listener it is associated with and
+	// other things that is important to the teamserver
+	// to know, like: parent agent, listener name, etc.
+	context map[string]any
+
+	// metadata contains the metadata of the agent
+	// like hostname, username, process name and id, etc.
+	metadata map[string]any
+}
+
 type Users struct {
 	Name     string
 	Password string
@@ -111,4 +127,5 @@ type Teamserver struct {
 	plugins   *PluginSystem
 	protocols []Handler // available handlers/listeners to use
 	listener  []Handler // started listeners
+	agents    sync.Map  // current connected agents
 }

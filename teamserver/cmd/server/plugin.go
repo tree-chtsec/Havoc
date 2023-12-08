@@ -42,7 +42,7 @@ type BasicInterface interface {
 
 type ListenerInterface interface {
 	ListenerRegister() map[string]any
-	ListenerStart(name string, options map[string]any) error
+	ListenerStart(name string, options map[string]any) (map[string]string, error)
 	ListenerEdit(config map[string]any) (map[string]any, error)
 	ListenerStop(name string) error
 	ListenerEvent(event map[string]any) (map[string]any, error)
@@ -277,10 +277,11 @@ func (s *PluginSystem) interactPlugin(extension *Plugin) error {
 	return nil
 }
 
-func (s *PluginSystem) ListenerStart(name, protocol string, options map[string]any) error {
+func (s *PluginSystem) ListenerStart(name, protocol string, options map[string]any) (map[string]string, error) {
 	var (
-		err error
-		ext *Plugin
+		data map[string]string
+		err  error
+		ext  *Plugin
 	)
 
 	err = errors.New("protocol not found")
@@ -289,7 +290,7 @@ func (s *PluginSystem) ListenerStart(name, protocol string, options map[string]a
 		ext = value.(*Plugin)
 
 		if protocol == ext.ListenerRegister()["protocol"].(string) {
-			err = ext.ListenerStart(name, options)
+			data, err = ext.ListenerStart(name, options)
 
 			return false
 		}
@@ -297,7 +298,7 @@ func (s *PluginSystem) ListenerStart(name, protocol string, options map[string]a
 		return true
 	})
 
-	return err
+	return data, err
 }
 
 func (s *PluginSystem) ListenerEvent(protocol string, event map[string]any) (map[string]any, error) {

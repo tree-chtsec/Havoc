@@ -37,14 +37,32 @@ func (t *Teamserver) ListenerRegister(name string, listener map[string]any) erro
 }
 
 func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any) error {
-	var err error
+	var (
+		err    error
+		data   map[string]string
+		host   string
+		port   string
+		status string
+	)
 
 	for _, prot := range t.protocols {
 		if val, ok := prot.Data["protocol"]; ok {
 			if val.(string) == protocol {
-				if err = t.plugins.ListenerStart(name, protocol, options); err != nil {
+				if data, err = t.plugins.ListenerStart(name, protocol, options); err != nil {
 					return err
 				}
+
+				host, ok = data["host"]
+				port, ok = data["port"]
+				status, ok = data["status"]
+
+				t.UserBroadcast(true, t.EventCreate(EventListenerStart, map[string]any{
+					"name":     name,
+					"protocol": protocol,
+					"host":     host,
+					"port":     port,
+					"status":   status,
+				}))
 
 				break
 			}
