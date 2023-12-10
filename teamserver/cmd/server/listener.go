@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // ListenerRegister
@@ -95,8 +96,11 @@ func (t *Teamserver) ListenerEvent(protocol string, event map[string]any) (map[s
 	return resp, err
 }
 
-func (t *Teamserver) ListenerLog(name string, fmt string, args ...any) {
-
+func (t *Teamserver) ListenerLog(name string, format string, args ...any) {
+	t.UserBroadcast(true, t.EventCreate(EventListenerLog, map[string]any{
+		"name": name,
+		"log":  fmt.Sprintf(format, args...),
+	}))
 }
 
 //
