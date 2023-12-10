@@ -28,6 +28,7 @@ namespace Event {
         static std::string edit   = "listener::edit";
         static std::string stop   = "listener::stop";
         static std::string status = "listener::status";
+        static std::string log    = "listener::log";
     }
 
     namespace payload {

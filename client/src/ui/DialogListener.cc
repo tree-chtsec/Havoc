@@ -392,6 +392,7 @@ auto HavocListener::insertTab(
     tab.name = name;
     tab.tab  = new QWidget;
     tab.tab->setProperty( "dark", "true" );
+    tab.tab->setProperty( "custom-widget", "true" );
 
     tab.layout = new QGridLayout( tab.tab );
 

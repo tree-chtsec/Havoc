@@ -12,6 +12,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QTextEdit>
 
 QT_BEGIN_NAMESPACE
 
@@ -25,6 +26,8 @@ class HavocPageListener : public QWidget
         QTableWidgetItem* Host;
         QTableWidgetItem* Port;
         QTableWidgetItem* Status;
+
+        QTextEdit*        Logger;
     } Listener;
 
     std::vector<Listener*> TableEntries  = {};
@@ -49,6 +52,11 @@ public:
 
     auto addListener(
         const json& data
+    ) -> void;
+
+    auto addListenerLog(
+        const std::string& name,
+        const std::string& log
     ) -> void;
 
     auto updateListenersRunningLabel(

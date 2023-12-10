@@ -1,6 +1,5 @@
 #include <Havoc.h>
-#include "ui/PageListener.h"
-
+#include <ui/PageListener.h>
 
 HavocPageListener::HavocPageListener() {
     if ( objectName().isEmpty() ) {
@@ -58,6 +57,8 @@ HavocPageListener::HavocPageListener() {
     
     TabWidget = new QTabWidget( Splitter );
     TabWidget->setObjectName( QString::fromUtf8( "TabWidget" ) );
+    TabWidget->setMovable( true );
+    TabWidget->setTabsClosable( true );
 
     Splitter->addWidget( TableWidget );
     Splitter->addWidget( TabWidget );
@@ -99,12 +100,12 @@ auto HavocPageListener::buttonAddListener() -> void {
 auto HavocPageListener::addListener(
     const json& data
 ) -> void {
-    auto name   = QString();
-    auto type   = QString();
-    auto host   = QString();
-    auto port   = QString();
-    auto status = QString();
-    auto item   = new Listener();
+    auto name     = QString();
+    auto type     = QString();
+    auto host     = QString();
+    auto port     = QString();
+    auto status   = QString();
+    auto listener = new Listener();
 
     if ( data.contains( "name" ) ) {
         if ( data[ "name" ].is_string() ) {
@@ -166,17 +167,20 @@ auto HavocPageListener::addListener(
         return;
     }
 
-    item->Name   = new QTableWidgetItem( name );
-    item->Type   = new QTableWidgetItem( type );
-    item->Host   = new QTableWidgetItem( host );
-    item->Port   = new QTableWidgetItem( port );
-    item->Status = new QTableWidgetItem( status );
+    listener->Name   = new QTableWidgetItem( name );
+    listener->Type   = new QTableWidgetItem( type );
+    listener->Host   = new QTableWidgetItem( host );
+    listener->Port   = new QTableWidgetItem( port );
+    listener->Status = new QTableWidgetItem( status );
+    listener->Logger = new QTextEdit( this );
 
-    item->Name->setFlags( item->Name->flags() ^ Qt::ItemIsEditable );
-    item->Type->setFlags( item->Type->flags() ^ Qt::ItemIsEditable );
-    item->Host->setFlags( item->Host->flags() ^ Qt::ItemIsEditable );
-    item->Port->setFlags( item->Port->flags() ^ Qt::ItemIsEditable );
-    item->Status->setFlags( item->Status->flags() ^ Qt::ItemIsEditable );
+    listener->Name->setFlags( listener->Name->flags() ^ Qt::ItemIsEditable );
+    listener->Type->setFlags( listener->Type->flags() ^ Qt::ItemIsEditable );
+    listener->Host->setFlags( listener->Host->flags() ^ Qt::ItemIsEditable );
+    listener->Port->setFlags( listener->Port->flags() ^ Qt::ItemIsEditable );
+    listener->Status->setFlags( listener->Status->flags() ^ Qt::ItemIsEditable );
+    listener->Logger->setProperty( "logger", "true" );
+    listener->Logger->setReadOnly( true );
 
     if ( TableWidget->rowCount() < 1 ) {
         TableWidget->setRowCount( 1 );
@@ -186,16 +190,16 @@ auto HavocPageListener::addListener(
 
     const bool isSortingEnabled = TableWidget->isSortingEnabled();
     TableWidget->setSortingEnabled( false );
-
-    TableWidget->setItem( TableWidget->rowCount() - 1, 0, item->Name );
-    TableWidget->setItem( TableWidget->rowCount() - 1, 1, item->Type );
-    TableWidget->setItem( TableWidget->rowCount() - 1, 2, item->Host );
-    TableWidget->setItem( TableWidget->rowCount() - 1, 3, item->Port );
-    TableWidget->setItem( TableWidget->rowCount() - 1, 4, item->Status );
-
+    TableWidget->setItem( TableWidget->rowCount() - 1, 0, listener->Name );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 1, listener->Type );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 2, listener->Host );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 3, listener->Port );
+    TableWidget->setItem( TableWidget->rowCount() - 1, 4, listener->Status );
     TableWidget->setSortingEnabled( isSortingEnabled );
 
-    TableEntries.push_back( item );
+    TableEntries.push_back( listener );
+
+    TabWidget->addTab( listener->Logger, "[Logger] " + listener->Name->text() );
 
     /* increase the number of listeners */
     ListenersRunning++;
@@ -207,4 +211,17 @@ auto HavocPageListener::updateListenersRunningLabel(
     int value
 ) const -> void {
     ActiveLabel->setText( QString( "Active: %1" ).arg( value ) );
+}
+
+auto HavocPageListener::addListenerLog(
+    const std::string& name,
+    const std::string& log
+) -> void {
+    for ( auto& listener : TableEntries ) {
+        if ( listener->Name->text().toStdString() == name ) {
+
+            listener->Logger->append( log.c_str() );
+            break;
+        }
+    }
 }
