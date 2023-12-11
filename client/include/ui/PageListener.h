@@ -18,7 +18,8 @@ QT_BEGIN_NAMESPACE
 
 class HavocPageListener : public QWidget
 {
-    int ListenersRunning = 0;
+    bool SplitterMoveToggle = false;
+    int  ListenersRunning   = 0;
 
     typedef struct {
         QTableWidgetItem* Name;
@@ -61,6 +62,14 @@ public:
 
     auto updateListenersRunningLabel(
         int value
+    ) const -> void;
+
+    auto handleListenerContextMenu(
+        const QPoint& pos
+    ) -> void;
+
+    auto tabCloseRequested(
+        int index
     ) const -> void;
 
     auto buttonAddListener() -> void;

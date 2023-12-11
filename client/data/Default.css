@@ -43,17 +43,34 @@ QTableWidget {
     color: #f8f8f2;
 }
 
-QTabBar::tab {
+QTableWidget::item:selected {
+    selection-background-color: #6272a4;
+    color: #6272a4;
+}
+
+QTabBar[HxProtocol="true"]::tab {
     background: #313342;
     color: #f8f8f2;
     padding-top: 3px;
     padding-bottom: 3px;
 }
 
+QTabBar[HxTab="true"]::tab {
+    background: #313342;
+    color: #f8f8f2;
+    margin-top: 3px;
+    padding: 4px 10px 4px 10px;
+    border-bottom-color: transparent;
+}
+
 QTabBar::tab:selected {
     background: #44475A;
     color: #f8f8f2;
     border: 1px solid #6272A4;
+}
+
+QTabBar[HxTab="true"]::tab:selected {
+    border-bottom-color: transparent;
 }
 
 QTabBar::close-button {
@@ -116,8 +133,20 @@ QTextEdit {
     color: #f8f8f2;
 }
 
-QTextEdit[logger="true"] {
+QTextEdit[HxListenerLogger="true"] {
     background-color: #282A36;
+    color: #f8f8f2;
+}
+
+QMenu {
+    background: #282a36;
+    color: #f8f8f2;
+    border: 1px solid #44475a;
+    padding: 2px;
+}
+
+QMenu::item:selected {
+    background: #313342;
     color: #f8f8f2;
 }
 

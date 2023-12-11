@@ -59,9 +59,11 @@ HavocPageListener::HavocPageListener() {
     TabWidget->setObjectName( QString::fromUtf8( "TabWidget" ) );
     TabWidget->setMovable( true );
     TabWidget->setTabsClosable( true );
+    TabWidget->tabBar()->setProperty( "HxTab", "true" );
 
     Splitter->addWidget( TableWidget );
     Splitter->addWidget( TabWidget );
+    Splitter->handle( 1 )->setEnabled( false ); /* disabled by default */
 
     gridLayout->addWidget( ButtonNewListener, 0, 0, 1, 1 );
     gridLayout->addItem( horizontalSpacer, 0, 1, 1, 1 );
@@ -71,6 +73,8 @@ HavocPageListener::HavocPageListener() {
     retranslateUi();
 
     QObject::connect( ButtonNewListener, &QPushButton::clicked, this, &HavocPageListener::buttonAddListener );
+    QObject::connect( TableWidget, &QTableWidget::customContextMenuRequested, this, &HavocPageListener::handleListenerContextMenu );
+    QObject::connect( TabWidget->tabBar(), &QTabBar::tabCloseRequested, this, &HavocPageListener::tabCloseRequested );
 
     QMetaObject::connectSlotsByName( this );
 }
@@ -172,14 +176,14 @@ auto HavocPageListener::addListener(
     listener->Host   = new QTableWidgetItem( host );
     listener->Port   = new QTableWidgetItem( port );
     listener->Status = new QTableWidgetItem( status );
-    listener->Logger = new QTextEdit( this );
+    listener->Logger = new QTextEdit();
 
     listener->Name->setFlags( listener->Name->flags() ^ Qt::ItemIsEditable );
     listener->Type->setFlags( listener->Type->flags() ^ Qt::ItemIsEditable );
     listener->Host->setFlags( listener->Host->flags() ^ Qt::ItemIsEditable );
     listener->Port->setFlags( listener->Port->flags() ^ Qt::ItemIsEditable );
     listener->Status->setFlags( listener->Status->flags() ^ Qt::ItemIsEditable );
-    listener->Logger->setProperty( "logger", "true" );
+    listener->Logger->setProperty( "HxListenerLogger", "true" );
     listener->Logger->setReadOnly( true );
 
     if ( TableWidget->rowCount() < 1 ) {
@@ -199,8 +203,6 @@ auto HavocPageListener::addListener(
 
     TableEntries.push_back( listener );
 
-    TabWidget->addTab( listener->Logger, "[Logger] " + listener->Name->text() );
-
     /* increase the number of listeners */
     ListenersRunning++;
 
@@ -219,9 +221,64 @@ auto HavocPageListener::addListenerLog(
 ) -> void {
     for ( auto& listener : TableEntries ) {
         if ( listener->Name->text().toStdString() == name ) {
-
             listener->Logger->append( log.c_str() );
             break;
         }
+    }
+}
+
+auto HavocPageListener::handleListenerContextMenu(
+    const QPoint& pos
+) -> void {
+    auto Menu = new QMenu( this );
+    auto Name = QString();
+
+    /* check if we point to a session table item/agent */
+    if ( ! TableWidget->itemAt( pos ) ) {
+        return;
+    }
+
+    Name = TableWidget->item( TableWidget->currentRow(), 0 )->text();
+
+    Menu->addAction( "Logs"    );
+    Menu->addAction( "Stop"    );
+    Menu->addAction( "Restart" );
+
+    if ( auto action = Menu->exec( TableWidget->horizontalHeader()->viewport()->mapToGlobal( pos ) ) ) {
+        if ( action->text().compare( "Logs" ) == 0 ) {
+            for ( auto& listener : TableEntries ) {
+                if ( listener->Name->text().compare( Name ) == 0 ) {
+
+                    if ( TabWidget->count() == 0 ) {
+                        Splitter->setSizes( QList<int>() << 200 << 220 );
+                        Splitter->handle( 1 )->setEnabled( true );
+                        Splitter->handle( 1 )->setCursor( Qt::SplitVCursor );
+                    }
+
+                    TabWidget->addTab( listener->Logger, "[Logger] " + listener->Name->text() );
+
+                    break;
+                }
+            }
+        } else {
+            spdlog::debug( "[ERROR] invalid action from selected listener menu" );
+        }
+    }
+
+}
+
+auto HavocPageListener::tabCloseRequested(
+    int index
+) const -> void {
+    if ( index == -1 ) {
+        return;
+    }
+
+    TabWidget->removeTab( index );
+
+    if ( TabWidget->count() == 0 ) {
+        Splitter->setSizes( QList<int>() << 0 );
+        Splitter->handle( 1 )->setEnabled( false );
+        Splitter->handle( 1 )->setCursor( Qt::ArrowCursor );
     }
 }

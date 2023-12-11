@@ -343,7 +343,7 @@ auto HavocListener::insertPage(
 
     protocol.tabWidget = new QTabWidget( protocol.page );
     protocol.tabWidget->setObjectName( "protocol.tabWidget" );
-    protocol.tabWidget->tabBar()->setProperty( "protocol", "true" );
+    protocol.tabWidget->tabBar()->setProperty( "HxProtocol", "true" );
     protocol.tabWidget->tabBar()->setExpanding( true );
     protocol.tabWidget->tabBar()->setDocumentMode( true );
 
@@ -392,7 +392,6 @@ auto HavocListener::insertTab(
     tab.name = name;
     tab.tab  = new QWidget;
     tab.tab->setProperty( "dark", "true" );
-    tab.tab->setProperty( "custom-widget", "true" );
 
     tab.layout = new QGridLayout( tab.tab );
 
@@ -1188,6 +1187,8 @@ auto HavocListener::getOptionValue(
             }
         }
     }
+
+    return {};
 }
 
 auto HavocListener::getCurrentProtocol() -> Protocol* { return & Protocols[ StackedProtocols->currentIndex() ]; }
