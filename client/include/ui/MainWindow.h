@@ -44,9 +44,9 @@ public:
     QStackedWidget*     StackedWidget   = nullptr;
     HavocPageAgent*     PageAgent       = nullptr;
     HavocPageListener*  PageListener    = nullptr;
-    QWidget*            PagePayload     = nullptr;
+    HavocPageBuilder*   PagePayload     = nullptr;
     QWidget*            PageServer      = nullptr;
-    QWidget*            PageScripts     = nullptr;
+    HavocPageScript*    PageScripts     = nullptr;
     QWidget*            PageSettings    = nullptr;
 
     explicit HavocMainWindow( );

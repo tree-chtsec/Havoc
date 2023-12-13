@@ -115,7 +115,7 @@ QLabel {
     color: #f8f8f2;
 }
 
-QLabel[labelDisplay="true"] {
+QLabel[HxLabelDisplay="true"] {
     border-radius: 2px;
     border:  1px solid #6272a4;
     padding: 2px 6px 2px 6px;
@@ -177,7 +177,7 @@ QPushButton[HavocButtonUsed="false"] {
     border-left-width: 2px;
 }
 
-QPushButton[ClickButton="true"] {
+QPushButton[HxButton="true"] {
     background-color: #44475a;
     color: #f8f8f2;
     font-weight: bold;
@@ -186,7 +186,7 @@ QPushButton[ClickButton="true"] {
     padding: 4px 8px 4px 8px;
 }
 
-QPushButton:pressed[ClickButton="true"] {
+QPushButton:pressed[HxButton="true"] {
     border: 1px solid #bd93f9;
     background-color: #282A36;
     color: #f8f8f2;

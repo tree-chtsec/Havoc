@@ -19,7 +19,6 @@ QT_BEGIN_NAMESPACE
 class HavocConnect : public QDialog
 {
     bool PressedConnect = false;
-    bool PressedAdd     = false;
 
 public:
     QGridLayout* gridLayout       = nullptr;
@@ -41,6 +40,7 @@ public:
     auto sanityCheckInput() -> bool;
     auto retranslateUi() -> void;
     auto start() -> json;
+    auto pressedConnect() const -> bool;
 };
 
 QT_END_NAMESPACE

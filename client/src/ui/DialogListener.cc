@@ -37,19 +37,19 @@ public:
 
         LabelFilePath = new QLabel( this );
         LabelFilePath->setObjectName( "LabelFilePath" );
-        LabelFilePath->setProperty( "labelDisplay", "true" );
+        LabelFilePath->setProperty( "HxLabelDisplay", "true" );
 
         ButtonAdd = new QPushButton( this );
         ButtonAdd->setObjectName( "ButtonAdd" );
         ButtonAdd->setMaximumSize( buttonSizeMax );
         ButtonAdd->setMinimumSize( buttonSizeMin );
-        ButtonAdd->setProperty( "ClickButton", "true" );
+        ButtonAdd->setProperty( "HxButton", "true" );
 
         ButtonRemove = new QPushButton( this );
         ButtonRemove->setObjectName( "ButtonRemove" );
         ButtonRemove->setMaximumSize( buttonSizeMax );
         ButtonRemove->setMinimumSize( buttonSizeMin );
-        ButtonRemove->setProperty( "ClickButton", "true" );
+        ButtonRemove->setProperty( "HxButton", "true" );
 
         gridLayout->addWidget( LabelFilePath, 0, 0, 1, 1 );
         gridLayout->addWidget( ButtonAdd,     0, 1, 1, 1 );
@@ -121,13 +121,13 @@ public:
         ButtonAdd->setMaximumSize( buttonSize );
         ButtonAdd->setMinimumSize( buttonSize );
         ButtonAdd->setStyleSheet( "margin-top: 2px" );
-        ButtonAdd->setProperty( "ClickButton", "true" );
+        ButtonAdd->setProperty( "HxButton", "true" );
 
         ButtonClear = new QPushButton( this );
         ButtonClear->setObjectName( "ButtonClear" );
         ButtonClear->setMaximumSize( buttonSize );
         ButtonClear->setMinimumSize( buttonSize );
-        ButtonClear->setProperty( "ClickButton", "true" );
+        ButtonClear->setProperty( "HxButton", "true" );
 
         gridLayout->addWidget( ListWidget,  0, 0, 3, 1 );
         gridLayout->addWidget( ButtonAdd,   0, 1, 1, 1 );
@@ -219,11 +219,11 @@ HavocListener::HavocListener() {
 
     ButtonSave = new QPushButton( this );
     ButtonSave->setObjectName( "ButtonClose" );
-    ButtonSave->setProperty( "ClickButton", "true" );
+    ButtonSave->setProperty( "HxButton", "true" );
 
     ButtonClose = new QPushButton( this );
     ButtonClose->setObjectName( "ButtonClose" );
-    ButtonClose->setProperty( "ClickButton", "true" );
+    ButtonClose->setProperty( "HxButton", "true" );
 
     gridLayout->addWidget( LabelName,        0, 0, 1, 1 );
     gridLayout->addWidget( InputName,        0, 1, 1, 5 );
@@ -802,7 +802,7 @@ auto HavocListener::addOption(
         auto place   = std::vector<int>();
         auto objects = std::vector<std::string>();
 
-        button->setProperty( "ClickButton", "true" );
+        button->setProperty( "HxButton", "true" );
         option.widget = button;
 
         if ( option.option.contains( "name" ) ) {

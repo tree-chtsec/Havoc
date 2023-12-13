@@ -1,5 +1,5 @@
 #include <Havoc.h>
-#include "ui/MainWindow.h"
+#include <ui/MainWindow.h>
 
 /* Havoc side button hover over event. */
 class Hover : public QObject
@@ -108,9 +108,9 @@ HavocMainWindow::HavocMainWindow() {
     /* create page objects */
     PageAgent    = new HavocPageAgent;
     PageListener = new HavocPageListener;
-    PagePayload  = new QWidget;
+    PagePayload  = new HavocPageBuilder;
     PageServer   = new QWidget;
-    PageScripts  = new QWidget;
+    PageScripts  = new HavocPageScript;
     PageSettings = new QWidget;
 
     /* add stacked pages to the GUI */

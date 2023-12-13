@@ -49,11 +49,11 @@ HavocConnect::HavocConnect() {
 
     ButtonConnect->setObjectName( QString::fromUtf8( "ButtonConnect" ) );
     ButtonConnect->setMinimumSize( QSize( 0, 30 ) );
-    ButtonConnect->setProperty( "ClickButton", "true" );
+    ButtonConnect->setProperty( "HxButton", "true" );
 
     ButtonAdd->setObjectName( QString::fromUtf8( "ButtonAdd" ) );
     ButtonAdd->setMinimumSize( QSize( 0, 30 ) );
-    ButtonAdd->setProperty( "ClickButton", "true" );
+    ButtonAdd->setProperty( "HxButton", "true" );
 
     ListConnection->setObjectName( QString::fromUtf8( "ListConnection" ) );
     ListConnection->setMaximumSize( QSize( 240, 16777215 ) );
@@ -129,7 +129,8 @@ auto HavocConnect::start() -> json {
          InputHost->text().isEmpty()        ||
          InputPort->text().isEmpty()        ||
          InputUsername->text().isEmpty()    ||
-         InputPassword->text().isEmpty()
+         InputPassword->text().isEmpty()    ||
+         ! PressedConnect
     ) {
         return {};
     }
@@ -172,5 +173,8 @@ auto HavocConnect::sanityCheckInput() -> bool {
 
     return true;
 }
+
+auto HavocConnect::pressedConnect() const -> bool { return PressedConnect; }
+
 
 

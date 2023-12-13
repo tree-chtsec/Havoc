@@ -72,19 +72,19 @@ HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
 
     AgentDisplayerSessions = new QLabel( this );
     AgentDisplayerSessions->setObjectName( "LabelDisplaySessions" );
-    AgentDisplayerSessions->setProperty( "labelDisplay", "true" );
+    AgentDisplayerSessions->setProperty( "HxLabelDisplay", "true" );
 
     AgentDisplayerTargets = new QLabel( this );
     AgentDisplayerTargets->setObjectName( "LabelDisplayTargets" );
-    AgentDisplayerTargets->setProperty( "labelDisplay", "true" );
+    AgentDisplayerTargets->setProperty( "HxLabelDisplay", "true" );
 
     AgentDisplayerPivots = new QLabel( this );
     AgentDisplayerPivots->setObjectName( "LabelDisplayPivots" );
-    AgentDisplayerPivots->setProperty( "labelDisplay", "true" );
+    AgentDisplayerPivots->setProperty( "HxLabelDisplay", "true" );
 
     AgentDisplayerElevated = new QLabel( this );
     AgentDisplayerElevated->setObjectName( "LabelDisplayElevated" );
-    AgentDisplayerElevated->setProperty( "labelDisplay", "true" );
+    AgentDisplayerElevated->setProperty( "HxLabelDisplay", "true" );
 
     horizontalSpacer = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 

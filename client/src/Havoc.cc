@@ -32,7 +32,7 @@ auto HavocClient::Main(
 
     /* get provided creds */
     auto data = Connector->start();
-    if ( data.empty() ) {
+    if ( data.empty() || ! Connector->pressedConnect() ) {
         return;
     }
 

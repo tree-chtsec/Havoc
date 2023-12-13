@@ -11,12 +11,12 @@ HavocPageListener::HavocPageListener() {
 
     ActiveLabel = new QLabel( this );
     ActiveLabel->setObjectName( QString::fromUtf8("LabelDisplayListenerActive" ) );
-    ActiveLabel->setProperty( "labelDisplay", "true" );
+    ActiveLabel->setProperty( "HxLabelDisplay", "true" );
 
     horizontalSpacer  = new QSpacerItem( 1157, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     ButtonNewListener = new QPushButton( this );
     ButtonNewListener->setObjectName( QString::fromUtf8( "ButtonNewListener" ) );
-    ButtonNewListener->setProperty( "ClickButton", "true" );
+    ButtonNewListener->setProperty( "HxButton", "true" );
 
     Splitter = new QSplitter( this );
     Splitter->setObjectName( QString::fromUtf8( "Splitter" ) );

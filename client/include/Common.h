@@ -6,6 +6,15 @@
 /* std libraries */
 #include <memory>
 
+/* external libs */
+#include <toml.hpp>
+#include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
+#include <httplib.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+#include <pybind11/stl.h>
+
 /* Qt libraries */
 #include <QApplication>
 #include <QMainWindow>
@@ -15,14 +24,9 @@
 #include <QFileDialog>
 #include <QMenu>
 
-/* external libs */
-#include <toml.hpp>
-#include <nlohmann/json.hpp>
-#include <spdlog/spdlog.h>
-#include <httplib.h>
-
 /* define namepsace */
-using json = nlohmann::json;
+using     json = nlohmann::json;
+namespace py11 = pybind11;
 
 /* typedefs */
 typedef uint8_t  u8;
