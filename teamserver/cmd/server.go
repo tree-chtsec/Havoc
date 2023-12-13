@@ -6,9 +6,7 @@ import (
 
 	"Havoc/cmd/server"
 	"Havoc/pkg/colors"
-	"Havoc/pkg/events"
 	"Havoc/pkg/logger"
-	"Havoc/pkg/logr"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +19,6 @@ var CobraServer = &cobra.Command{
 		var (
 			DirPath, _  = os.Getwd()
 			ServerTimer = time.Now()
-			LogrPath    = "loot/" + ServerTimer.Format("2006.01.02._15:04:05")
 			Server      *server.Teamserver
 		)
 
@@ -33,27 +30,12 @@ var CobraServer = &cobra.Command{
 			os.Exit(0)
 		}
 
-		if Server = server.NewTeamserver(DatabasePath); Server == nil {
+		if Server = server.NewTeamserver(); Server == nil {
 			logger.Error("failed to create server")
 			return nil
 		}
 
 		Server.SetServerFlags(flags)
-
-		logr.LogrInstance = logr.NewLogr(Server.ConfigPath(), LogrPath)
-		if logr.LogrInstance == nil {
-			logger.Error("failed to create logr loot folder")
-			return nil
-		}
-
-		logr.LogrInstance.LogrSendText = func(text string) {
-			var pk = events.Teamserver.Logger(text)
-
-			Server.EventAppend(pk)
-			Server.EventBroadcast("", pk)
-		}
-
-		logr.LogrInstance.ServerStdOutInit()
 
 		startMenu()
 
@@ -73,15 +55,8 @@ var CobraServer = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if !Server.FindSystemPackages() {
-			logger.Error("Please install needed packages. Refer to the Wiki for more help.")
-			os.Exit(1)
-		}
-
 		logger.Info("Time: " + colors.Yellow(ServerTimer.Format("02/01/2006 15:04:05")))
-		logger.Info("Teamserver logs saved under: " + colors.Blue(LogrPath))
 
-		// start teamserver
 		Server.Start()
 
 		os.Exit(0)

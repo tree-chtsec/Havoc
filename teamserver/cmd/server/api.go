@@ -1,7 +1,7 @@
 package server
 
 import (
-	"Havoc/pkg/common/certs"
+	"Havoc/pkg/cert"
 	"Havoc/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -82,7 +82,7 @@ func (api *ServerApi) Start(host, port, certsPath string, finished *chan bool) {
 	)
 
 	// generate cert and key based on host
-	Cert, Key, err = certs.HTTPSGenerateRSACertificate(host)
+	Cert, Key, err = cert.HTTPSGenerateRSACertificate(host)
 	if err != nil {
 		logger.Error("Failed to generate server certificates: " + err.Error())
 		os.Exit(0)
