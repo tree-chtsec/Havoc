@@ -1,6 +1,7 @@
 package server
 
 import (
+	"Havoc/pkg/plugin"
 	"Havoc/pkg/profile"
 
 	"sync"
@@ -74,7 +75,7 @@ type Teamserver struct {
 	}
 
 	clients   sync.Map
-	plugins   *PluginSystem
+	plugins   *plugin.PluginSystem
 	protocols []Handler // available handlers/listeners to use
 	listener  []Handler // started listeners
 	agents    sync.Map  // current connected agents

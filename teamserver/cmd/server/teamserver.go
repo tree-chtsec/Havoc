@@ -1,12 +1,13 @@
 package server
 
-import "C"
 import (
-	"Havoc/pkg/colors"
-	"Havoc/pkg/logger"
-	"Havoc/pkg/profile"
 	"os"
 	"strconv"
+
+	"Havoc/pkg/colors"
+	"Havoc/pkg/logger"
+	"Havoc/pkg/plugin"
+	"Havoc/pkg/profile"
 )
 
 var (
@@ -36,7 +37,12 @@ func (t *Teamserver) Start() {
 	var (
 		ServerFinished chan bool
 		err            error
+		plugins        []string
 	)
+
+	plugins = []string{
+		"../HavocPlugins/http.hp/http.hp",
+	}
 
 	if t.Flags.Server.Host == "" {
 		t.Flags.Server.Host = t.Profile.ServerHost()
@@ -47,23 +53,32 @@ func (t *Teamserver) Start() {
 	}
 
 	if t.Server, err = NewServerApi(t); err != nil {
-		logger.Error("Failed to start api server: " + err.Error())
+		logger.Error("failed to start api server: " + err.Error())
 		return
 	}
 
 	// generate a new plugin system instance
-	t.plugins = NewPluginSystem(t)
-	if err = t.plugins.RegisterPlugin("../HavocPlugins/http.hp/http.hp"); err != nil {
-		logger.Error("failed to load plugin: %v", err)
+	t.plugins = plugin.NewPluginSystem(t)
+
+	// load all plugins that has been specified in the folder
+	logger.Info("loading plugins [%v]:", len(plugins))
+	for i := range plugins {
+		var ext *plugin.Plugin
+
+		if ext, err = t.plugins.RegisterPlugin(plugins[i]); err != nil {
+			logger.Error("failed to load plugin: %v", err)
+		}
+
+		logger.Info(" - plugin \"%v\" loaded", colors.Blue(ext.Name))
 	}
 
 	// start the api server
 	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, t.ConfigPath(), &ServerFinished)
 
-	logger.Info("Starting Teamserver on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
+	logger.Info("starting server on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
 
 	// This should hold the Teamserver as long as the WebSocket Server is running
-	logger.Debug("Wait til the server shutdown")
+	logger.Debug("wait til the server shutdown")
 
 	<-ServerFinished
 }

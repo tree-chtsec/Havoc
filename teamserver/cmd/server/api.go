@@ -102,9 +102,11 @@ func (api *ServerApi) Start(host, port, certsPath string, finished *chan bool) {
 		return
 	}
 
+	logger.Debug("certPath: %v", certPath)
+
 	// start the api server
 	if err = api.Engine.RunTLS(host+":"+port, certPath, keyPath); err != nil {
-		logger.Error("Failed to start websocket: " + err.Error())
+		logger.Error("Failed to start webserver: " + err.Error())
 		return
 	}
 

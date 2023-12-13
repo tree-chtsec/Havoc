@@ -21,9 +21,9 @@ func (p *Profile) SetProfile(path string, def bool) error {
 	}
 
 	if def {
-		logger.Info("Use default profile")
+		logger.Info("use default profile")
 	} else {
-		logger.Info("Havoc profile:", colors.Blue(path))
+		logger.Info("profile:", colors.Blue(path))
 	}
 
 	return nil

@@ -55,7 +55,7 @@ var CobraServer = &cobra.Command{
 			os.Exit(1)
 		}
 
-		logger.Info("Time: " + colors.Yellow(ServerTimer.Format("02/01/2006 15:04:05")))
+		logger.Info("time: " + colors.Yellow(ServerTimer.Format("02/01/2006 15:04:05")))
 
 		Server.Start()
 

@@ -11,8 +11,6 @@ import (
 )
 
 var (
-	DatabasePath = "teamserver.db"
-
 	HavocCli = &cobra.Command{
 		Use:          "havoc",
 		Short:        fmt.Sprintf("Havoc Framework [Version: %v] [CodeName: %v]", server.Version, server.CodeName),
