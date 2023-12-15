@@ -50,9 +50,17 @@ set( HAVOC_INCLUDE
         include/ui/Connect.h
         include/ui/MainWindow.h
         include/ui/AgentConsole.h
-        include/ui/PageAgent.h
-        include/ui/PageListener.h
         include/ui/DialogListener.h
+
+        include/ui/PageAgent.h
+        include/ui/PageBuilder.h
+        include/ui/PageListener.h
+        include/ui/PageScript.h
+
+        include/ui/HxWidget.h
+        include/ui/HxConsole.h
+
+        include/api/Engine.h
 )
 
 ##
@@ -69,12 +77,21 @@ set( HAVOC_SRC
         src/ui/Connect.cc
         src/ui/MainWindow.cc
         src/ui/AgentConsole.cc
+        src/ui/DialogListener.cc
+
         src/ui/PageAgent.cc
         src/ui/PageListener.cc
-        src/ui/DialogListener.cc
+        src/ui/PageBuilder.cc
+        src/ui/PageScript.cc
+
+        src/ui/HxWidget.cc
+        src/ui/HxConsole.cc
+
+        src/api/Engine.cc
 )
 
-find_package(OpenSSL REQUIRED)
+find_package( OpenSSL REQUIRED )
+find_package( PythonLibs REQUIRED )
 
 ##
 ## build Havoc client executable
@@ -94,6 +111,7 @@ set( PYTHON_MINOR $ENV{Python_VERSION_MINOR} )
 set( PYTHONLIBS_VERSION_STRING ${Python_VERSION} )
 set( PYTHON_INCLUDE_DIR ${Python_INCLUDE_DIRS} )
 set( PYTHON_LIBRARIES ${Python_LIBRARIES} )
+include_directories( ${PYTHON_INCLUDE_DIRS} )
 
 ##
 ## qt finding and handling
