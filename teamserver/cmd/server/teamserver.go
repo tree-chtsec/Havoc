@@ -69,7 +69,7 @@ func (t *Teamserver) Start() {
 			logger.Error("failed to load plugin: %v", err)
 		}
 
-		logger.Info(" - plugin \"%v\" loaded", colors.Blue(ext.Name))
+		logger.Info(" %v plugin \"%v\" loaded", colors.Blue("*"), colors.Blue(ext.Name))
 	}
 
 	// start the api server
