@@ -1,3 +1,4 @@
+#include <Havoc.h>
 #include <core/Helper.h>
 #include <api/Engine.h>
 
@@ -12,7 +13,13 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
         );
 
         core.def( "HcScriptManagerConsoleStdOut", HcScriptManagerConsoleStdOut, py11::call_guard<py11::gil_scoped_release>() );
-        core.def( "HcScriptManagerConsoleStdIn",  HcScriptManagerConsoleStdIn );
+        core.def( "HcScriptManagerConsoleStdIn",  [&] ( const py11::object& callback ) -> py11::none {
+            Havoc->MainWindows->PageScripts->PyConsole->InputCallback.push_back(
+                callback
+            );
+
+            return {};
+        } );
     }
 }
 

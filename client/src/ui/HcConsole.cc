@@ -34,8 +34,8 @@ HcConsole::HcConsole(
 
         Input->setText( "" );
 
-        for ( auto& callback : InputCallbacks ) {
-            callback();
+        for ( auto& callback : Havoc->MainWindows->PageScripts->PyConsole->InputCallback ) {
+            callback( text );
         }
     } );
 

@@ -10,5 +10,5 @@ auto HcScriptManagerConsoleStdOut(
 auto HcScriptManagerConsoleStdIn(
     const py11::function& callback
 ) -> void {
-    Havoc->MainWindows->PageScripts->PyConsole->InputCallbacks.push_back( callback );
+    // Havoc->MainWindows->PageScripts->PyConsole->InputCallback = callback;
 }

@@ -20,8 +20,8 @@ class HcConsole : public QWidget
     QLabel*      LabelInput  = {};
 
 public:
-    QLineEdit*                  Input          = nullptr;
-    std::vector<py11::function> InputCallbacks = {};
+    QLineEdit*                Input         = nullptr;
+    std::vector<py11::object> InputCallback = {};
 
     explicit HcConsole(
         QWidget* parent
