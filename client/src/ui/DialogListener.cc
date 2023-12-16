@@ -15,7 +15,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class HxWidgetFile : public QWidget {
+class HcWidgetFile : public QWidget {
     QString      FilePath      = {};
 
 public:
@@ -24,7 +24,7 @@ public:
     QPushButton* ButtonAdd     = nullptr;
     QPushButton* ButtonRemove  = nullptr;
 
-    explicit HxWidgetFile( QWidget* parent ) : QWidget( parent )
+    explicit HcWidgetFile( QWidget* parent ) : QWidget( parent )
     {
         auto buttonSizeMax = QSize( 70, 16777215 );
         auto buttonSizeMin = QSize( 70, 0 );
@@ -37,19 +37,19 @@ public:
 
         LabelFilePath = new QLabel( this );
         LabelFilePath->setObjectName( "LabelFilePath" );
-        LabelFilePath->setProperty( "HxLabelDisplay", "true" );
+        LabelFilePath->setProperty( "HcLabelDisplay", "true" );
 
         ButtonAdd = new QPushButton( this );
         ButtonAdd->setObjectName( "ButtonAdd" );
         ButtonAdd->setMaximumSize( buttonSizeMax );
         ButtonAdd->setMinimumSize( buttonSizeMin );
-        ButtonAdd->setProperty( "HxButton", "true" );
+        ButtonAdd->setProperty( "HcButton", "true" );
 
         ButtonRemove = new QPushButton( this );
         ButtonRemove->setObjectName( "ButtonRemove" );
         ButtonRemove->setMaximumSize( buttonSizeMax );
         ButtonRemove->setMinimumSize( buttonSizeMin );
-        ButtonRemove->setProperty( "HxButton", "true" );
+        ButtonRemove->setProperty( "HcButton", "true" );
 
         gridLayout->addWidget( LabelFilePath, 0, 0, 1, 1 );
         gridLayout->addWidget( ButtonAdd,     0, 1, 1, 1 );
@@ -57,8 +57,8 @@ public:
 
         retranslateUi();
 
-        connect( ButtonAdd,    &QPushButton::clicked, this, &HxWidgetFile::buttonAdd    );
-        connect( ButtonRemove, &QPushButton::clicked, this, &HxWidgetFile::buttonRemove );
+        connect( ButtonAdd,    &QPushButton::clicked, this, &HcWidgetFile::buttonAdd    );
+        connect( ButtonRemove, &QPushButton::clicked, this, &HcWidgetFile::buttonRemove );
 
         QMetaObject::connectSlotsByName( this );
     }
@@ -92,7 +92,7 @@ public:
     }
 };
 
-class HxWidgetList : public QWidget
+class HcWidgetList : public QWidget
 {
 public:
     QGridLayout*            gridLayout  = nullptr;
@@ -102,7 +102,7 @@ public:
     QFormLayout*            FormLayout  = nullptr;
     std::vector<QLineEdit*> InputList   = {};
 
-    explicit HxWidgetList( QWidget* parent ) : QWidget( parent ) {
+    explicit HcWidgetList( QWidget* parent ) : QWidget( parent ) {
 
         auto buttonSize = QSize( 100, 25 );
 
@@ -121,13 +121,13 @@ public:
         ButtonAdd->setMaximumSize( buttonSize );
         ButtonAdd->setMinimumSize( buttonSize );
         ButtonAdd->setStyleSheet( "margin-top: 2px" );
-        ButtonAdd->setProperty( "HxButton", "true" );
+        ButtonAdd->setProperty( "HcButton", "true" );
 
         ButtonClear = new QPushButton( this );
         ButtonClear->setObjectName( "ButtonClear" );
         ButtonClear->setMaximumSize( buttonSize );
         ButtonClear->setMinimumSize( buttonSize );
-        ButtonClear->setProperty( "HxButton", "true" );
+        ButtonClear->setProperty( "HcButton", "true" );
 
         gridLayout->addWidget( ListWidget,  0, 0, 3, 1 );
         gridLayout->addWidget( ButtonAdd,   0, 1, 1, 1 );
@@ -135,8 +135,8 @@ public:
 
         retranslateUi( );
 
-        connect( ButtonAdd,   &QPushButton::clicked, this, &HxWidgetList::buttonAdd   );
-        connect( ButtonClear, &QPushButton::clicked, this, &HxWidgetList::buttonClear );
+        connect( ButtonAdd,   &QPushButton::clicked, this, &HcWidgetList::buttonAdd   );
+        connect( ButtonClear, &QPushButton::clicked, this, &HcWidgetList::buttonClear );
 
         QMetaObject::connectSlotsByName( this );
     }
@@ -215,15 +215,14 @@ HavocListener::HavocListener() {
 
     StackedProtocols = new QStackedWidget( this );
     StackedProtocols->setObjectName( QString::fromUtf8( "StackedProtocols" ) );
-    StackedProtocols->setProperty( "protocol", "true" );
 
     ButtonSave = new QPushButton( this );
     ButtonSave->setObjectName( "ButtonClose" );
-    ButtonSave->setProperty( "HxButton", "true" );
+    ButtonSave->setProperty( "HcButton", "true" );
 
     ButtonClose = new QPushButton( this );
     ButtonClose->setObjectName( "ButtonClose" );
-    ButtonClose->setProperty( "HxButton", "true" );
+    ButtonClose->setProperty( "HcButton", "true" );
 
     gridLayout->addWidget( LabelName,        0, 0, 1, 1 );
     gridLayout->addWidget( InputName,        0, 1, 1, 5 );
@@ -343,7 +342,7 @@ auto HavocListener::insertPage(
 
     protocol.tabWidget = new QTabWidget( protocol.page );
     protocol.tabWidget->setObjectName( "protocol.tabWidget" );
-    protocol.tabWidget->tabBar()->setProperty( "HxProtocol", "true" );
+    protocol.tabWidget->tabBar()->setProperty( "HcProtocolTab", "true" );
     protocol.tabWidget->tabBar()->setExpanding( true );
     protocol.tabWidget->tabBar()->setDocumentMode( true );
 
@@ -511,7 +510,7 @@ auto HavocListener::addOption(
 
         tab.layout->addWidget( label, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
     } else if ( option.type == ListenerWidgetTypeList ) {
-        auto list  = new HxWidgetList( this );
+        auto list  = new HcWidgetList( this );
         auto place = std::vector<int>();
 
         if ( option.option.contains( "name" ) ) {
@@ -758,7 +757,7 @@ auto HavocListener::addOption(
         tab.layout->addItem( spacer, place[ 0 ], place[ 1 ], place[ 2 ], place[ 3 ] );
 
     } else if ( option.type == ListenerWidgetTypeFile ) {
-        auto file  = new HxWidgetFile( this );
+        auto file  = new HcWidgetFile( this );
         auto place = std::vector<int>();
 
         option.widget = file;
@@ -802,7 +801,7 @@ auto HavocListener::addOption(
         auto place   = std::vector<int>();
         auto objects = std::vector<std::string>();
 
-        button->setProperty( "HxButton", "true" );
+        button->setProperty( "HcButton", "true" );
         option.widget = button;
 
         if ( option.option.contains( "name" ) ) {
@@ -869,11 +868,11 @@ auto HavocListener::addOption(
                         } else if ( o->type == ListenerWidgetTypeCombo ) {
                             v = ( ( QComboBox* ) o->widget )->currentText().toStdString();
                         } else if ( o->type == ListenerWidgetTypeList ) {
-                            v = ( ( HxWidgetList* ) o->widget )->getListStrings();
+                            v = ( ( HcWidgetList* ) o->widget )->getListStrings();
                         } else if ( o->type == ListenerWidgetTypeToggle ) {
                             v = json();
                         } else if ( o->type == ListenerWidgetTypeFile ) {
-                            v = ( ( HxWidgetFile* ) o->widget )->getFilePath().toStdString();
+                            v = ( ( HcWidgetFile* ) o->widget )->getFilePath().toStdString();
                         } else if ( o->type == ListenerWidgetTypeText ) {
                             v = ( ( QTextEdit* ) o->widget )->toPlainText().toStdString();
                         }
@@ -966,12 +965,12 @@ auto HavocListener::getOptions() -> json {
             } else if ( option.type == ListenerWidgetTypeCombo ) {
                 data[ tab.name ][ option.name ] = ( ( QComboBox* ) option.widget )->currentText().toStdString();
             } else if ( option.type == ListenerWidgetTypeList ) {
-                data[ tab.name ][ option.name ] = ( ( HxWidgetList* ) option.widget )->getListStrings();
+                data[ tab.name ][ option.name ] = ( ( HcWidgetList* ) option.widget )->getListStrings();
             } else if ( option.type == ListenerWidgetTypeToggle ) {
                 data[ tab.name ][ option.name ] = json();
             } else if ( option.type == ListenerWidgetTypeFile ) {
-                if ( ! ( ( HxWidgetFile* ) option.widget )->getFilePath().isEmpty() ) {
-                    data[ tab.name ][ option.name ] = Helper::FileRead( ( ( HxWidgetFile* ) option.widget )->getFilePath() ).toBase64().toStdString();
+                if ( ! ( ( HcWidgetFile* ) option.widget )->getFilePath().isEmpty() ) {
+                    data[ tab.name ][ option.name ] = Helper::FileRead( ( ( HcWidgetFile* ) option.widget )->getFilePath() ).toBase64().toStdString();
                 }
             } else if ( option.type == ListenerWidgetTypeText ) {
                 data[ tab.name ][ option.name ] = ( ( QTextEdit* ) option.widget )->toPlainText().toStdString();
@@ -1109,7 +1108,7 @@ auto HavocListener::sanityCheckOptions() -> bool {
                     return false;
                 }
             } else if ( option.type == ListenerWidgetTypeList && ! option.optional ) {
-                if ( ( ( HxWidgetList* ) option.widget )->getListStrings().empty() ) {
+                if ( ( ( HcWidgetList* ) option.widget )->getListStrings().empty() ) {
                     Helper::MessageBox(
                         QMessageBox::Critical,
                         "Listener failure",
@@ -1118,7 +1117,7 @@ auto HavocListener::sanityCheckOptions() -> bool {
                     return false;
                 }
             } if ( option.type == ListenerWidgetTypeFile && ! option.optional ) {
-                if ( ( ( HxWidgetFile* ) option.widget )->getFilePath().isEmpty() ) {
+                if ( ( ( HcWidgetFile* ) option.widget )->getFilePath().isEmpty() ) {
                     Helper::MessageBox(
                         QMessageBox::Critical,
                         "Listener failure",
@@ -1177,11 +1176,11 @@ auto HavocListener::getOptionValue(
             } else if ( option.type == ListenerWidgetTypeCombo ) {
                 return ( ( QComboBox* ) option.widget )->currentText().toStdString();
             } else if ( option.type == ListenerWidgetTypeList ) {
-                return ( ( HxWidgetList* ) option.widget )->getListStrings();
+                return ( ( HcWidgetList* ) option.widget )->getListStrings();
             } else if ( option.type == ListenerWidgetTypeToggle ) {
                 return json();
             } else if ( option.type == ListenerWidgetTypeFile ) {
-                return ( ( HxWidgetFile* ) option.widget )->getFilePath().toStdString();
+                return ( ( HcWidgetFile* ) option.widget )->getFilePath().toStdString();
             } else if ( option.type == ListenerWidgetTypeText ) {
                 return ( ( QTextEdit* ) option.widget )->toPlainText().toStdString();
             }

@@ -49,11 +49,11 @@ HavocConnect::HavocConnect() {
 
     ButtonConnect->setObjectName( QString::fromUtf8( "ButtonConnect" ) );
     ButtonConnect->setMinimumSize( QSize( 0, 30 ) );
-    ButtonConnect->setProperty( "HxButton", "true" );
+    ButtonConnect->setProperty( "HcButton", "true" );
 
     ButtonAdd->setObjectName( QString::fromUtf8( "ButtonAdd" ) );
     ButtonAdd->setMinimumSize( QSize( 0, 30 ) );
-    ButtonAdd->setProperty( "HxButton", "true" );
+    ButtonAdd->setProperty( "HcButton", "true" );
 
     ListConnection->setObjectName( QString::fromUtf8( "ListConnection" ) );
     ListConnection->setMaximumSize( QSize( 240, 16777215 ) );

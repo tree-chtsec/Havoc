@@ -11,12 +11,12 @@ HavocPageListener::HavocPageListener() {
 
     ActiveLabel = new QLabel( this );
     ActiveLabel->setObjectName( QString::fromUtf8("LabelDisplayListenerActive" ) );
-    ActiveLabel->setProperty( "HxLabelDisplay", "true" );
+    ActiveLabel->setProperty( "HcLabelDisplay", "true" );
 
     horizontalSpacer  = new QSpacerItem( 1157, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     ButtonNewListener = new QPushButton( this );
     ButtonNewListener->setObjectName( QString::fromUtf8( "ButtonNewListener" ) );
-    ButtonNewListener->setProperty( "HxButton", "true" );
+    ButtonNewListener->setProperty( "HcButton", "true" );
 
     Splitter = new QSplitter( this );
     Splitter->setObjectName( QString::fromUtf8( "Splitter" ) );
@@ -59,7 +59,7 @@ HavocPageListener::HavocPageListener() {
     TabWidget->setObjectName( QString::fromUtf8( "TabWidget" ) );
     TabWidget->setMovable( true );
     TabWidget->setTabsClosable( true );
-    TabWidget->tabBar()->setProperty( "HxTab", "true" );
+    TabWidget->tabBar()->setProperty( "HcTab", "true" );
 
     Splitter->addWidget( TableWidget );
     Splitter->addWidget( TabWidget );
@@ -183,7 +183,7 @@ auto HavocPageListener::addListener(
     listener->Host->setFlags( listener->Host->flags() ^ Qt::ItemIsEditable );
     listener->Port->setFlags( listener->Port->flags() ^ Qt::ItemIsEditable );
     listener->Status->setFlags( listener->Status->flags() ^ Qt::ItemIsEditable );
-    listener->Logger->setProperty( "HxListenerLogger", "true" );
+    listener->Logger->setProperty( "HcConsole", "true" );
     listener->Logger->setReadOnly( true );
 
     if ( TableWidget->rowCount() < 1 ) {

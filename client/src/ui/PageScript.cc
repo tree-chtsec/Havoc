@@ -1,55 +1,96 @@
+#include <Havoc.h>
 #include <ui/PageScript.h>
 
-HavocPageScript::HavocPageScript() {
+HavocPagePlugins::HavocPagePlugins()
+{
     if ( objectName().isEmpty() ) {
-        setObjectName( "ScriptPage" );
+        setObjectName( "PagePlugins" );
     }
 
     gridLayout = new QGridLayout( this );
     gridLayout->setObjectName( "gridLayout" );
 
-    Spacer = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    TabWidget = new QTabWidget( this );
+    TabWidget->setObjectName( "TabWidget" );
+    TabWidget->setProperty( "HcPageTab", "true" );
+    TabWidget->tabBar()->setProperty( "HcPageTab", "true" );
 
-    Splitter = new QSplitter( this );
-    Splitter->setObjectName( "Splitter" );
-    Splitter->setOrientation( Qt::Vertical );
+    TabPluginManager = new QWidget();
+    TabPluginManager->setObjectName( "TabPluginManager" );
 
-    ScriptTableWidget = new QTableWidget( Splitter );
-    ScriptTableWidget->setColumnCount( 1 );
-    ScriptTableWidget->setHorizontalHeaderItem( 0, new QTableWidgetItem( "Path" ) );
-    ScriptTableWidget->setObjectName( "ScriptTableWidget" );
-    ScriptTableWidget->horizontalHeader()->setStretchLastSection( true );
+    gridLayout_2 = new QGridLayout( TabPluginManager );
+    gridLayout_2->setObjectName( "gridLayout_2" );
 
-    ScriptTabWidget = new QTabWidget( Splitter );
-    ScriptTabWidget->setObjectName( "ScriptTabWidget" );
-    ScriptTabWidget->addTab( TabScriptInterpreter, "Interpreter" );
+    ButtonLoad = new QPushButton( TabPluginManager );
+    ButtonLoad->setObjectName( "ButtonLoad" );
+    ButtonLoad->setProperty( "HcButton", "true" );
 
-    TabScriptInterpreter = new QWidget();
-    TabScriptInterpreter->setObjectName( "TabScriptInterpreter" );
+    horizontalSpacer = new QSpacerItem( 972, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 
-    Splitter->addWidget( ScriptTableWidget );
-    Splitter->addWidget( ScriptTabWidget );
+    LabelLoadedPlugins = new QLabel( TabPluginManager );
+    LabelLoadedPlugins->setObjectName( "LabelLoadedPlugins" );
+    LabelLoadedPlugins->setProperty( "HcLabelDisplay", "true" );
 
-    ButtonLoadScript = new QPushButton( this );
-    ButtonLoadScript->setObjectName( "ButtonLoadScript" );
-    ButtonLoadScript->setProperty( "HxButton", "true" );
+    splitter = new QSplitter( TabPluginManager );
+    splitter->setObjectName( "splitter" );
+    splitter->setOrientation( Qt::Vertical );
 
-    label = new QLabel( this );
-    label->setObjectName( "label" );
-    label->setProperty( "HxLabelDisplay", "true" );
+    TablePluginsWidget = new QTableWidget( splitter );
+    TablePluginsWidget->setObjectName( "TablePluginsWidget" );
+    TablePluginsWidget->setProperty( "HcPageTab", "true" );
 
-    gridLayout->addItem( Spacer, 0, 2, 1, 1 );
-    gridLayout->addWidget( Splitter, 1, 0, 1, 4 );
-    gridLayout->addWidget( label, 0, 3, 1, 1 );
-    gridLayout->addWidget( ButtonLoadScript, 0, 0, 1, 2 );
+    if ( TablePluginsWidget->columnCount() < 1 ) {
+        TablePluginsWidget->setColumnCount( 1 );
+    }
+
+    TablePluginsWidget->setHorizontalHeaderItem( 0, new QTableWidgetItem( "Path" ) );
+
+    /* table settings */
+    TablePluginsWidget->setEnabled( true );
+    TablePluginsWidget->setShowGrid( false );
+    TablePluginsWidget->setSortingEnabled( false );
+    TablePluginsWidget->setWordWrap( true );
+    TablePluginsWidget->setCornerButtonEnabled( true );
+    TablePluginsWidget->horizontalHeader()->setVisible( true );
+    TablePluginsWidget->setSelectionBehavior( QAbstractItemView::SelectRows );
+    TablePluginsWidget->setContextMenuPolicy( Qt::CustomContextMenu );
+    TablePluginsWidget->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeMode::Stretch );
+    TablePluginsWidget->horizontalHeader()->setStretchLastSection( true );
+    TablePluginsWidget->verticalHeader()->setVisible( false );
+    TablePluginsWidget->setFocusPolicy( Qt::NoFocus );
+
+    PyConsole = new HcConsole(splitter );
+    PyConsole->setObjectName( "PyConsole" );
+    PyConsole->setInputLabel( ">>>" );
+    PyConsole->setBottomLabel( "[Python Interpreter]" );
+
+    splitter->addWidget( TablePluginsWidget );
+    splitter->addWidget( PyConsole );
+
+    TabPluginStore = new QWidget();
+    TabPluginStore->setObjectName( "TabPluginStore" );
+
+    gridLayout_2->addWidget( ButtonLoad, 0, 0, 1, 1 );
+    gridLayout_2->addItem( horizontalSpacer, 0, 1, 1, 1 );
+    gridLayout_2->addWidget( LabelLoadedPlugins, 0, 2, 1, 1 );
+    gridLayout_2->addWidget( splitter, 1, 0, 1, 3 );
+    gridLayout_2->setContentsMargins( 0, 0, 0, 0 );
+
+    gridLayout->addWidget( TabWidget, 0, 0, 1, 1 );
+
+    TabWidget->addTab( TabPluginManager, "Manager" );
+    TabWidget->addTab( TabPluginStore,   "Store"   );
 
     retranslateUi();
+
+    TabWidget->setCurrentIndex( 0 );
 
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HavocPageScript::retranslateUi() -> void {
-    setWindowTitle( "ScriptPage" );
-    ButtonLoadScript->setText( "Load Script" );
-    label->setText( "Scripts loaded: 0" );
+auto HavocPagePlugins::retranslateUi() -> void {
+    setWindowTitle( "PagePlugins" );
+    setStyleSheet( Havoc->getStyleSheet() );
+    ButtonLoad->setText( "Load Plugin" );
+    LabelLoadedPlugins->setText( "Loaded: 0" );
 }

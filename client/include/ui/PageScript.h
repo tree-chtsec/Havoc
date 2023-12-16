@@ -13,24 +13,30 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
 
+#include <ui/HcConsole.h>
+
 QT_BEGIN_NAMESPACE
 
-class HavocPageScript : public QWidget
+class HavocPagePlugins : public QWidget
 {
-public:
-    QGridLayout*  gridLayout           = nullptr;
-    QSpacerItem*  Spacer               = nullptr;
-    QSplitter*    Splitter             = nullptr;
-    QTableWidget* ScriptTableWidget    = nullptr;
-    QTabWidget*   ScriptTabWidget      = nullptr;
-    QWidget*      TabScriptInterpreter = nullptr;
-    QPushButton*  ButtonLoadScript     = nullptr;
-    QLabel*       label                = nullptr;
 
-    explicit HavocPageScript();
+public:
+    QGridLayout*  gridLayout         = nullptr;
+    QGridLayout*  gridLayout_2       = nullptr;
+    QSplitter*    splitter           = nullptr;
+    QSpacerItem*  horizontalSpacer   = nullptr;
+
+    QTabWidget*   TabWidget          = nullptr;
+    QWidget*      TabPluginManager   = nullptr;
+    QPushButton*  ButtonLoad         = nullptr;
+    QLabel*       LabelLoadedPlugins = nullptr;
+    QTableWidget* TablePluginsWidget = nullptr;
+    HcConsole*    PyConsole          = nullptr;
+    QWidget*      TabPluginStore     = nullptr;
+
+    explicit HavocPagePlugins();
 
     auto retranslateUi() -> void;
-
 };
 
 QT_END_NAMESPACE

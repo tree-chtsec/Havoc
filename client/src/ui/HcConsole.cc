@@ -1,19 +1,24 @@
-#include <ui/HxConsole.h>
+#include <Havoc.h>
+#include <ui/HcConsole.h>
 
-HxConsole::HxConsole() {
+HcConsole::HcConsole(
+    QWidget* parent
+) : QWidget( parent ) {
     if ( objectName().isEmpty() ) {
-        setObjectName( "HxConsole" );
+        setObjectName( "HcConsole" );
     }
 
     gridLayout = new QGridLayout( this );
     gridLayout->setObjectName( "gridLayout" );
+    gridLayout->setContentsMargins( 0, 0, 0, 0 );
 
     LabelHeader = new QLabel( this );
     LabelHeader->setObjectName( "LabelHeader" );
 
-
     Console = new QTextEdit( this );
     Console->setObjectName( "Console" );
+    Console->setReadOnly( true );
+    Console->setProperty( "HcConsole", "true" );
 
     LabelBottom = new QLabel( this );
     LabelBottom->setObjectName( "LabelBottom" );
@@ -24,6 +29,16 @@ HxConsole::HxConsole() {
     Input = new QLineEdit( this );
     Input->setObjectName( "Input" );
 
+    QObject::connect( Input, &QLineEdit::returnPressed, this, [&] () {
+        auto text = py11::str( Input->text().toStdString() );
+
+        Input->setText( "" );
+
+        for ( auto& callback : InputCallbacks ) {
+            callback();
+        }
+    } );
+
     gridLayout->addWidget( LabelHeader, 0, 0, 1, 2 );
     gridLayout->addWidget( Console,     1, 0, 1, 2 );
     gridLayout->addWidget( LabelBottom, 2, 0, 1, 2 );
@@ -33,20 +48,26 @@ HxConsole::HxConsole() {
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HxConsole::setHeaderLabel(
+auto HcConsole::setHeaderLabel(
     const QString& text
 ) -> void {
-
+    LabelHeader->setText( text );
 }
 
-auto HxConsole::setBottomLabel(
+auto HcConsole::setBottomLabel(
     const QString& text
 ) -> void {
-
+    LabelBottom->setText( text );
 }
 
-auto HxConsole::setInputLabel(
+auto HcConsole::setInputLabel(
     const QString& text
 ) -> void {
+    LabelInput->setText( text );
+}
 
+auto HcConsole::appendConsole(
+    const QString& text
+) -> void {
+    Console->append( text );
 }

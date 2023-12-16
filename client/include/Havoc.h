@@ -17,6 +17,8 @@
 #include <ui/MainWindow.h>
 #include <ui/Connect.h>
 
+#include <api/Engine.h>
+
 #define HAVOC_VERSION  "0.8"
 #define HAVOC_CODENAME "Killer Queen"
 
@@ -43,6 +45,7 @@ class HavocClient : public QWidget {
 public:
     /* Main gui window */
     HavocMainWindow* MainWindows = nullptr;
+    HavocPyEngine*   PyEngine    = nullptr;
 
     /* havoc client constructor and destructor */
     explicit HavocClient();
@@ -63,25 +66,27 @@ public:
     /* get server connection token */
     auto getServerToken() -> std::string;
 
-    /* signals */
-    auto eventHandle(
-        const QByteArray& request
-    ) -> void;
-    auto eventDispatch(
-        const json& event
-    ) -> void;
-    auto eventClosed() -> void;
-
-    /*
-     * Ui methods
-     */
     auto getStyleSheet() -> QByteArray;
+
+    auto setupThreads() -> void;
 
     /* send request to api endpoint */
     auto ApiSend(
         const std::string& endpoint,
         const json&        body
     ) -> httplib::Result;
+
+Q_SIGNALS:
+    /* signals */
+    auto eventHandle(
+        const QByteArray& request
+    ) -> void;
+
+    auto eventDispatch(
+        const json& event
+    ) -> void;
+
+    auto eventClosed() -> void;
 };
 
 /* a global Havoc app instance */

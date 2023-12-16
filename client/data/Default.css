@@ -48,28 +48,53 @@ QTableWidget::item:selected {
     color: #6272a4;
 }
 
-QTabBar[HxProtocol="true"]::tab {
+
+
+QTabBar[HcProtocolTab="true"]::tab {
     background: #313342;
     color: #f8f8f2;
     padding-top: 3px;
     padding-bottom: 3px;
 }
 
-QTabBar[HxTab="true"]::tab {
-    background: #313342;
+QTabBar[HcProtocolTab="true"]::tab:selected {
+    background: #44475A;
+    color: #f8f8f2;
+    border: 1px solid #6272A4;
+}
+
+QTabWidget[HcPageTab="true"]::tab-bar {
+    alignment: center;
+}
+
+QTabBar[HcPageTab="true"]::tab {
+    background: #44475A;
+    color: #f8f8f2;
+    min-width: 100px;
+    padding: 5px;
+    margin-bottom: 5px;
+    margin-right: 4px;
+    border-radius: 2px;
+}
+
+QTabBar[HcPageTab="true"]::tab:selected {
+    background: #44475A;
+    color: #f8f8f2;
+    border: 1px solid #6272A4;
+}
+
+QTabBar[HcTab="true"]::tab {
+    background: #282A36;
     color: #f8f8f2;
     margin-top: 3px;
     padding: 4px 10px 4px 10px;
     border-bottom-color: transparent;
 }
 
-QTabBar::tab:selected {
+QTabBar[HcTab="true"]::tab:selected {
     background: #44475A;
     color: #f8f8f2;
     border: 1px solid #6272A4;
-}
-
-QTabBar[HxTab="true"]::tab:selected {
     border-bottom-color: transparent;
 }
 
@@ -83,7 +108,6 @@ QTabBar::close-button:hover {
 }
 
 QLabel {
-    background: #282a36;
     color: #f8f8f2;
 }
 
@@ -99,13 +123,6 @@ QLineEdit {
     color: #f8f8f2;
 }
 
-QLineEdit[textEmpty="true"] {
-    border-radius: 2px;
-    padding: 2px 6px 2px 6px;
-    background-color: #44475A;
-    color: #6272a4;
-}
-
 QDialog {
     background: #282a36;
     color: #f8f8f2;
@@ -115,7 +132,7 @@ QLabel {
     color: #f8f8f2;
 }
 
-QLabel[HxLabelDisplay="true"] {
+QLabel[HcLabelDisplay="true"] {
     border-radius: 2px;
     border:  1px solid #6272a4;
     padding: 2px 6px 2px 6px;
@@ -133,7 +150,7 @@ QTextEdit {
     color: #f8f8f2;
 }
 
-QTextEdit[HxListenerLogger="true"] {
+QTextEdit[HcConsole="true"] {
     background-color: #282A36;
     color: #f8f8f2;
 }
@@ -177,7 +194,7 @@ QPushButton[HavocButtonUsed="false"] {
     border-left-width: 2px;
 }
 
-QPushButton[HxButton="true"] {
+QPushButton[HcButton="true"] {
     background-color: #44475a;
     color: #f8f8f2;
     font-weight: bold;
@@ -186,7 +203,7 @@ QPushButton[HxButton="true"] {
     padding: 4px 8px 4px 8px;
 }
 
-QPushButton:pressed[HxButton="true"] {
+QPushButton:pressed[HcButton="true"] {
     border: 1px solid #bd93f9;
     background-color: #282A36;
     color: #f8f8f2;

@@ -2,6 +2,7 @@
 #define HAVOCCLIENT_COMMON_H
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+#define PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF
 
 /* std libraries */
 #include <memory>
@@ -14,6 +15,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
+#include <pybind11/complex.h>
+#include <pybind11/functional.h>
 
 /* Qt libraries */
 #include <QApplication>
@@ -22,6 +25,7 @@
 #include <QMessageBox>
 #include <QToolButton>
 #include <QFileDialog>
+#include <QThread>
 #include <QMenu>
 
 /* define namepsace */

@@ -6,8 +6,6 @@ auto HavocClient::eventDispatch(
     auto type = std::string();
     auto data = json();
 
-    spdlog::debug( "event: {}", event.dump() );
-
     if ( ! event.contains( "type" ) ) {
         spdlog::debug( "invalid event: {}", event.dump() );
         return;
@@ -27,8 +25,6 @@ auto HavocClient::eventDispatch(
             spdlog::error( "user::login: invalid package (data emtpy)" );
             return;
         }
-
-        spdlog::debug( "user login: {}", data[ "username" ].get<std::string>() );
     }
     else if ( type == Event::user::logout )
     {
@@ -36,8 +32,6 @@ auto HavocClient::eventDispatch(
             spdlog::error( "user::logout: invalid package (data emtpy)" );
             return;
         }
-
-        spdlog::debug( "user logout: {}", data[ "username" ].get<std::string>() );
     }
     else if ( type == Event::user::message )
     {

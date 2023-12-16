@@ -57,10 +57,12 @@ set( HAVOC_INCLUDE
         include/ui/PageListener.h
         include/ui/PageScript.h
 
-        include/ui/HxWidget.h
-        include/ui/HxConsole.h
+        include/ui/HcWidget.h
+        include/ui/HcConsole.h
 
         include/api/Engine.h
+        include/api/HcCore.h
+        include/api/HcScriptManager.h
 )
 
 ##
@@ -84,10 +86,12 @@ set( HAVOC_SRC
         src/ui/PageBuilder.cc
         src/ui/PageScript.cc
 
-        src/ui/HxWidget.cc
-        src/ui/HxConsole.cc
+        src/ui/HcWidget.cc
+        src/ui/HcConsole.cc
 
         src/api/Engine.cc
+        src/api/HcCore.cc
+        src/api/HcScriptManager.cc
 )
 
 find_package( OpenSSL REQUIRED )

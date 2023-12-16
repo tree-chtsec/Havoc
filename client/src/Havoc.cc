@@ -177,21 +177,9 @@ auto HavocClient::Main(
     MainWindows->renderWindow();
     MainWindows->setStyleSheet( getStyleSheet() );
 
-    /*
-     * now set up the event thread and dispatcher
-     */
-    Events.Thread = new QThread;
-    Events.Worker = new EventWorker;
-    Events.Worker->moveToThread( Events.Thread );
+    setupThreads();
 
-    /* connect events */
-    QObject::connect( Events.Thread, &QThread::started, Events.Worker, &EventWorker::run );
-    QObject::connect( Events.Worker, &EventWorker::availableEvent, this, &HavocClient::eventHandle );
-    QObject::connect( Events.Worker, &EventWorker::socketClosed, this, &HavocClient::eventClosed );
-
-    /* fire up the even thread that is going to
-     * process events and emit signals to the main gui thread */
-    Events.Thread->start();
+    PyEngine = new HavocPyEngine;
 
     QApplication::exec();
 
@@ -326,6 +314,18 @@ auto HavocClient::getStyleSheet(
     return Helper::FileRead( ":/style/default" );
 }
 
+auto HavocClient::setupThreads() -> void {
+    /* now set up the event thread and dispatcher */
+    Events.Thread = new QThread;
+    Events.Worker = new EventWorker;
+    Events.Worker->moveToThread( Events.Thread );
 
+    /* connect events */
+    QObject::connect( Events.Thread, &QThread::started, Events.Worker, &EventWorker::run );
+    QObject::connect( Events.Worker, &EventWorker::availableEvent, this, &HavocClient::eventHandle );
+    QObject::connect( Events.Worker, &EventWorker::socketClosed, this, &HavocClient::eventClosed );
 
-
+    /* fire up the even thread that is going to
+     * process events and emit signals to the main gui thread */
+    Events.Thread->start();
+}

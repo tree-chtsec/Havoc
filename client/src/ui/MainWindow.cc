@@ -110,7 +110,7 @@ HavocMainWindow::HavocMainWindow() {
     PageListener = new HavocPageListener;
     PagePayload  = new HavocPageBuilder;
     PageServer   = new QWidget;
-    PageScripts  = new HavocPageScript;
+    PageScripts  = new HavocPagePlugins;
     PageSettings = new QWidget;
 
     /* add stacked pages to the GUI */

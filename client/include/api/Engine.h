@@ -3,19 +3,13 @@
 
 #include <Common.h>
 
+#include <api/HcCore.h>
+#include <api/HcScriptManager.h>
+
 class HavocPyEngine {
-private:
-    py11::scoped_interpreter* guard = nullptr;
-
+public:
     explicit HavocPyEngine();
-
-    auto InvokePath(
-        const std::string& path
-    ) -> std::string;
-
-    auto Invoke(
-        const std::string& code
-    ) -> std::string;
+    ~HavocPyEngine();
 };
 
 #endif

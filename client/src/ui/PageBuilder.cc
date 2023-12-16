@@ -10,7 +10,7 @@ HavocPageBuilder::HavocPageBuilder() {
 
     LabelPayload = new QLabel( this );
     LabelPayload->setObjectName( "LabelPayload" );
-    LabelPayload->setProperty( "HxLabelDisplay", "true" );
+    LabelPayload->setProperty( "HcLabelDisplay", "true" );
 
     ComboPayload = new QComboBox( this );
     ComboPayload->setObjectName(QString::fromUtf8("ComboPayload"));

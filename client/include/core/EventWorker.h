@@ -20,6 +20,8 @@ public:
     /* run event thread */
     void run();
 
+    void test();
+
 public slots:
     auto connected() -> void;
     auto closed() -> void;

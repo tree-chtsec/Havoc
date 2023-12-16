@@ -27,7 +27,6 @@ public:
 
 class HavocMainWindow : public QMainWindow
 {
-
 public:
     QWidget*            MainWidget      = nullptr;
     QGridLayout*        gridLayout      = nullptr;
@@ -46,7 +45,7 @@ public:
     HavocPageListener*  PageListener    = nullptr;
     HavocPageBuilder*   PagePayload     = nullptr;
     QWidget*            PageServer      = nullptr;
-    HavocPageScript*    PageScripts     = nullptr;
+    HavocPagePlugins*   PageScripts     = nullptr;
     QWidget*            PageSettings    = nullptr;
 
     explicit HavocMainWindow( );
