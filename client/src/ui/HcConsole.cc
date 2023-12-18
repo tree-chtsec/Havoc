@@ -29,15 +29,7 @@ HcConsole::HcConsole(
     Input = new QLineEdit( this );
     Input->setObjectName( "Input" );
 
-    QObject::connect( Input, &QLineEdit::returnPressed, this, [&] () {
-        auto text = py11::str( Input->text().toStdString() );
-
-        Input->setText( "" );
-
-        for ( auto& callback : Havoc->MainWindows->PageScripts->PyConsole->InputCallback ) {
-            callback( text );
-        }
-    } );
+    QObject::connect( Input, &QLineEdit::returnPressed, this, &HcConsole::inputEnter );
 
     gridLayout->addWidget( LabelHeader, 0, 0, 1, 2 );
     gridLayout->addWidget( Console,     1, 0, 1, 2 );
@@ -70,4 +62,26 @@ auto HcConsole::appendConsole(
     const QString& text
 ) -> void {
     Console->append( text );
+}
+
+auto HcConsole::inputEnter() -> void {
+    auto expt  = std::string();
+    auto input = Input->text().toStdString();
+    auto text  = py11::str( input );
+
+    Input->setText( "" );
+
+    appendConsole( ( ">>> " + input ).c_str() );
+
+    try {
+        pybind11::exec( text );
+    } catch ( py11::error_already_set &eas ) {
+        expt = std::string( eas.what() );
+    } catch ( const std::exception &e ) {
+        expt = std::string( e.what() );
+    }
+
+    if ( ! expt.empty() ) {
+        appendConsole( expt.c_str() );
+    }
 }

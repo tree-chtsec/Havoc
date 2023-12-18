@@ -1,5 +1,7 @@
 #include <Havoc.h>
 
+pybind11::object g_callback;
+
 HavocClient::HavocClient() {
 
     /* initialize logger */
@@ -179,8 +181,6 @@ auto HavocClient::Main(
 
     setupThreads();
 
-    PyEngine = new HavocPyEngine;
-
     QApplication::exec();
 
     return;
@@ -328,4 +328,16 @@ auto HavocClient::setupThreads() -> void {
     /* fire up the even thread that is going to
      * process events and emit signals to the main gui thread */
     Events.Thread->start();
+
+    /* now set up the event thread and dispatcher */
+    Python.Thread = new QThread;
+    Python.Engine = new HavocPyEngine;
+    Python.Engine->moveToThread( Python.Thread );
+
+    /* connect events */
+    QObject::connect( Python.Thread, &QThread::started, Python.Engine, &HavocPyEngine::run );
+
+    /* fire up the even thread that is going to
+     * process events and emit signals to the main gui thread */
+    Python.Engine->start();
 }

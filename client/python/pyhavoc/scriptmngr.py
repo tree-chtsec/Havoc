@@ -1,11 +1,18 @@
 from _pyhavoc import core
-import time
 
-def _HcScriptMngrHandleInput(
-    text: str
-) -> None:
-    core.HcScriptManagerConsoleStdOut( f"[_HcScriptMngrHandleInput] text -> {text}" )
-    return
+import sys
 
-core.HcScriptManagerConsoleStdOut( "[Havoc Python Console]" )
-core.HcScriptManagerConsoleStdIn( _HcScriptMngrHandleInput )
+class HcPyScriptMngrThreadManager:
+
+    def __init__(self):
+        pass
+
+class HcPyScriptMngrStdOutErrHandler:
+    def __init__( self ):
+        return
+
+    def write( self, data ):
+        core.HcScriptManagerConsoleStdOut( data )
+
+sys.stdout = HcPyScriptMngrStdOutErrHandler()
+sys.stderr = HcPyScriptMngrStdOutErrHandler()

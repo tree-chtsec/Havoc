@@ -22,6 +22,8 @@
 #define HAVOC_VERSION  "0.8"
 #define HAVOC_CODENAME "Killer Queen"
 
+extern pybind11::object g_callback;
+
 class HavocClient : public QWidget {
 
     /* current connection info */
@@ -45,7 +47,11 @@ class HavocClient : public QWidget {
 public:
     /* Main gui window */
     HavocMainWindow* MainWindows = nullptr;
-    HavocPyEngine*   PyEngine    = nullptr;
+
+    struct {
+        QThread*       Thread = nullptr;
+        HavocPyEngine* Engine = nullptr;
+    } Python;
 
     /* havoc client constructor and destructor */
     explicit HavocClient();

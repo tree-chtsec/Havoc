@@ -20,8 +20,8 @@ class HcConsole : public QWidget
     QLabel*      LabelInput  = {};
 
 public:
-    QLineEdit*                Input         = nullptr;
-    std::vector<py11::object> InputCallback = {};
+    QLineEdit*   Input         = nullptr;
+    py11::object InputCallback = {};
 
     explicit HcConsole(
         QWidget* parent
@@ -42,6 +42,8 @@ public:
     auto appendConsole(
         const QString& text
     ) -> void;
+
+    auto inputEnter() -> void;
 };
 
 QT_END_NAMESPACE

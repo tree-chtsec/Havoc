@@ -6,10 +6,14 @@
 #include <api/HcCore.h>
 #include <api/HcScriptManager.h>
 
-class HavocPyEngine {
+class HavocPyEngine : public QThread {
 public:
+    py11::scoped_interpreter* guard{};
+
     explicit HavocPyEngine();
     ~HavocPyEngine();
+
+    auto run() -> void;
 };
 
 #endif

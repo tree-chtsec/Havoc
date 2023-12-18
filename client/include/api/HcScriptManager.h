@@ -9,7 +9,7 @@ auto HcScriptManagerConsoleStdOut(
 ) -> void;
 
 auto HcScriptManagerConsoleStdIn(
-    const py11::function& callback
+    const py11::object& callback
 ) -> void;
 
 #endif //HAVOCCLIENT_API_HCSCRIPTMANAGER_H

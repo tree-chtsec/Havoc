@@ -6,9 +6,3 @@ auto HcScriptManagerConsoleStdOut(
 ) -> void {
     Havoc->MainWindows->PageScripts->PyConsole->appendConsole( text.c_str() );
 }
-
-auto HcScriptManagerConsoleStdIn(
-    const py11::function& callback
-) -> void {
-    // Havoc->MainWindows->PageScripts->PyConsole->InputCallback = callback;
-}
