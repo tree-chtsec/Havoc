@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_PAGESCRIPT_H
-#define HAVOCCLIENT_PAGESCRIPT_H
+#ifndef HAVOCCLIENT_HCPAGESCRIPT_H
+#define HAVOCCLIENT_HCPAGESCRIPT_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -17,7 +17,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class HavocPagePlugins : public QWidget
+class HcPagePlugins : public QWidget
 {
 
 public:
@@ -25,7 +25,6 @@ public:
     QGridLayout*  gridLayout_2       = nullptr;
     QSplitter*    splitter           = nullptr;
     QSpacerItem*  horizontalSpacer   = nullptr;
-
     QTabWidget*   TabWidget          = nullptr;
     QWidget*      TabPluginManager   = nullptr;
     QPushButton*  ButtonLoad         = nullptr;
@@ -34,7 +33,9 @@ public:
     HcConsole*    PyConsole          = nullptr;
     QWidget*      TabPluginStore     = nullptr;
 
-    explicit HavocPagePlugins();
+    std::optional<py11::object> LoadCallback = {};
+
+    explicit HcPagePlugins();
 
     auto retranslateUi() -> void;
 };

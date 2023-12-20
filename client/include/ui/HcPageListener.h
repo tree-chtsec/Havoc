@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_PAGELISTENER_H
-#define HAVOCCLIENT_PAGELISTENER_H
+#ifndef HAVOCCLIENT_HCPAGELISTENER_H
+#define HAVOCCLIENT_HCPAGELISTENER_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -16,7 +16,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class HavocPageListener : public QWidget
+class HcPageListener : public QWidget
 {
     bool SplitterMoveToggle = false;
     int  ListenersRunning   = 0;
@@ -48,7 +48,7 @@ public:
     QTableWidgetItem* TitleStatus       = nullptr;
     std::vector<json> Protocols         = {};
 
-    explicit HavocPageListener();
+    explicit HcPageListener();
     auto retranslateUi() -> void;
 
     auto addListener(
@@ -77,4 +77,4 @@ public:
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_PAGELISTENER_H
+#endif //HAVOCCLIENT_HCPAGELISTENER_H

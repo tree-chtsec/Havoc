@@ -8,7 +8,7 @@ auto HcScriptManagerConsoleStdOut(
     const std::string& text
 ) -> void;
 
-auto HcScriptManagerConsoleStdIn(
+auto HcScriptManagerLoadScriptCallback(
     const py11::object& callback
 ) -> void;
 

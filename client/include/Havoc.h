@@ -8,14 +8,14 @@
 #include <core/Helper.h>
 #include <core/EventWorker.h>
 
-#include <ui/PageAgent.h>
-#include <ui/PageListener.h>
-#include <ui/PageBuilder.h>
-#include <ui/PageScript.h>
+#include <ui/HcPageAgent.h>
+#include <ui/HcPageListener.h>
+#include <ui/HcPageBuilder.h>
+#include <ui/HcPageScript.h>
 
-#include <ui/DialogListener.h>
-#include <ui/MainWindow.h>
-#include <ui/Connect.h>
+#include <ui/HcListenerDialog.h>
+#include <ui/HcMainWindow.h>
+#include <ui/HcConnectDialog.h>
 
 #include <api/Engine.h>
 
@@ -46,7 +46,7 @@ class HavocClient : public QWidget {
 
 public:
     /* Main gui window */
-    HavocMainWindow* MainWindows = nullptr;
+    HcMainWindow* Gui = nullptr;
 
     struct {
         QThread*       Thread = nullptr;

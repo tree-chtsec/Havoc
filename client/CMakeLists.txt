@@ -9,9 +9,9 @@ set( CMAKE_CXX_STANDARD 20 )
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTORCC ON )
 set( CMAKE_AUTOUIC ON )
-set( QT_VERSION 5 )
+set( QT_VERSION 6 )
 set( REQUIRED_LIBS Core Gui Widgets Network WebSockets )
-set( REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebSockets )
+set( REQUIRED_LIBS_QUALIFIED Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY .. )
 set( APP_ICON_RESOURCE_WINDOWS "data/Havoc.qrc" )
 
@@ -24,7 +24,6 @@ add_definitions( -DQT_NO_DEBUG_OUTPUT )
 ## compiler flags
 ##
 set( CMAKE_CXX_FLAGS "-Wattributes -lssl -lcrypto" )
-
 
 ##
 ## include header directories
@@ -47,15 +46,14 @@ set( HAVOC_INCLUDE
         include/core/Helper.h
         include/core/EventWorker.h
 
-        include/ui/Connect.h
-        include/ui/MainWindow.h
-        include/ui/AgentConsole.h
-        include/ui/DialogListener.h
+        include/ui/HcConnectDialog.h
+        include/ui/HcMainWindow.h
+        include/ui/HcListenerDialog.h
 
-        include/ui/PageAgent.h
-        include/ui/PageBuilder.h
-        include/ui/PageListener.h
-        include/ui/PageScript.h
+        include/ui/HcPageAgent.h
+        include/ui/HcPageBuilder.h
+        include/ui/HcPageListener.h
+        include/ui/HcPageScript.h
 
         include/ui/HcWidget.h
         include/ui/HcConsole.h
@@ -76,15 +74,14 @@ set( HAVOC_SRC
         src/core/Helper.cc
         src/core/EventWorker.cc
 
-        src/ui/Connect.cc
-        src/ui/MainWindow.cc
-        src/ui/AgentConsole.cc
-        src/ui/DialogListener.cc
+        src/ui/HcConnectDialog.cc
+        src/ui/HcMainWindow.cc
+        src/ui/HcListenerDialog.cc
 
-        src/ui/PageAgent.cc
-        src/ui/PageListener.cc
-        src/ui/PageBuilder.cc
-        src/ui/PageScript.cc
+        src/ui/HcPageAgent.cc
+        src/ui/HcPageListener.cc
+        src/ui/HcPageBuilder.cc
+        src/ui/HcPageScript.cc
 
         src/ui/HcWidget.cc
         src/ui/HcConsole.cc

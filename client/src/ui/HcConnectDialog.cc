@@ -1,10 +1,10 @@
 #include <Havoc.h>
 #include <core/Helper.h>
-#include <ui/Connect.h>
+#include <ui/HcConnectDialog.h>
 
-HavocConnect::HavocConnect() {
+HcConnectDialog::HcConnectDialog() {
     if ( objectName().isEmpty() ) {
-        setObjectName( QString::fromUtf8( "HavocConnect" ) );
+        setObjectName( QString::fromUtf8( "HcConnectDialog" ) );
     }
 
     resize( 600, 261 );
@@ -94,7 +94,7 @@ HavocConnect::HavocConnect() {
     QMetaObject::connectSlotsByName( this );
 }
 
-HavocConnect::~HavocConnect() {
+HcConnectDialog::~HcConnectDialog() {
     delete horizontalLayout;
     delete ConnectionWidget;
     delete gridLayout;
@@ -109,20 +109,20 @@ HavocConnect::~HavocConnect() {
     delete ListConnection;
 }
 
-void HavocConnect::retranslateUi() {
-    setWindowTitle( QCoreApplication::translate( "HavocConnect", "Havoc Connect", nullptr ) );
+void HcConnectDialog::retranslateUi() {
+    setWindowTitle( QCoreApplication::translate( "HcConnectDialog", "Havoc Connect", nullptr ) );
     setStyleSheet( Havoc->getStyleSheet() );
-    LabelHavoc->setText( QCoreApplication::translate( "HavocConnect", "<html><head/><body><p><span style=\" font-size:12pt;\">Havoc [ welcome back ]</span></p></body></html>", nullptr ) );
-    InputProfileName->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Profile Name", nullptr ) );
-    InputHost->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Host", nullptr ) );
-    InputPort->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Port", nullptr ) );
-    InputUsername->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Username", nullptr ) );
-    InputPassword->setPlaceholderText( QCoreApplication::translate( "HavocConnect", "Password", nullptr ) );
-    ButtonConnect->setText( QCoreApplication::translate( "HavocConnect", "CONNECT", nullptr ) );
-    ButtonAdd->setText( QCoreApplication::translate( "HavocConnect", "ADD", nullptr ) );
+    LabelHavoc->setText( QCoreApplication::translate( "HcConnectDialog", "<html><head/><body><p><span style=\" font-size:12pt;\">Havoc [ welcome back ]</span></p></body></html>", nullptr ) );
+    InputProfileName->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Profile Name", nullptr ) );
+    InputHost->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Host", nullptr ) );
+    InputPort->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Port", nullptr ) );
+    InputUsername->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Username", nullptr ) );
+    InputPassword->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Password", nullptr ) );
+    ButtonConnect->setText( QCoreApplication::translate( "HcConnectDialog", "CONNECT", nullptr ) );
+    ButtonAdd->setText( QCoreApplication::translate( "HcConnectDialog", "ADD", nullptr ) );
 }
 
-auto HavocConnect::start() -> json {
+auto HcConnectDialog::start() -> json {
     exec();
 
     if ( InputProfileName->text().isEmpty() ||
@@ -144,7 +144,7 @@ auto HavocConnect::start() -> json {
     };
 }
 
-auto HavocConnect::sanityCheckInput() -> bool {
+auto HcConnectDialog::sanityCheckInput() -> bool {
 
     if ( InputProfileName->text().isEmpty() ) {
         Helper::MessageBox( QMessageBox::Critical, "Profile Error", "Profile field is emtpy." );
@@ -174,7 +174,7 @@ auto HavocConnect::sanityCheckInput() -> bool {
     return true;
 }
 
-auto HavocConnect::pressedConnect() const -> bool { return PressedConnect; }
+auto HcConnectDialog::pressedConnect() const -> bool { return PressedConnect; }
 
 
 

@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_PAGEAGENT_H
-#define HAVOCCLIENT_PAGEAGENT_H
+#ifndef HAVOCCLIENT_HCPAGEAGENT_H
+#define HAVOCCLIENT_HCPAGEAGENT_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -15,7 +15,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class HavocPageAgent : public QWidget
+class HcPageAgent : public QWidget
 {
     bool SplitterMoveToggle = false;
 
@@ -42,8 +42,8 @@ public:
     QTableWidgetItem* TitleNote              = nullptr;
     QTableWidgetItem* TitleLastCallback      = nullptr;
 
-    explicit HavocPageAgent( QWidget* parent = nullptr );
-    ~HavocPageAgent();
+    explicit HcPageAgent(QWidget* parent = nullptr );
+    ~HcPageAgent();
 
     auto retranslateUi() -> void;
 
@@ -59,4 +59,4 @@ public:
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_PAGEAGENT_H
+#endif //HAVOCCLIENT_HCPAGEAGENT_H

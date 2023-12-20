@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_MAINWINDOW_H
-#define HAVOCCLIENT_MAINWINDOW_H
+#ifndef HAVOCCLIENT_HCMAINWINDOW_H
+#define HAVOCCLIENT_HCMAINWINDOW_H
 
 #include <Havoc.h>
 
@@ -25,7 +25,7 @@ public:
     auto setUsed( bool state ) -> void;
 };
 
-class HavocMainWindow : public QMainWindow
+class HcMainWindow : public QMainWindow
 {
 public:
     QWidget*            MainWidget      = nullptr;
@@ -41,14 +41,14 @@ public:
     HavocButton*        ButtonPayload   = nullptr;
     QSpacerItem*        Spacer          = nullptr;
     QStackedWidget*     StackedWidget   = nullptr;
-    HavocPageAgent*     PageAgent       = nullptr;
-    HavocPageListener*  PageListener    = nullptr;
-    HavocPageBuilder*   PagePayload     = nullptr;
+    HcPageAgent*        PageAgent       = nullptr;
+    HcPageListener*     PageListener    = nullptr;
+    HcPageBuilder*      PagePayload     = nullptr;
     QWidget*            PageServer      = nullptr;
-    HavocPagePlugins*   PageScripts     = nullptr;
+    HcPagePlugins*      PageScripts     = nullptr;
     QWidget*            PageSettings    = nullptr;
 
-    explicit HavocMainWindow( );
+    explicit HcMainWindow( );
 
     auto retranslateUi() -> void;
     auto renderWindow() -> void;
@@ -68,4 +68,4 @@ public:
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_MAINWINDOW_H
+#endif //HAVOCCLIENT_HCMAINWINDOW_H

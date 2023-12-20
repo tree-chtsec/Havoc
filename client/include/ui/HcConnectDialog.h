@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_CONNECT_H
-#define HAVOCCLIENT_CONNECT_H
+#ifndef HAVOCCLIENT_HCCONNECTDIALOG_H
+#define HAVOCCLIENT_HCCONNECTDIALOG_H
 
 #include <Common.h>
 
@@ -16,7 +16,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class HavocConnect : public QDialog
+class HcConnectDialog : public QDialog
 {
     bool PressedConnect = false;
 
@@ -34,8 +34,8 @@ public:
     QPushButton* ButtonAdd        = nullptr;
     QListWidget* ListConnection   = nullptr;
 
-    explicit HavocConnect( );
-    ~HavocConnect( ) override;
+    explicit HcConnectDialog( );
+    ~HcConnectDialog( ) override;
 
     auto sanityCheckInput() -> bool;
     auto retranslateUi() -> void;
@@ -45,4 +45,4 @@ public:
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_CONNECT_H
+#endif //HAVOCCLIENT_HCCONNECTDIALOG_H

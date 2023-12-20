@@ -27,7 +27,7 @@ auto HavocClient::Main(
     int    argc,
     char** argv
 ) -> void {
-    auto Connector = new HavocConnect();
+    auto Connector = new HcConnectDialog();
     auto Result    = httplib::Result();
     auto Response  = json{};
     auto Error     = std::string( "Failed to send login request: " );
@@ -175,9 +175,9 @@ auto HavocClient::Main(
     /*
      * create main window
      */
-    MainWindows = new HavocMainWindow;
-    MainWindows->renderWindow();
-    MainWindows->setStyleSheet( getStyleSheet() );
+    Gui = new HcMainWindow;
+    Gui->renderWindow();
+    Gui->setStyleSheet(getStyleSheet() );
 
     setupThreads();
 
@@ -330,14 +330,14 @@ auto HavocClient::setupThreads() -> void {
     Events.Thread->start();
 
     /* now set up the event thread and dispatcher */
-    Python.Thread = new QThread;
+    // Python.Thread = new QThread;
     Python.Engine = new HavocPyEngine;
-    Python.Engine->moveToThread( Python.Thread );
+    // Python.Engine->moveToThread( Python.Thread );
 
     /* connect events */
-    QObject::connect( Python.Thread, &QThread::started, Python.Engine, &HavocPyEngine::run );
+    // QObject::connect( Python.Thread, &QThread::started, Python.Engine, &HavocPyEngine::run );
 
     /* fire up the even thread that is going to
      * process events and emit signals to the main gui thread */
-    Python.Engine->start();
+    Python.Engine->run();
 }

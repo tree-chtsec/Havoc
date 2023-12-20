@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_DIALOGLISTENER_H
-#define HAVOCCLIENT_DIALOGLISTENER_H
+#ifndef HAVOCCLIENT_HCLISTENERDIALOG_H
+#define HAVOCCLIENT_HCLISTENERDIALOG_H
 
 #include <Common.h>
 
@@ -63,7 +63,7 @@ const int ListenerEventEnter  = 0b00000001;
 const int ListenerEventChange = 0b00000010;
 const int ListenerEventAll    = 0b10000000;
 
-class HavocListener : public QDialog
+class HcListenerDialog : public QDialog
 {
     ListenerState   State            = None;
 
@@ -81,7 +81,7 @@ public:
     Protocol*             Previous   = nullptr;
     std::vector<Protocol> Protocols  = {};
 
-    explicit HavocListener();
+    explicit HcListenerDialog();
 
     auto addProtocol(
         const json& data
@@ -136,4 +136,4 @@ public:
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_DIALOGLISTENER_H
+#endif //HAVOCCLIENT_HCLISTENERDIALOG_H

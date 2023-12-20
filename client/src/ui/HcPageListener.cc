@@ -1,7 +1,7 @@
 #include <Havoc.h>
-#include <ui/PageListener.h>
+#include <ui/HcPageListener.h>
 
-HavocPageListener::HavocPageListener() {
+HcPageListener::HcPageListener() {
     if ( objectName().isEmpty() ) {
         setObjectName( QString::fromUtf8( "PageListener" ) );
     }
@@ -72,14 +72,14 @@ HavocPageListener::HavocPageListener() {
 
     retranslateUi();
 
-    QObject::connect( ButtonNewListener, &QPushButton::clicked, this, &HavocPageListener::buttonAddListener );
-    QObject::connect( TableWidget, &QTableWidget::customContextMenuRequested, this, &HavocPageListener::handleListenerContextMenu );
-    QObject::connect( TabWidget->tabBar(), &QTabBar::tabCloseRequested, this, &HavocPageListener::tabCloseRequested );
+    QObject::connect( ButtonNewListener, &QPushButton::clicked, this, &HcPageListener::buttonAddListener );
+    QObject::connect( TableWidget, &QTableWidget::customContextMenuRequested, this, &HcPageListener::handleListenerContextMenu );
+    QObject::connect( TabWidget->tabBar(), &QTabBar::tabCloseRequested, this, &HcPageListener::tabCloseRequested );
 
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HavocPageListener::retranslateUi() -> void {
+auto HcPageListener::retranslateUi() -> void {
     setStyleSheet( Havoc->getStyleSheet() );
 
     setWindowTitle( "PageListener" );
@@ -87,8 +87,8 @@ auto HavocPageListener::retranslateUi() -> void {
     ButtonNewListener->setText( "Add Listener" );
 }
 
-auto HavocPageListener::buttonAddListener() -> void {
-    auto Dialog = new HavocListener;
+auto HcPageListener::buttonAddListener() -> void {
+    auto Dialog = new HcListenerDialog;
 
     /* add registered protocols
      * to the dialog listener */
@@ -101,7 +101,7 @@ auto HavocPageListener::buttonAddListener() -> void {
     delete Dialog;
 }
 
-auto HavocPageListener::addListener(
+auto HcPageListener::addListener(
     const json& data
 ) -> void {
     auto name     = QString();
@@ -209,13 +209,13 @@ auto HavocPageListener::addListener(
     updateListenersRunningLabel( ListenersRunning );
 }
 
-auto HavocPageListener::updateListenersRunningLabel(
+auto HcPageListener::updateListenersRunningLabel(
     int value
 ) const -> void {
     ActiveLabel->setText( QString( "Active: %1" ).arg( value ) );
 }
 
-auto HavocPageListener::addListenerLog(
+auto HcPageListener::addListenerLog(
     const std::string& name,
     const std::string& log
 ) -> void {
@@ -227,7 +227,7 @@ auto HavocPageListener::addListenerLog(
     }
 }
 
-auto HavocPageListener::handleListenerContextMenu(
+auto HcPageListener::handleListenerContextMenu(
     const QPoint& pos
 ) -> void {
     auto Menu = new QMenu( this );
@@ -267,7 +267,7 @@ auto HavocPageListener::handleListenerContextMenu(
 
 }
 
-auto HavocPageListener::tabCloseRequested(
+auto HcPageListener::tabCloseRequested(
     int index
 ) const -> void {
     if ( index == -1 ) {

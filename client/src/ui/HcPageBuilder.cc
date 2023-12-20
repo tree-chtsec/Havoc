@@ -1,9 +1,10 @@
 #include <Common.h>
-#include <ui/PageBuilder.h>
+#include <ui/HcPageBuilder.h>
 
-HavocPageBuilder::HavocPageBuilder() {
-    if ( objectName().isEmpty() )
-        setObjectName( "PageBuilder" );
+HcPageBuilder::HcPageBuilder() {
+    if ( objectName().isEmpty() ) {
+        setObjectName( "HcPageBuilder" );
+    }
 
     gridLayout = new QGridLayout( this );
     gridLayout->setObjectName( "gridLayout" );
@@ -18,7 +19,7 @@ HavocPageBuilder::HavocPageBuilder() {
     Spacer = new QSpacerItem( 834, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 
     StackedWidget = new QStackedWidget( this );
-    StackedWidget->setObjectName( "stackedWidget" );
+    StackedWidget->setObjectName( "PageBuilderStackedWidget" );
 
     gridLayout->addWidget( LabelPayload,  0, 0, 1, 1);
     gridLayout->addWidget( ComboPayload,  0, 1, 1, 1 );
@@ -30,7 +31,7 @@ HavocPageBuilder::HavocPageBuilder() {
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HavocPageBuilder::retranslateUi() -> void {
+auto HcPageBuilder::retranslateUi() -> void {
     setWindowTitle( "PageBuilder" );
     LabelPayload->setText( "Payload: " );
 }

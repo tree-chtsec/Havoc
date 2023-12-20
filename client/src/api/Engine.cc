@@ -12,7 +12,19 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
             "havoc client core api"
         );
 
-        core.def( "HcScriptManagerConsoleStdOut", HcScriptManagerConsoleStdOut, py11::call_guard<py11::gil_scoped_release>() );
+        //
+        // Havoc Script Manager api functions
+        //
+        core.def( "HcScriptManagerConsoleStdOut",      HcScriptManagerConsoleStdOut );
+        core.def( "HcScriptManagerLoadScriptCallback", HcScriptManagerLoadScriptCallback );
+
+        //
+        // Havoc Ui functions and utilities
+        //
+        core.def( "HcUiPayloadBuilderWidgetName", [] () -> py11::str {
+            return py11::str( Havoc->Gui->PagePayload->objectName().toStdString() );
+        } );
+
     }
 }
 

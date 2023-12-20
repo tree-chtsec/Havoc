@@ -1,7 +1,7 @@
 #include <Havoc.h>
-#include <ui/PageScript.h>
+#include <ui/HcPageScript.h>
 
-HavocPagePlugins::HavocPagePlugins()
+HcPagePlugins::HcPagePlugins()
 {
     if ( objectName().isEmpty() ) {
         setObjectName( "PagePlugins" );
@@ -83,12 +83,32 @@ HavocPagePlugins::HavocPagePlugins()
 
     retranslateUi();
 
+    QObject::connect( ButtonLoad, &QPushButton::clicked, this, [&] () {
+        auto FileDialog = QFileDialog();
+        auto Filename   = QUrl();
+
+        if ( LoadCallback.has_value() ) {
+            if ( FileDialog.exec() == QFileDialog::Accepted ) {
+                Filename = FileDialog.selectedUrls().value( 0 ).toLocalFile();
+                if ( ! Filename.toString().isNull() ) {
+                    LoadCallback.value()( py11::str( Filename.toString().toStdString() ) );
+                }
+            }
+        } else {
+            Helper::MessageBox(
+                QMessageBox::Warning,
+                "Script Manager",
+                "No load script handler has been registered"
+            );
+        }
+    } );
+
     TabWidget->setCurrentIndex( 0 );
 
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HavocPagePlugins::retranslateUi() -> void {
+auto HcPagePlugins::retranslateUi() -> void {
     setWindowTitle( "PagePlugins" );
     setStyleSheet( Havoc->getStyleSheet() );
     ButtonLoad->setText( "Load Plugin" );

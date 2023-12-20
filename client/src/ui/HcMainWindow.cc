@@ -1,5 +1,5 @@
 #include <Havoc.h>
-#include <ui/MainWindow.h>
+#include <ui/HcMainWindow.h>
 
 /* Havoc side button hover over event. */
 class Hover : public QObject
@@ -23,22 +23,22 @@ class Hover : public QObject
 
 public:
     bool eventFilter( QObject* watched, QEvent* event ) override {
-        handleButtonSideEvent( "connection", Havoc->MainWindows->ButtonAgents,    watched, event );
-        handleButtonSideEvent( "listener",   Havoc->MainWindows->ButtonListeners, watched, event );
-        handleButtonSideEvent( "payload",    Havoc->MainWindows->ButtonPayload,   watched, event );
-        handleButtonSideEvent( "hosting",    Havoc->MainWindows->ButtonServer,    watched, event );
-        handleButtonSideEvent( "script",     Havoc->MainWindows->ButtonScripts,   watched, event );
-        handleButtonSideEvent( "settings",   Havoc->MainWindows->ButtonSettings,  watched, event );
+        handleButtonSideEvent("connection", Havoc->Gui->ButtonAgents, watched, event );
+        handleButtonSideEvent("listener", Havoc->Gui->ButtonListeners, watched, event );
+        handleButtonSideEvent("payload", Havoc->Gui->ButtonPayload, watched, event );
+        handleButtonSideEvent("hosting", Havoc->Gui->ButtonServer, watched, event );
+        handleButtonSideEvent("script", Havoc->Gui->ButtonScripts, watched, event );
+        handleButtonSideEvent("settings", Havoc->Gui->ButtonSettings, watched, event );
 
         return false;
     }
 };
 
-HavocMainWindow::HavocMainWindow() {
+HcMainWindow::HcMainWindow() {
     auto HoverEvent = new Hover;
 
     if ( objectName().isEmpty() ) {
-        setObjectName( QString::fromUtf8( "HavocMainWindow" ) );
+        setObjectName( QString::fromUtf8( "HcMainWindow" ) );
     }
 
     resize( 1124, 659 );
@@ -106,10 +106,10 @@ HavocMainWindow::HavocMainWindow() {
     gridLayout->setContentsMargins( 0, 0, 0, 0 );
 
     /* create page objects */
-    PageAgent    = new HavocPageAgent;
-    PageListener = new HavocPageListener;
-    PagePayload  = new HavocPageBuilder;
-    PageScripts  = new HavocPagePlugins;
+    PageAgent    = new HcPageAgent;
+    PageListener = new HcPageListener;
+    PagePayload  = new HcPageBuilder;
+    PageScripts  = new HcPagePlugins;
     PageServer   = new QWidget;
     PageSettings = new QWidget;
 
@@ -164,16 +164,16 @@ HavocMainWindow::HavocMainWindow() {
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HavocMainWindow::retranslateUi() -> void {
+auto HcMainWindow::retranslateUi() -> void {
     setWindowTitle( QString( "Havoc [Version: %1 %2]" ).arg( HAVOC_VERSION ).arg( HAVOC_CODENAME ) );
 
 }
 
-auto HavocMainWindow::renderWindow() -> void {
+auto HcMainWindow::renderWindow() -> void {
     show();
 }
 
-auto HavocMainWindow::unusedSideButtons() -> void {
+auto HcMainWindow::unusedSideButtons() -> void {
     ButtonAgents->setIcon( Helper::GrayScaleIcon( QImage( ":/icons/32px-connection-white" ) ) );
     ButtonAgents->setIconSize( QSize( 32, 32 ) );
     ButtonAgents->setToolTip( "Agents" );
@@ -205,7 +205,7 @@ auto HavocMainWindow::unusedSideButtons() -> void {
     ButtonSettings->setUsed( false );
 }
 
-auto HavocMainWindow::useSideButton(
+auto HcMainWindow::useSideButton(
     HavocButton*   button,
     const QString& name
 ) -> void {
@@ -216,32 +216,32 @@ auto HavocMainWindow::useSideButton(
     button->setIconSize( QSize( 32, 32 ) );
 }
 
-auto HavocMainWindow::switchPageAgent() -> void {
+auto HcMainWindow::switchPageAgent() -> void {
     useSideButton( ButtonAgents, "connection" );
     StackedWidget->setCurrentIndex( 0 );
 }
 
-auto HavocMainWindow::switchPageListener() -> void {
+auto HcMainWindow::switchPageListener() -> void {
     useSideButton( ButtonListeners, "listener" );
     StackedWidget->setCurrentIndex( 1 );
 }
 
-auto HavocMainWindow::switchPagePayload() -> void {
+auto HcMainWindow::switchPagePayload() -> void {
     useSideButton( ButtonPayload, "payload" );
     StackedWidget->setCurrentIndex( 2 );
 }
 
-auto HavocMainWindow::switchPageServer() -> void {
+auto HcMainWindow::switchPageServer() -> void {
     useSideButton( ButtonServer, "hosting" );
     StackedWidget->setCurrentIndex( 3 );
 }
 
-auto HavocMainWindow::switchPageScripts() -> void {
+auto HcMainWindow::switchPageScripts() -> void {
     useSideButton( ButtonScripts, "script" );
     StackedWidget->setCurrentIndex( 4 );
 }
 
-auto HavocMainWindow::switchPageSettings() -> void {
+auto HcMainWindow::switchPageSettings() -> void {
     useSideButton( ButtonSettings, "settings" );
     StackedWidget->setCurrentIndex( 5 );
 }
@@ -254,7 +254,7 @@ auto HavocButton::setUsed(
     bool state
 ) -> void {
     buttonUsed = state;
-    setProperty( "HavocButtonUsed", buttonUsed ? "true" : "false" );
+    setProperty( "HcButtonUsed", buttonUsed ? "true" : "false" );
     style()->unpolish( this );
     style()->polish( this );
 }

@@ -1,5 +1,5 @@
 #include <Havoc.h>
-#include <ui/DialogListener.h>
+#include <ui/HcListenerDialog.h>
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -193,9 +193,9 @@ private:
 
 QT_END_NAMESPACE
 
-HavocListener::HavocListener() {
+HcListenerDialog::HcListenerDialog() {
     if ( objectName().isEmpty() ) {
-        setObjectName( QString::fromUtf8( "HavocListener" ) );
+        setObjectName( QString::fromUtf8( "HcListenerDialog" ) );
     }
 
     gridLayout = new QGridLayout( this );
@@ -247,8 +247,8 @@ HavocListener::HavocListener() {
 
     QMetaObject::connectSlotsByName( this );
 
-    connect( ComboProtocol, &QComboBox::currentTextChanged, this, &HavocListener::changeProtocol );
-    connect( ButtonSave,  &QPushButton::clicked, this, &HavocListener::save );
+    connect( ComboProtocol, &QComboBox::currentTextChanged, this, &HcListenerDialog::changeProtocol );
+    connect( ButtonSave,  &QPushButton::clicked, this, &HcListenerDialog::save );
     connect( ButtonClose, &QPushButton::clicked, this, [&]() {
         State = Closed;
         close();
@@ -259,7 +259,7 @@ HavocListener::HavocListener() {
     QMetaObject::connectSlotsByName( this );
 }
 
-auto HavocListener::retranslateUi() -> void {
+auto HcListenerDialog::retranslateUi() -> void {
     setStyleSheet( Havoc->getStyleSheet() );
     setWindowTitle( "Listener" );
 
@@ -269,7 +269,7 @@ auto HavocListener::retranslateUi() -> void {
     ButtonClose->setText( "Close" );
 }
 
-auto HavocListener::addProtocol(
+auto HcListenerDialog::addProtocol(
     const json& data
 ) -> void {
     auto protocol = Protocol();
@@ -329,7 +329,7 @@ auto HavocListener::addProtocol(
     ComboProtocol->addItem( protocol.type );
 }
 
-auto HavocListener::insertPage(
+auto HcListenerDialog::insertPage(
     Protocol& protocol
 ) -> void {
 
@@ -380,7 +380,7 @@ auto HavocListener::insertPage(
 
 }
 
-auto HavocListener::insertTab(
+auto HcListenerDialog::insertTab(
     Protocol&          protocol,
     const std::string& name,
     std::vector<json>& widgets
@@ -451,7 +451,7 @@ auto HavocListener::insertTab(
     protocol.tabs.push_back( tab );
 }
 
-auto HavocListener::addOption(
+auto HcListenerDialog::addOption(
     ProtclTabOption& tab,
     ProtclOption&    option
 ) -> void {
@@ -900,7 +900,7 @@ auto HavocListener::addOption(
 
 }
 
-auto HavocListener::getOption(
+auto HcListenerDialog::getOption(
     const std::string& name
 ) -> ProtclOption* {
     auto index = StackedProtocols->currentIndex();
@@ -920,7 +920,7 @@ auto HavocListener::getOption(
     return nullptr;
 }
 
-auto HavocListener::setOption(
+auto HcListenerDialog::setOption(
     const ProtclOption* option,
     const json&         values
 ) -> void {
@@ -945,7 +945,7 @@ auto HavocListener::setOption(
     }
 }
 
-auto HavocListener::getOptions() -> json {
+auto HcListenerDialog::getOptions() -> json {
     auto index    = StackedProtocols->currentIndex();
     auto data     = json();
     auto listener = json();
@@ -985,7 +985,7 @@ auto HavocListener::getOptions() -> json {
     return listener;
 }
 
-auto HavocListener::changeProtocol(
+auto HcListenerDialog::changeProtocol(
     const QString &text
 ) -> void {
     spdlog::debug( "changeProtocol( \"{}\" );", text.toStdString() );
@@ -999,10 +999,10 @@ auto HavocListener::changeProtocol(
     }
 }
 
-auto HavocListener::getCloseState() -> ListenerState { return State; }
-auto HavocListener::start()         -> void { ComboProtocol->setCurrentIndex( 0 ); exec(); }
+auto HcListenerDialog::getCloseState() -> ListenerState { return State; }
+auto HcListenerDialog::start()         -> void { ComboProtocol->setCurrentIndex(0 ); exec(); }
 
-auto HavocListener::save() -> void {
+auto HcListenerDialog::save() -> void {
     auto Result = httplib::Result();
     auto data   = json();
 
@@ -1059,7 +1059,7 @@ InvalidServerResponseError:
     close();
 }
 
-auto HavocListener::sanityCheckOptions() -> bool {
+auto HcListenerDialog::sanityCheckOptions() -> bool {
     if ( InputName->text().isEmpty() ) {
         Helper::MessageBox(
             QMessageBox::Critical,
@@ -1141,7 +1141,7 @@ auto HavocListener::sanityCheckOptions() -> bool {
     return true;
 }
 
-auto HavocListener::eventProcess(
+auto HcListenerDialog::eventProcess(
     const json& data
 ) -> void {
     auto result = httplib::Result();
@@ -1164,7 +1164,7 @@ auto HavocListener::eventProcess(
     }
 }
 
-auto HavocListener::getOptionValue(
+auto HcListenerDialog::getOptionValue(
     const std::string& name
 ) -> json {
     for ( auto& tab : getCurrentProtocol()->tabs ) {
@@ -1190,4 +1190,4 @@ auto HavocListener::getOptionValue(
     return {};
 }
 
-auto HavocListener::getCurrentProtocol() -> Protocol* { return & Protocols[ StackedProtocols->currentIndex() ]; }
+auto HcListenerDialog::getCurrentProtocol() -> Protocol* { return & Protocols[ StackedProtocols->currentIndex() ]; }

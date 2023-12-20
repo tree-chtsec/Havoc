@@ -1,5 +1,5 @@
-#ifndef HAVOCCLIENT_PAGEBUILDER_H
-#define HAVOCCLIENT_PAGEBUILDER_H
+#ifndef HAVOCCLIENT_HCPAGEBUILDER_H
+#define HAVOCCLIENT_HCPAGEBUILDER_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -12,7 +12,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class HavocPageBuilder : public QWidget
+class HcPageBuilder : public QWidget
 {
 public:
     QGridLayout*    gridLayout    = nullptr;
@@ -21,7 +21,7 @@ public:
     QSpacerItem*    Spacer        = nullptr;
     QStackedWidget* StackedWidget = nullptr;
 
-    explicit HavocPageBuilder();
+    explicit HcPageBuilder();
 
     auto retranslateUi() -> void;
 
@@ -29,4 +29,4 @@ public:
 
 QT_END_NAMESPACE
 
-#endif //HAVOCCLIENT_PAGEBUILDER_H
+#endif //HAVOCCLIENT_HCPAGEBUILDER_H

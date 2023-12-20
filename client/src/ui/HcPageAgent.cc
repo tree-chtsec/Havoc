@@ -1,7 +1,7 @@
 #include <Havoc.h>
-#include <ui/PageAgent.h>
+#include <ui/HcPageAgent.h>
 
-HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
+HcPageAgent::HcPageAgent(QWidget* parent ) : QWidget(parent ) {
 
     if ( objectName().isEmpty() ) {
         setObjectName( QString::fromUtf8( "PageAgent" ) );
@@ -105,9 +105,9 @@ HavocPageAgent::HavocPageAgent( QWidget* parent ) : QWidget( parent ) {
     QMetaObject::connectSlotsByName( this );
 }
 
-HavocPageAgent::~HavocPageAgent() = default;
+HcPageAgent::~HcPageAgent() = default;
 
-auto HavocPageAgent::retranslateUi() -> void {
+auto HcPageAgent::retranslateUi() -> void {
     setStyleSheet( Havoc->getStyleSheet() );
 
     AgentDisplayerElevated->setText( "Elevated: 0" );
@@ -117,14 +117,14 @@ auto HavocPageAgent::retranslateUi() -> void {
     ComboAgentView->addItems( QStringList() << "Sessions" << "Sessions Graph" << "Targets" );
 }
 
-auto HavocPageAgent::addTab(
+auto HcPageAgent::addTab(
     const QString& name,
     QWidget*       widget
 ) -> void {
 
 }
 
-auto HavocPageAgent::addAgent(
+auto HcPageAgent::addAgent(
     json agent
 ) -> void {
 
