@@ -1,16 +1,12 @@
 #include <Havoc.h>
 
-pybind11::object g_callback;
-
 HavocClient::HavocClient() {
-
     /* initialize logger */
     spdlog::set_pattern( "[%T %^%l%$] %v" );
     spdlog::info( "Havoc Framework [{} :: {}]", HAVOC_VERSION, HAVOC_CODENAME );
 
     /* enabled debug messages */
     spdlog::set_level( spdlog::level::debug );
-
 }
 
 HavocClient::~HavocClient() = default;
@@ -172,14 +168,15 @@ auto HavocClient::Main(
 
     Profile.Token = data[ "token" ].get<std::string>();
 
-    /*
-     * create main window
-     */
+    /* create main window */
     Gui = new HcMainWindow;
     Gui->renderWindow();
-    Gui->setStyleSheet(getStyleSheet() );
+    Gui->setStyleSheet( getStyleSheet() );
 
     setupThreads();
+
+    Python = new HcPyEngine();
+    Python->run();
 
     QApplication::exec();
 
@@ -200,7 +197,7 @@ auto HavocClient::Exit() -> void {
 auto HavocClient::ApiSend(
     const std::string& endpoint,
     const json&        body
-) -> httplib::Result {
+) const -> httplib::Result {
     /* create http client */
     auto Http   = httplib::Client( "https://" + Profile.Host + ":" + Profile.Port );
     auto Result = httplib::Result();
@@ -328,16 +325,4 @@ auto HavocClient::setupThreads() -> void {
     /* fire up the even thread that is going to
      * process events and emit signals to the main gui thread */
     Events.Thread->start();
-
-    /* now set up the event thread and dispatcher */
-    // Python.Thread = new QThread;
-    Python.Engine = new HavocPyEngine;
-    // Python.Engine->moveToThread( Python.Thread );
-
-    /* connect events */
-    // QObject::connect( Python.Thread, &QThread::started, Python.Engine, &HavocPyEngine::run );
-
-    /* fire up the even thread that is going to
-     * process events and emit signals to the main gui thread */
-    Python.Engine->run();
 }

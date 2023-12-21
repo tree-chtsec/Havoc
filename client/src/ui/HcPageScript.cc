@@ -59,7 +59,7 @@ HcPagePlugins::HcPagePlugins()
     TablePluginsWidget->verticalHeader()->setVisible( false );
     TablePluginsWidget->setFocusPolicy( Qt::NoFocus );
 
-    PyConsole = new HcConsole(splitter );
+    PyConsole = new HcConsole( splitter );
     PyConsole->setObjectName( "PyConsole" );
     PyConsole->setInputLabel( ">>>" );
     PyConsole->setBottomLabel( "[Python Interpreter]" );
@@ -86,12 +86,23 @@ HcPagePlugins::HcPagePlugins()
     QObject::connect( ButtonLoad, &QPushButton::clicked, this, [&] () {
         auto FileDialog = QFileDialog();
         auto Filename   = QUrl();
+        auto exception  = std::string();
 
         if ( LoadCallback.has_value() ) {
             if ( FileDialog.exec() == QFileDialog::Accepted ) {
                 Filename = FileDialog.selectedUrls().value( 0 ).toLocalFile();
                 if ( ! Filename.toString().isNull() ) {
-                    LoadCallback.value()( py11::str( Filename.toString().toStdString() ) );
+                    try {
+                        LoadCallback.value()( py11::str( Filename.toString().toStdString() ) );
+                    } catch ( py11::error_already_set &eas ) {
+                        exception = eas.what();
+                    } catch ( const std::exception &e ) {
+                        exception = e.what();
+                    }
+
+                    if ( ! exception.empty() ) {
+                        PyConsole->appendConsole( exception.c_str() );
+                    }
                 }
             }
         } else {

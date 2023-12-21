@@ -7,7 +7,7 @@ import PySide6
 from PySide6 import QtCore
 from PySide6 import QtWidgets
 
-def _HcUiGetWidgetByObjectName(
+def HcUiGetWidgetByObjectName(
     object_name: str
 ) -> PySide6.QtWidgets.QWidget:
 
@@ -17,3 +17,5 @@ def _HcUiGetWidgetByObjectName(
 
     return None
 
+def HcUiPayloadBuilderWidgetName() -> str:
+    return core.HcUiPayloadBuilderWidgetName()

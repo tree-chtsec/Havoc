@@ -4,11 +4,6 @@ import sys
 import os
 import importlib.util
 
-class HcPyScriptMngrThreadManager:
-
-    def __init__(self):
-        pass
-
 class HcPyScriptMngrStdOutErrHandler:
     def __init__( self ):
         return
@@ -16,6 +11,10 @@ class HcPyScriptMngrStdOutErrHandler:
     def write( self, data ):
         core.HcScriptManagerConsoleStdOut( data )
 
+##
+## Callback function once the user decides
+## to load a script into the client
+##
 @core.HcScriptManagerLoadScriptCallback
 def _HcPyScriptLoad(
     _script_path: str
@@ -30,5 +29,11 @@ def _HcPyScriptLoad(
 
     return
 
+##
+## redirect StdOut and StdErr
+##
+## TODO: make own class or add param for
+##       StdErr to pretty print it as red
+##
 sys.stdout = HcPyScriptMngrStdOutErrHandler()
 sys.stderr = HcPyScriptMngrStdOutErrHandler()

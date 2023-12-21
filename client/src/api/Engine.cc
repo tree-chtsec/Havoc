@@ -1,6 +1,7 @@
 #include <Havoc.h>
 #include <core/Helper.h>
 #include <api/Engine.h>
+#include <filesystem>
 
 PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
     m.doc() = "python api for havoc framework";
@@ -28,17 +29,20 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
     }
 }
 
-HavocPyEngine::HavocPyEngine() {
-    guard = new py11::scoped_interpreter;
-}
+HcPyEngine::HcPyEngine()  = default;
+HcPyEngine::~HcPyEngine() = default;
 
-HavocPyEngine::~HavocPyEngine() = default;
-
-auto HavocPyEngine::run() -> void {
+auto HcPyEngine::run() -> void {
     auto exception = std::string();
 
+    guard = new py11::scoped_interpreter;
+
     try {
-        py11::module_::import( "python.pyhavoc" );
+        py11::module_::import( "sys" )
+            .attr( "path" )
+            .attr( "append" )( "python" );
+
+        py11::module_::import( "pyhavoc" );
     } catch ( py11::error_already_set &eas ) {
         exception = std::string( eas.what() );
     } catch ( const std::exception &e ) {
