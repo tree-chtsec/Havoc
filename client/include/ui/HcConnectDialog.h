@@ -2,6 +2,7 @@
 #define HAVOCCLIENT_HCCONNECTDIALOG_H
 
 #include <Common.h>
+#include <ui/HcLineEdit.h>
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -25,14 +26,16 @@ public:
     QHBoxLayout* horizontalLayout = nullptr;
     QWidget*     ConnectionWidget = nullptr;
     QLabel*      LabelHavoc       = nullptr;
-    QLineEdit*   InputProfileName = nullptr;
-    QLineEdit*   InputHost        = nullptr;
-    QLineEdit*   InputPort        = nullptr;
-    QLineEdit*   InputUsername    = nullptr;
-    QLineEdit*   InputPassword    = nullptr;
+    HcLineEdit*  InputProfileName = nullptr;
+    HcLineEdit*  InputHost        = nullptr;
+    HcLineEdit*  InputPort        = nullptr;
+    HcLineEdit*  InputUsername    = nullptr;
+    HcLineEdit*  InputPassword    = nullptr;
     QPushButton* ButtonConnect    = nullptr;
     QPushButton* ButtonAdd        = nullptr;
     QListWidget* ListConnection   = nullptr;
+    QAction*     ActionPassBlinder= nullptr;
+    bool         PassBlinderToggle= false;
 
     explicit HcConnectDialog( );
     ~HcConnectDialog( ) override;

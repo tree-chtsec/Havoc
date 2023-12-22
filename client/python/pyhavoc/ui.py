@@ -3,8 +3,10 @@
 ##
 from _pyhavoc import core
 
+##
+## import qt ui library
+##
 import PySide6
-from PySide6 import QtCore
 from PySide6 import QtWidgets
 
 def HcUiGetWidgetByObjectName(

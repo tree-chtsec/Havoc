@@ -15,11 +15,11 @@ HcConnectDialog::HcConnectDialog() {
     ConnectionWidget = new QWidget( this );
     gridLayout       = new QGridLayout( ConnectionWidget );
     LabelHavoc       = new QLabel( ConnectionWidget );
-    InputProfileName = new QLineEdit( ConnectionWidget );
-    InputHost        = new QLineEdit( ConnectionWidget );
-    InputPort        = new QLineEdit( ConnectionWidget );
-    InputUsername    = new QLineEdit( ConnectionWidget );
-    InputPassword    = new QLineEdit( ConnectionWidget );
+    InputProfileName = new HcLineEdit( ConnectionWidget );
+    InputHost        = new HcLineEdit( ConnectionWidget );
+    InputPort        = new HcLineEdit( ConnectionWidget );
+    InputUsername    = new HcLineEdit( ConnectionWidget );
+    InputPassword    = new HcLineEdit( ConnectionWidget );
     ButtonConnect    = new QPushButton( ConnectionWidget );
     ButtonAdd        = new QPushButton( ConnectionWidget );
     ListConnection   = new QListWidget( this );
@@ -46,6 +46,8 @@ HcConnectDialog::HcConnectDialog() {
 
     InputPassword->setObjectName( QString::fromUtf8( "InputPassword" ) );
     InputPassword->setMinimumSize( QSize( 0, 30 ) );
+    InputPassword->Input->setEchoMode( QLineEdit::Password );
+    ActionPassBlinder = InputPassword->Input->addAction( QIcon( ":/icons/16px-blind-white" ), QLineEdit::TrailingPosition );
 
     ButtonConnect->setObjectName( QString::fromUtf8( "ButtonConnect" ) );
     ButtonConnect->setMinimumSize( QSize( 0, 30 ) );
@@ -84,12 +86,26 @@ HcConnectDialog::HcConnectDialog() {
     } );
 
     QObject::connect( ButtonAdd, &QPushButton::clicked, this, [&] {
-        InputProfileName->setText( "Server" );
-        InputHost->setText( "127.0.0.1" );
-        InputPort->setText( "40056" );
-        InputUsername->setText( "5pider" );
-        InputPassword->setText( "password1234" );
+        InputProfileName->setInputText( "Death Star" );
+        InputHost->setInputText( "127.0.0.1" );
+        InputPort->setInputText( "40056" );
+        InputUsername->setInputText( "5pider" );
+        InputPassword->setInputText( "password1234" );
     } );
+
+    QObject::connect( ActionPassBlinder, &QAction::triggered, this, [&]
+    {
+        if ( ! PassBlinderToggle ) {
+            InputPassword->Input->setEchoMode( QLineEdit::Normal );
+            ActionPassBlinder->setIcon( QIcon( ":/icons/16px-eye-white" ) );
+        } else {
+            InputPassword->Input->setEchoMode( QLineEdit::Password );
+            ActionPassBlinder->setIcon( QIcon( ":/icons/16px-blind-white" ) );
+        }
+
+        /* toggle */
+        PassBlinderToggle = ! PassBlinderToggle;
+    });
 
     QMetaObject::connectSlotsByName( this );
 }
@@ -112,20 +128,21 @@ HcConnectDialog::~HcConnectDialog() {
 void HcConnectDialog::retranslateUi() {
     setWindowTitle( QCoreApplication::translate( "HcConnectDialog", "Havoc Connect", nullptr ) );
     setStyleSheet( Havoc->getStyleSheet() );
-    LabelHavoc->setText( QCoreApplication::translate( "HcConnectDialog", "<html><head/><body><p><span style=\" font-size:12pt;\">Havoc [ welcome back ]</span></p></body></html>", nullptr ) );
-    InputProfileName->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Profile Name", nullptr ) );
-    InputHost->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Host", nullptr ) );
-    InputPort->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Port", nullptr ) );
-    InputUsername->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Username", nullptr ) );
-    InputPassword->setPlaceholderText( QCoreApplication::translate( "HcConnectDialog", "Password", nullptr ) );
+    LabelHavoc->setText( "<html><head/><body><p><span style=\" font-size:12pt;\">Havoc [ welcome back ]</span></p></body></html>" );
     ButtonConnect->setText( QCoreApplication::translate( "HcConnectDialog", "CONNECT", nullptr ) );
     ButtonAdd->setText( QCoreApplication::translate( "HcConnectDialog", "ADD", nullptr ) );
+
+    InputProfileName->setLabelText( "Profile:" );
+    InputHost->setLabelText( "Host:   " );
+    InputPort->setLabelText( "Port:" );
+    InputUsername->setLabelText( "User:   " );
+    InputPassword->setLabelText( "Pass:   " );
 }
 
 auto HcConnectDialog::start() -> json {
     exec();
 
-    if ( InputProfileName->text().isEmpty() ||
+    if ( /* InputProfileName->text().isEmpty() || */
          InputHost->text().isEmpty()        ||
          InputPort->text().isEmpty()        ||
          InputUsername->text().isEmpty()    ||

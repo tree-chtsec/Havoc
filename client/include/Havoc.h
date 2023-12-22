@@ -16,6 +16,7 @@
 #include <ui/HcListenerDialog.h>
 #include <ui/HcMainWindow.h>
 #include <ui/HcConnectDialog.h>
+#include <ui/HcLineEdit.h>
 
 #include <api/Engine.h>
 

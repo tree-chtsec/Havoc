@@ -10,8 +10,8 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTORCC ON )
 set( CMAKE_AUTOUIC ON )
 set( QT_VERSION 6 )
-set( REQUIRED_LIBS Core Gui Widgets Network WebSockets )
-set( REQUIRED_LIBS_QUALIFIED Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets )
+set( REQUIRED_LIBS Core Gui Widgets Network WebSockets Designer )
+set( REQUIRED_LIBS_QUALIFIED Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Designer )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY .. )
 set( APP_ICON_RESOURCE_WINDOWS "data/Havoc.qrc" )
 
@@ -57,6 +57,7 @@ set( HAVOC_INCLUDE
 
         include/ui/HcWidget.h
         include/ui/HcConsole.h
+        include/ui/HcLineEdit.h
 
         include/api/Engine.h
         include/api/HcCore.h
@@ -85,6 +86,7 @@ set( HAVOC_SRC
 
         src/ui/HcWidget.cc
         src/ui/HcConsole.cc
+        src/ui/HcLineEdit.cc
 
         src/api/Engine.cc
         src/api/HcCore.cc
