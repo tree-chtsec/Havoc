@@ -23,7 +23,14 @@
 #define HAVOC_VERSION  "0.8"
 #define HAVOC_CODENAME "Killer Queen"
 
+
+
 class HavocClient : public QWidget {
+
+    struct Listener {
+        std::string  name;
+        py11::object object;
+    };
 
     /* current connection info */
     struct {
@@ -42,6 +49,8 @@ class HavocClient : public QWidget {
         QThread*     Thread;
         EventWorker* Worker;
     } Events;
+
+    std::vector<Listener> protocols = {};
 
 public:
     HcMainWindow* Gui    = nullptr;
@@ -69,6 +78,17 @@ public:
     auto getStyleSheet() -> QByteArray;
 
     auto setupThreads() -> void;
+
+    auto addListener(
+        const std::string&  name,
+        const py11::object& listener
+    ) -> void;
+
+    auto listener(
+        const std::string& name
+    ) -> std::optional<py11::object>;
+
+    auto listeners() -> std::vector<std::string>;
 
     /* send request to api endpoint */
     auto ApiSend(

@@ -19,13 +19,33 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
         core.def( "HcScriptManagerConsoleStdOut",      HcScriptManagerConsoleStdOut );
         core.def( "HcScriptManagerLoadScriptCallback", HcScriptManagerLoadScriptCallback );
 
+    }
+
+    /* havoc client ui api */
+    {
+        auto ui = m.def_submodule(
+            "ui",
+            "havoc client ui api"
+        );
+
         //
         // Havoc Ui functions and utilities
         //
-        core.def( "HcUiPayloadBuilderWidgetName", [] () -> py11::str {
-            return py11::str( Havoc->Gui->PagePayload->objectName().toStdString() );
+
+        ui.def( "HcUiPayloadBuilderObjName", [] () -> py11::str {
+            return ( Havoc->Gui->PagePayload->objectName().toStdString() );
         } );
 
+        ui.def( "HcUiListenerObjName", []() -> py11::str {
+            return ( "HcListenerDialog.StackedProtocols" );
+        } );
+
+        ui.def( "HcUiListenerRegisterView", [](
+            const std::string&  name,
+            const py11::object& object
+        ) {
+            Havoc->addListener( name, object );
+        } );
     }
 }
 
@@ -51,7 +71,6 @@ auto HcPyEngine::run() -> void {
 
     if ( ! exception.empty() ) {
         spdlog::error( "failed to import \"python.pyhavoc\": \n{}", exception );
-        exit( 0 );
     }
 }
 

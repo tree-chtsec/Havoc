@@ -9,9 +9,9 @@
 
 class HcLineEdit : public QWidget {
     QHBoxLayout* Layout = nullptr;
-
-public:
     QLabel*      Label  = nullptr;
+public:
+    QLineEdit*   Input  = nullptr;
 
     explicit HcLineEdit( QWidget* parent = nullptr );
     ~HcLineEdit();
@@ -30,7 +30,6 @@ public:
 
     auto text() -> QString;
 
-    QLineEdit*   Input  = nullptr;
 };
 
 #endif //HAVOCCLIENT_HCLINEEDIT_H

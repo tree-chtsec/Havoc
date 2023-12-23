@@ -311,6 +311,38 @@ auto HavocClient::getStyleSheet(
     return Helper::FileRead( ":/style/default" );
 }
 
+auto HavocClient::addListener(
+    const std::string&  name,
+    const py11::object& listener
+) -> void {
+    protocols.push_back( Listener{
+        .name   = name,
+        .object = listener
+    } );
+}
+
+auto HavocClient::listener(
+    const std::string& name
+) -> std::optional<py11::object> {
+    for ( auto& listener : protocols ) {
+        if ( listener.name == name ) {
+            return listener.object;
+        }
+    }
+
+    return std::nullopt;
+}
+
+auto HavocClient::listeners() -> std::vector<std::string> {
+    auto names = std::vector<std::string>();
+
+    for ( auto& listener : protocols ) {
+        names.push_back( listener.name );
+    }
+
+    return names;
+}
+
 auto HavocClient::setupThreads() -> void {
     /* now set up the event thread and dispatcher */
     Events.Thread = new QThread;

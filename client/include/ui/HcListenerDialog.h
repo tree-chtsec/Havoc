@@ -2,6 +2,8 @@
 #define HAVOCCLIENT_HCLISTENERDIALOG_H
 
 #include <Common.h>
+#include <ui/HcLineEdit.h>
+#include <ui/HcComboBox.h>
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -70,9 +72,8 @@ class HcListenerDialog : public QDialog
 public:
     QGridLayout*    gridLayout       = nullptr;
     QLabel*         LabelName        = nullptr;
-    QLineEdit*      InputName        = nullptr;
-    QLabel*         LabelProtocol    = nullptr;
-    QComboBox*      ComboProtocol    = nullptr;
+    HcLineEdit*     InputName        = nullptr;
+    HcComboBox*     ComboProtocol    = nullptr;
     QStackedWidget* StackedProtocols = nullptr;
     QPushButton*    ButtonSave       = nullptr;
     QPushButton*    ButtonClose      = nullptr;

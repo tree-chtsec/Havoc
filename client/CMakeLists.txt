@@ -46,6 +46,10 @@ set( HAVOC_INCLUDE
         include/core/Helper.h
         include/core/EventWorker.h
 
+        include/api/Engine.h
+        include/api/HcCore.h
+        include/api/HcScriptManager.h
+
         include/ui/HcConnectDialog.h
         include/ui/HcMainWindow.h
         include/ui/HcListenerDialog.h
@@ -58,10 +62,7 @@ set( HAVOC_INCLUDE
         include/ui/HcWidget.h
         include/ui/HcConsole.h
         include/ui/HcLineEdit.h
-
-        include/api/Engine.h
-        include/api/HcCore.h
-        include/api/HcScriptManager.h
+        include/ui/HcComboBox.h
 )
 
 ##
@@ -87,6 +88,7 @@ set( HAVOC_SRC
         src/ui/HcWidget.cc
         src/ui/HcConsole.cc
         src/ui/HcLineEdit.cc
+        src/ui/HcComboBox.cc
 
         src/api/Engine.cc
         src/api/HcCore.cc

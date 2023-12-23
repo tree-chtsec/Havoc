@@ -201,20 +201,14 @@ HcListenerDialog::HcListenerDialog() {
     gridLayout = new QGridLayout( this );
     gridLayout->setObjectName( "gridLayout" );
 
-    LabelName = new QLabel( this );
-    LabelName->setObjectName( "LabelName" );
+    InputName = new HcLineEdit( this );
+    InputName->Input->setObjectName( QString::fromUtf8( "InputName" ) );
 
-    InputName = new QLineEdit( this );
-    InputName->setObjectName( QString::fromUtf8( "InputName" ) );
-
-    LabelProtocol = new QLabel( this );
-    LabelProtocol->setObjectName( QString::fromUtf8( "LabelProtocol" ) );
-
-    ComboProtocol = new QComboBox( this );
-    ComboProtocol->setObjectName( QString::fromUtf8( "ComboProtocol" ) );
+    ComboProtocol = new HcComboBox;
+    ComboProtocol->Combo->setObjectName( QString::fromUtf8( "ComboProtocol" ) );
 
     StackedProtocols = new QStackedWidget( this );
-    StackedProtocols->setObjectName( QString::fromUtf8( "StackedProtocols" ) );
+    StackedProtocols->setObjectName( QString::fromUtf8( "HcListenerDialog.StackedProtocols" ) );
 
     ButtonSave = new QPushButton( this );
     ButtonSave->setObjectName( "ButtonClose" );
@@ -224,10 +218,8 @@ HcListenerDialog::HcListenerDialog() {
     ButtonClose->setObjectName( "ButtonClose" );
     ButtonClose->setProperty( "HcButton", "true" );
 
-    gridLayout->addWidget( LabelName,        0, 0, 1, 1 );
-    gridLayout->addWidget( InputName,        0, 1, 1, 5 );
-    gridLayout->addWidget( LabelProtocol,    1, 0, 1, 1 );
-    gridLayout->addWidget( ComboProtocol,    1, 1, 1, 5 );
+    gridLayout->addWidget( InputName,        0, 0, 1, 6 );
+    gridLayout->addWidget( ComboProtocol,    1, 0, 1, 6 );
     gridLayout->addWidget( StackedProtocols, 2, 0, 1, 6 );
 
     horizontal[ 0 ] = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
@@ -247,7 +239,7 @@ HcListenerDialog::HcListenerDialog() {
 
     QMetaObject::connectSlotsByName( this );
 
-    connect( ComboProtocol, &QComboBox::currentTextChanged, this, &HcListenerDialog::changeProtocol );
+    connect( ComboProtocol->Combo, &QComboBox::currentTextChanged, this, &HcListenerDialog::changeProtocol );
     connect( ButtonSave,  &QPushButton::clicked, this, &HcListenerDialog::save );
     connect( ButtonClose, &QPushButton::clicked, this, [&]() {
         State = Closed;
@@ -263,8 +255,19 @@ auto HcListenerDialog::retranslateUi() -> void {
     setStyleSheet( Havoc->getStyleSheet() );
     setWindowTitle( "Listener" );
 
-    LabelName->setText( "Name:      " );
-    LabelProtocol->setText( "Protocol:  " );
+    ComboProtocol->Combo->clear();
+
+    if ( Havoc->listeners().empty() ) {
+        ComboProtocol->Combo->addItem( "(no listeners available)" );
+        ComboProtocol->setDisabled( true );
+    } else {
+        for ( auto& name : Havoc->listeners() ) {
+            ComboProtocol->Combo->addItem( name.c_str() );
+        }
+    }
+
+    InputName->setLabelText( "Name:      " );
+    ComboProtocol->setLabelText( "Protocol:  " );
     ButtonSave->setText( "Save" );
     ButtonClose->setText( "Close" );
 }
@@ -326,7 +329,7 @@ auto HcListenerDialog::addProtocol(
 
     Protocols.push_back( protocol );
 
-    ComboProtocol->addItem( protocol.type );
+    ComboProtocol->Combo->addItem( protocol.type );
 }
 
 auto HcListenerDialog::insertPage(
@@ -979,7 +982,7 @@ auto HcListenerDialog::getOptions() -> json {
     }
 
     listener[ "name" ]     = InputName->text().toStdString();
-    listener[ "protocol" ] = ComboProtocol->currentText().toStdString();
+    listener[ "protocol" ] = ComboProtocol->Combo->currentText().toStdString();
     listener[ "data" ]     = data;
 
     return listener;
@@ -1000,7 +1003,7 @@ auto HcListenerDialog::changeProtocol(
 }
 
 auto HcListenerDialog::getCloseState() -> ListenerState { return State; }
-auto HcListenerDialog::start()         -> void { ComboProtocol->setCurrentIndex(0 ); exec(); }
+auto HcListenerDialog::start()         -> void { ComboProtocol->Combo->setCurrentIndex( 0 ); exec(); }
 
 auto HcListenerDialog::save() -> void {
     auto Result = httplib::Result();
@@ -1069,7 +1072,7 @@ auto HcListenerDialog::sanityCheckOptions() -> bool {
         return false;
     }
 
-    if ( ComboProtocol->currentText().isEmpty() && Protocols.empty() ) {
+    if ( ComboProtocol->Combo->currentText().isEmpty() && Protocols.empty() ) {
         Helper::MessageBox(
             QMessageBox::Critical,
             "Listener failure",

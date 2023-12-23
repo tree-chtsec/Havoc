@@ -92,9 +92,9 @@ auto HcPageListener::buttonAddListener() -> void {
 
     /* add registered protocols
      * to the dialog listener */
-    for ( auto& p : Protocols ) {
+    /* for ( auto& p : Protocols ) {
         Dialog->addProtocol( p );
-    }
+    } */
 
     Dialog->start();
 
