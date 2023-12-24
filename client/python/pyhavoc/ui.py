@@ -22,18 +22,37 @@ def HcUiGetWidgetByObjectName(
 
 class HcListenerView:
 
+    _hc_name: str
+
     def __init__( self ):
-        pass
+        print( f"[HcListenerView] __init__()" )
 
     ##
     ## main entrypoint what the
     ## Havoc client is going to call
     ##
-    def _main( self ):
+    def _hc_main( self ):
+        print( f"[HcListenerView] _hc_main()" )
         self.main()
 
+    ##
+    ## set the protocol name
+    ##
+    def _hc_set_name(self, name: str ):
+        self._hc_name = name
+        print( f"[HcListenerView] _hc_name -> {self._hc_name}" )
+
+    ##
+    ## get our protocol widget
+    ##
     def listener_widget( self ) -> QtWidgets.QWidget:
-        pass
+
+        widget = HcUiGetWidgetByObjectName( "HcListenerDialog.Protocol." + self._hc_name )
+
+        if widget is None:
+            raise "HcListenerDialog protocol widget not found: " + "HcListenerDialog.Protocol." + self._hc_name
+
+        return widget
 
     ##
     ## main function to be executed
