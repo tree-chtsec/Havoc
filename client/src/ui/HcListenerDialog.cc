@@ -248,14 +248,9 @@ HcListenerDialog::HcListenerDialog() {
 
     retranslateUi();
 
-    if ( Havoc->listeners().empty() ) {
-        ComboProtocol->Combo->addItem( "(no listeners available)" );
-        ComboProtocol->setDisabled( true );
-    } else {
-        for ( auto& name : Havoc->listeners() ) {
-            if ( Havoc->listener( name ).has_value() ) {
-                addProtocol( name, Havoc->listener( name ).value() );
-            }
+    for ( auto& name : Havoc->listeners() ) {
+        if ( Havoc->listener( name ).has_value() ) {
+            addProtocol( name, Havoc->listener( name ).value() );
         }
     }
 
@@ -288,7 +283,20 @@ auto HcListenerDialog::changeProtocol(
 }
 
 auto HcListenerDialog::getCloseState() -> ListenerState { return State; }
-auto HcListenerDialog::start()         -> void { ComboProtocol->Combo->setCurrentIndex( 0 ); exec(); }
+
+auto HcListenerDialog::start() -> void {
+    if ( Havoc->listeners().empty() ) {
+        Helper::MessageBox(
+                QMessageBox::Icon::Warning,
+                "Listener error",
+                "No protocols available"
+        );
+        return;
+    }
+
+    ComboProtocol->Combo->setCurrentIndex( 0 );
+    exec();
+}
 
 auto HcListenerDialog::save() -> void {
     auto Result = httplib::Result();

@@ -1,7 +1,8 @@
 import pyhavoc
 
-import PySide6
-from PySide6 import QtWidgets
+from PySide6.QtCore import *  
+from PySide6.QtGui import *  
+from PySide6.QtWidgets import *  
 
 @pyhavoc.ui.HcUiListenerRegisterView( "Http" )
 class HcListenerHttp( pyhavoc.ui.HcListenerView ):
@@ -9,27 +10,27 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
     ##
     ## base widgets
     ##
-    layout       : QtWidgets.QGridLayout = None
-    tab_widget   : QtWidgets.QTabWidget  = None
+    layout       : QGridLayout = None
+    tab_widget   : QTabWidget  = None
 
     ##
     ## page widgets
     ##
-    page_option  : QtWidgets.QWidget     = None
-    page_proxy   : QtWidgets.QWidget     = None
-    page_server  : QtWidgets.QWidget     = None
-    page_client  : QtWidgets.QWidget     = None
-    page_preview : QtWidgets.QWidget     = None
-    page_help    : QtWidgets.QWidget     = None
+    page_option  : QWidget     = None
+    page_proxy   : QWidget     = None
+    page_server  : QWidget     = None
+    page_client  : QWidget     = None
+    page_preview : QWidget     = None
+    page_help    : QWidget     = None
 
     ##
     ## page options widgets
     ##
-    opt_layout         : QtWidgets.QGridLayout = None
-    opt_label_hostbind : QtWidgets.QLabel      = None
-    opt_combo_hostbind : QtWidgets.QComboBox   = None
-    opt_label_port     : QtWidgets.QLabel      = None
-    opt_input_port     : QtWidgets.QLineEdit   = None
+    opt_layout         : QGridLayout = None
+    opt_label_hostbind : QLabel      = None
+    opt_combo_hostbind : QComboBox   = None
+    opt_label_port     : QLabel      = None
+    opt_input_port     : QLineEdit   = None
 
     ##
     ## page
@@ -46,10 +47,10 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
         ##
         ## create base widget
         ##
-        self.layout = QtWidgets.QGridLayout( widget )
+        self.layout = QGridLayout( widget )
         self.layout.setContentsMargins( 0, 0, 0, 0 )
 
-        self.tab_widget = QtWidgets.QTabWidget()
+        self.tab_widget = QTabWidget()
         self.tab_widget.tabBar().setProperty( "HcProtocolTab", "true" )
         self.tab_widget.tabBar().setExpanding( True )
         self.tab_widget.tabBar().setDocumentMode( True )
@@ -69,18 +70,18 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def option_create( self ):
 
-        self.page_option = QtWidgets.QWidget()
+        self.page_option = QWidget()
         self.page_option.setProperty( "HcWidgetDark", "true" )
 
-        self.opt_layout  = QtWidgets.QGridLayout( self.page_option )
+        self.opt_layout  = QGridLayout( self.page_option )
 
-        self.opt_label_hostbind = QtWidgets.QLabel( "Host (Bind): " )
-        self.opt_combo_hostbind = QtWidgets.QComboBox()
+        self.opt_label_hostbind = QLabel( "Host (Bind): " )
+        self.opt_combo_hostbind = QComboBox()
         self.opt_combo_hostbind.addItem( "0.0.0.0"   )
         self.opt_combo_hostbind.addItem( "127.0.0.1" )
 
-        self.opt_label_port = QtWidgets.QLabel( "Port: " )
-        self.opt_input_port = QtWidgets.QLineEdit()
+        self.opt_label_port = QLabel( "Port: " )
+        self.opt_input_port = QLineEdit()
 
         self.opt_layout.addWidget( self.opt_label_hostbind, 0, 0, 1, 1 )
         self.opt_layout.addWidget( self.opt_combo_hostbind, 0, 1, 1, 1 )
@@ -93,7 +94,7 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def proxy_create( self ):
 
-        self.page_proxy = QtWidgets.QWidget()
+        self.page_proxy = QWidget()
 
         self.tab_widget.addTab( self.page_proxy, "Proxy" )
 
@@ -101,7 +102,7 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def server_create( self ):
 
-        self.page_server = QtWidgets.QWidget()
+        self.page_server = QWidget()
 
         self.tab_widget.addTab( self.page_server, "Server" )
 
@@ -109,7 +110,7 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def client_create( self ):
 
-        self.page_client = QtWidgets.QWidget()
+        self.page_client = QWidget()
 
         self.tab_widget.addTab( self.page_client, "Client" )
 
@@ -117,7 +118,7 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def preview_create( self ):
 
-        self.page_preview = QtWidgets.QWidget()
+        self.page_preview = QWidget()
 
         self.tab_widget.addTab( self.page_preview, "Preview" )
 
@@ -125,7 +126,7 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def help_create( self ):
 
-        self.page_help = QtWidgets.QWidget()
+        self.page_help = QWidget()
 
         self.tab_widget.addTab( self.page_help, "Help" )
 

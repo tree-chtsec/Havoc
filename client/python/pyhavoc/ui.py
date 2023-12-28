@@ -7,14 +7,15 @@ from _pyhavoc import ui
 ##
 ## import qt ui library
 ##
-import PySide6
-from PySide6 import QtWidgets
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 
 def HcUiGetWidgetByObjectName(
     object_name: str
-) -> QtWidgets.QWidget:
+) -> QWidget:
 
-    for widget in QtWidgets.QApplication.instance().allWidgets():
+    for widget in QApplication.instance().allWidgets():
         if str( widget.objectName() ) == object_name:
             return widget
 
@@ -45,7 +46,7 @@ class HcListenerView:
     ##
     ## get our protocol widget
     ##
-    def listener_widget( self ) -> QtWidgets.QWidget:
+    def listener_widget( self ) -> QWidget:
 
         widget = HcUiGetWidgetByObjectName( "HcListenerDialog.Protocol." + self._hc_name )
 
