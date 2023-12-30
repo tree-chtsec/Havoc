@@ -70,7 +70,7 @@ public:
         FileDialog->setAcceptMode( QFileDialog::AcceptOpen );
 
         if ( FileDialog->exec() == QFileDialog::Accepted ) {
-            FilePath = FileDialog->selectedUrls().value( 0 ).toLocalFile();
+            FilePath = FileDialog->selectedFiles().value( 0 );
             LabelFilePath->setText( FilePath );
         }
 

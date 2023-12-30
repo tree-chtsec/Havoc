@@ -20,10 +20,8 @@
 
 #include <api/Engine.h>
 
-#define HAVOC_VERSION  "0.8"
+#define HAVOC_VERSION  "1.0"
 #define HAVOC_CODENAME "Killer Queen"
-
-
 
 class HavocClient : public QWidget {
 

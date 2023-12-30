@@ -46,6 +46,10 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
         ) {
             Havoc->addListener( name, object );
         } );
+
+        ui.def( "HcUiGetStyleSheet", []() -> py11::str {
+            return ( Havoc->getStyleSheet().toStdString() );
+        } );
     }
 }
 

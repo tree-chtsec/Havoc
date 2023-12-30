@@ -23,9 +23,10 @@ def HcUiGetWidgetByObjectName(
 
 class HcListenerView:
 
-    _hc_name: str
-
     def __init__( self ):
+
+        self._hc_name: str = None
+
         print( f"[HcListenerView] __init__()" )
 
     ##
@@ -74,6 +75,9 @@ def HcUiPayloadBuilderObjName() -> str:
 
 def HcUiListenerObjName() -> str:
     return ui.HcUiListenerObjName()
+
+def HcUiGetStyleSheet() -> str:
+    return ui.HcUiGetStyleSheet()
 
 def HcUiListenerRegisterView( protocol: str ):
 
