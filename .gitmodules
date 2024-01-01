@@ -22,3 +22,6 @@
 [submodule "client/extern/http"]
 	path = client/extern/http
 	url = https://github.com/yhirose/cpp-httplib
+[submodule "client/extern/pybind11_json"]
+	path = client/extern/pybind11_json
+	url = https://github.com/pybind/pybind11_json

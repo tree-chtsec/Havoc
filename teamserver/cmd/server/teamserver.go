@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	Version  = "0.8"
+	Version  = "1.0"
 	CodeName = "Killer Queen"
 )
 
@@ -99,9 +99,19 @@ func (t *Teamserver) createConfigPath() error {
 		return err
 	}
 
-	t.configPath += "/.havoc"
+	t.configPath += "/.havoc/server"
 
 	if err = os.MkdirAll(t.configPath, os.ModePerm); err != nil {
+		return err
+	}
+
+	// create listeners directory
+	if err = os.MkdirAll(t.configPath+"/listeners", os.ModePerm); err != nil {
+		return err
+	}
+
+	// create agents directory
+	if err = os.MkdirAll(t.configPath+"/agents", os.ModePerm); err != nil {
 		return err
 	}
 

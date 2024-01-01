@@ -1,9 +1,11 @@
 package server
 
 import (
+	"Havoc/pkg/logger"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 )
 
 // ListenerRegister
@@ -37,6 +39,32 @@ func (t *Teamserver) ListenerRegister(name string, listener map[string]any) erro
 	return nil
 }
 
+func (t *Teamserver) ListenerExists(name string) bool {
+	for _, listener := range t.listener {
+		if listener.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (t *Teamserver) ListenerInitDir(name string) (string, error) {
+	var (
+		path string
+		err  error
+	)
+
+	path = t.configPath + "/listeners/" + name
+
+	// create agents directory
+	if err = os.MkdirAll(path, os.ModePerm); err != nil {
+		return path, err
+	}
+
+	return path, nil
+}
+
 func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any) error {
 	var (
 		err    error
@@ -44,11 +72,24 @@ func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any
 		host   string
 		port   string
 		status string
+		path   string
 	)
 
 	for _, prot := range t.protocols {
 		if val, ok := prot.Data["protocol"]; ok {
+
+			logger.Debug("val.(string)[%v] == protocol[%v]", val.(string), protocol)
+
 			if val.(string) == protocol {
+
+				if t.ListenerExists(name) {
+					return errors.New("listener already exists")
+				}
+
+				if path, err = t.ListenerInitDir(name); err != nil {
+					return errors.New("failed to create listener config path: " + err.Error())
+				}
+
 				if data, err = t.plugins.ListenerStart(name, protocol, options); err != nil {
 					return err
 				}
@@ -57,7 +98,18 @@ func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any
 				port, ok = data["port"]
 				status, ok = data["status"]
 
-				t.UserBroadcast(true, t.EventCreate(EventListenerStart, map[string]any{
+				t.listener = append(t.listener, Handler{
+					Name: name,
+					Data: map[string]any{
+						"protocol":    protocol,
+						"host":        host,
+						"port":        port,
+						"status":      status,
+						"config.path": path,
+					},
+				})
+
+				t.UserBroadcast(true, t.EventCreate(EventListenerStart, map[string]string{
 					"name":     name,
 					"protocol": protocol,
 					"host":     host,
@@ -101,4 +153,15 @@ func (t *Teamserver) ListenerLog(name string, format string, args ...any) {
 		"name": name,
 		"log":  fmt.Sprintf(format, args...),
 	}))
+}
+
+func (t *Teamserver) ListenerStatus(name string, status string) {
+	t.UserBroadcast(true, t.EventCreate(EventListenerStatus, map[string]any{
+		"name":   name,
+		"status": status,
+	}))
+}
+
+func (t *Teamserver) ListenerConfigPath(name string) string {
+	return t.configPath + "/listeners/" + name
 }
