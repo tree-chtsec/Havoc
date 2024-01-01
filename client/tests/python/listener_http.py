@@ -4,6 +4,8 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *  
 from PySide6.QtWidgets import *
 
+import base64
+
 class HcWidgetFile( QWidget ):
 
     PathMaxLen: int = 40
@@ -80,6 +82,18 @@ class HcWidgetFile( QWidget ):
 
         return
 
+    def fileb64( self ) -> str:
+
+        if len( self.file_path ) != 0:
+            file    = open( self.file_path, 'rb' )
+            content = file.read()
+
+            file.close()
+
+            return base64.b64encode( content ).decode( "utf-8" )
+
+        return ''
+
 
 class HcWidgetList( QWidget ):
 
@@ -126,6 +140,14 @@ class HcWidgetList( QWidget ):
 
         return
 
+    def list(self) -> list[str]:
+        array: list[str] = []
+
+        for i in self.InputList:
+            array.append( i.text() )
+
+        return array
+
     def add_input( self, value: str = "" ) -> None:
         line_edit = QLineEdit()
         line_edit.setFocus()
@@ -149,7 +171,7 @@ class HcWidgetList( QWidget ):
         self.InputList = []
         return
 
-@pyhavoc.ui.HcUiListenerRegisterView( "Http" )
+@pyhavoc.ui.HcUiListenerRegisterView( "HTTP" )
 class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def __init__( self, *args, **kwargs ):
@@ -182,7 +204,6 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
         self.opt_label_hosts       : QLabel       = None
         self.opt_list_hosts        : HcWidgetList = None
         self.opt_space_hosts       : QSpacerItem  = None
-
         self.opt_label_rotation    : QLabel       = None
         self.opt_combo_rotation    : QComboBox    = None
         self.opt_label_useragent   : QLabel       = None
@@ -198,6 +219,53 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
         self.opt_file_server_cert  : HcWidgetFile = None
         self.opt_label_server_key  : QLabel       = None
         self.opt_file_server_key   : HcWidgetFile = None
+
+        ##
+        ## page proxy widgets
+        ##
+        self.pxy_layout       : QGridLayout = None
+        self.pxy_label_enable : QLabel      = None
+        self.pxy_combo_enable : QComboBox   = None
+        self.pxy_label_type   : QLabel      = None
+        self.pxy_combo_type   : QComboBox   = None
+        self.pxy_label_host   : QLabel      = None
+        self.pxy_input_host   : QLineEdit   = None
+        self.pxy_label_port   : QLabel      = None
+        self.pxy_input_port   : QLineEdit   = None
+        self.pxy_label_user   : QLabel      = None
+        self.pxy_input_user   : QLineEdit   = None
+        self.pxy_label_pass   : QLabel      = None
+        self.pxy_input_pass   : QLineEdit   = None
+        self.pxy_spacer       : QSpacerItem = None
+
+        ##
+        ## page server widgets
+        ##
+        self.srv_layout        : QGridLayout  = None
+        self.srv_label_headers : QLabel       = None
+        self.srv_list_headers  : HcWidgetList = None
+        self.srv_spacer        : QSpacerItem  = None
+        self.srv_label_prepend : QLabel       = None
+        self.srv_text_prepend  : QTextEdit    = None
+        self.srv_label_append  : QLabel       = None
+        self.srv_text_append   : QTextEdit    = None
+
+        ##
+        ## page server widgets
+        ##
+        self.cli_layout        : QGridLayout  = None
+        self.cli_label_headers : QLabel       = None
+        self.cli_list_headers  : HcWidgetList = None
+        self.cli_spacer        : QSpacerItem  = None
+        self.cli_label_prepend : QLabel       = None
+        self.cli_text_prepend  : QTextEdit    = None
+        self.cli_label_append  : QLabel       = None
+        self.cli_text_append   : QTextEdit    = None
+
+        ##
+        ## page preview widgets
+        ##
+
 
     ##
     ## main function to create and
@@ -230,6 +298,8 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
         self.preview_create()
         self.help_create()
 
+        self.set_defaults()
+
         return
 
     def option_create( self ):
@@ -246,6 +316,7 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
         self.opt_label_port = QLabel( "Port: " )
         self.opt_input_port = QLineEdit()
+        self.opt_input_port.setValidator( QIntValidator( 0, 65535 ) )
 
         self.opt_label_hosts = QLabel( "Hosts: " )
         self.opt_list_hosts  = HcWidgetList()
@@ -306,6 +377,48 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
     def proxy_create( self ):
 
         self.page_proxy = QWidget()
+        self.page_proxy.setProperty( "HcWidgetDark", "true" )
+
+        self.pxy_layout = QGridLayout( self.page_proxy )
+
+        self.pxy_label_enable = QLabel( "Proxy enable: " )
+        self.pxy_combo_enable = QComboBox()
+        self.pxy_combo_enable.addItem( "false" )
+        self.pxy_combo_enable.addItem( "true" )
+
+        self.pxy_label_type = QLabel( "Type: " )
+        self.pxy_combo_type = QComboBox()
+        self.pxy_combo_type.addItem( "https" )
+        self.pxy_combo_type.addItem( "http" )
+
+        self.pxy_label_host = QLabel( "Host: " )
+        self.pxy_input_host = QLineEdit()
+
+        self.pxy_label_port = QLabel( "Port: " )
+        self.pxy_input_port = QLineEdit()
+
+        self.pxy_label_user = QLabel( "Username: " )
+        self.pxy_input_user = QLineEdit()
+
+        self.pxy_label_pass = QLabel( "Password: " )
+        self.pxy_input_pass = QLineEdit()
+
+        self.pxy_spacer = QSpacerItem( 20, 125, QSizePolicy.Minimum, QSizePolicy.Expanding )
+
+        self.pxy_layout.addWidget( self.pxy_label_enable, 0, 0, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_combo_enable, 0, 1, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_label_type,   1, 0, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_combo_type,   1, 1, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_label_host,   2, 0, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_input_host,   2, 1, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_label_port,   3, 0, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_input_port,   3, 1, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_label_user,   4, 0, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_input_user,   4, 1, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_label_pass,   5, 0, 1, 1 )
+        self.pxy_layout.addWidget( self.pxy_input_pass,   5, 1, 1, 1 )
+
+        self.pxy_layout.addItem( self.pxy_spacer, 6, 0, 1, 2 )
 
         self.tab_widget.addTab( self.page_proxy, "Proxy" )
 
@@ -314,6 +427,28 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
     def server_create( self ):
 
         self.page_server = QWidget()
+        self.page_server.setProperty( "HcWidgetDark", "true" )
+
+        self.srv_layout = QGridLayout( self.page_server )
+
+        self.srv_label_headers = QLabel( "Headers: " )
+        self.srv_list_headers  = HcWidgetList()
+        self.srv_spacer        = QSpacerItem( 20, 125, QSizePolicy.Minimum, QSizePolicy.Expanding )
+
+        self.srv_label_prepend = QLabel( "Prepend: " )
+        self.srv_text_prepend  = QTextEdit()
+
+        self.srv_label_append  = QLabel( "Append: " )
+        self.srv_text_append   = QTextEdit()
+
+        self.srv_layout.addWidget( self.srv_label_headers, 0, 0, 1, 1 )
+        self.srv_layout.addWidget( self.srv_list_headers,  0, 1, 2, 1 )
+        self.srv_layout.addWidget( self.srv_label_prepend, 2, 0, 1, 1 )
+        self.srv_layout.addWidget( self.srv_text_prepend,  2, 1, 1, 1 )
+        self.srv_layout.addWidget( self.srv_label_append,  3, 0, 1, 1 )
+        self.srv_layout.addWidget( self.srv_text_append,   3, 1, 1, 1 )
+
+        self.srv_layout.addItem( self.srv_spacer, 1, 0, 1, 1 )
 
         self.tab_widget.addTab( self.page_server, "Server" )
 
@@ -322,6 +457,28 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
     def client_create( self ):
 
         self.page_client = QWidget()
+        self.page_client.setProperty( "HcWidgetDark", "true" )
+
+        self.cli_layout = QGridLayout( self.page_client )
+
+        self.cli_label_headers = QLabel( "Headers: " )
+        self.cli_list_headers  = HcWidgetList()
+        self.cli_spacer        = QSpacerItem( 20, 125, QSizePolicy.Minimum, QSizePolicy.Expanding )
+
+        self.cli_label_prepend = QLabel( "Prepend: " )
+        self.cli_text_prepend  = QTextEdit()
+
+        self.cli_label_append  = QLabel( "Append: " )
+        self.cli_text_append   = QTextEdit()
+
+        self.cli_layout.addWidget( self.cli_label_headers, 0, 0, 1, 1 )
+        self.cli_layout.addWidget( self.cli_list_headers,  0, 1, 2, 1 )
+        self.cli_layout.addWidget( self.cli_label_prepend, 2, 0, 1, 1 )
+        self.cli_layout.addWidget( self.cli_text_prepend,  2, 1, 1, 1 )
+        self.cli_layout.addWidget( self.cli_label_append,  3, 0, 1, 1 )
+        self.cli_layout.addWidget( self.cli_text_append,   3, 1, 1, 1 )
+
+        self.cli_layout.addItem( self.cli_spacer, 1, 0, 1, 1 )
 
         self.tab_widget.addTab( self.page_client, "Client" )
 
@@ -343,9 +500,73 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
         return
 
+    def set_defaults( self ) -> None:
+
+        self.opt_input_port.setText( "443" )
+        self.opt_input_port.setCursorPosition( 0 )
+
+        self.opt_input_useragent.setText( "Mozilla/5.0 (X11; CrOS x86_64 15359.58.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.134 Safari/537.36" )
+        self.opt_input_useragent.setCursorPosition( 0 )
+
+        return
+
+
+    ##
+    ## sanity check the given input
+    ## return:
+    ##  true  -> successful checked the input and nothing is wrong
+    ##  false -> failed to check and something went wrong
+    ##
+    def sanity_check( self ) -> bool:
+
+        if len( self.opt_input_port.text() ) == 0:
+            pyhavoc.ui.HcUiMessageBox( QMessageBox.Critical, "Listener error", "port is emtpy" )
+            return False
+
+        if len( self.opt_list_hosts.list() ) == 0:
+            pyhavoc.ui.HcUiMessageBox( QMessageBox.Critical, "Listener error", "callback hosts is empty" )
+            return False
+
+        if len( self.opt_input_useragent.text() ) == 0:
+            pyhavoc.ui.HcUiMessageBox( QMessageBox.Critical, "Listener error", "user agent is empty" )
+            return False
+
+        return True
+
     ##
     ## pressing "save" action
     ##
     def save( self ) -> dict:
-        print( f"[HcListenerHttp] hello from save()" )
-        return
+        return {
+            "Options": {
+                "Host Bind"    : self.opt_combo_hostbind.currentText(),
+                "Port"         : self.opt_input_port.text(),
+                "Hosts"        : self.opt_list_hosts.list(),
+                "HostRotation" : self.opt_combo_rotation.currentText(),
+                "User Agent"   : self.opt_input_useragent.text(),
+                "Secure"       : self.opt_combo_secure.currentText(),
+                "Server Cert"  : self.opt_file_server_cert.fileb64(),
+                "Server Key"   : self.opt_file_server_key.fileb64(),
+            },
+
+            "Proxy": {
+                "Enabled": self.pxy_combo_enable.currentText(),
+                "Type"   : self.pxy_combo_type.currentText(),
+                "Host"   : self.pxy_input_host.text(),
+                "Port"   : self.pxy_input_port.text(),
+                "User"   : self.pxy_input_user.text(),
+                "Pass"   : self.pxy_input_pass.text(),
+            },
+
+            "Response": {
+                "Headers": self.srv_list_headers.list(),
+                "Prepend": self.srv_text_prepend.toPlainText(),
+                "Append" : self.srv_text_prepend.toPlainText(),
+            },
+
+            "Request": {
+                "Headers": self.cli_list_headers.list(),
+                "Prepend": self.cli_text_prepend.toPlainText(),
+                "Append" : self.cli_text_prepend.toPlainText(),
+            }
+        }

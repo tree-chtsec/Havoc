@@ -90,15 +90,11 @@ auto HcPageListener::retranslateUi() -> void {
 auto HcPageListener::buttonAddListener() -> void {
     auto Dialog = new HcListenerDialog;
 
-    /* add registered protocols
-     * to the dialog listener */
-    /* for ( auto& p : Protocols ) {
-        Dialog->addProtocol( p );
-    } */
-
     Dialog->start();
 
-    delete Dialog;
+    if ( Dialog->getCloseState() != Closed ) {
+        delete Dialog;
+    }
 }
 
 auto HcPageListener::addListener(
@@ -222,6 +218,18 @@ auto HcPageListener::addListenerLog(
     for ( auto& listener : TableEntries ) {
         if ( listener->Name->text().toStdString() == name ) {
             listener->Logger->append( log.c_str() );
+            break;
+        }
+    }
+}
+
+auto HcPageListener::setListenerStatus(
+    const std::string& name,
+    const std::string& status
+) -> void {
+    for ( auto& listener : TableEntries ) {
+        if ( listener->Name->text().toStdString() == name ) {
+            listener->Status->setText( status.c_str() );
             break;
         }
     }

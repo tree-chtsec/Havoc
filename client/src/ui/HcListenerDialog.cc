@@ -2,196 +2,11 @@
 #include <ui/HcListenerDialog.h>
 
 #include <QtCore/QVariant>
-#include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QFormLayout>
-#include <QtWidgets/QTextEdit>
 #include <QMetaMethod>
-#include <QRegularExpressionValidator>
-#include <QRegularExpression>
-
-QT_BEGIN_NAMESPACE
-
-class HcWidgetFile : public QWidget {
-    QString      FilePath      = {};
-
-public:
-    QGridLayout* gridLayout    = nullptr;
-    QLabel*      LabelFilePath = nullptr;
-    QPushButton* ButtonAdd     = nullptr;
-    QPushButton* ButtonRemove  = nullptr;
-
-    explicit HcWidgetFile( QWidget* parent ) : QWidget( parent )
-    {
-        auto buttonSizeMax = QSize( 70, 16777215 );
-        auto buttonSizeMin = QSize( 70, 0 );
-
-        setContentsMargins( 0, 0, 0, 0 );
-
-        gridLayout = new QGridLayout( this );
-        gridLayout->setObjectName( "gridLayout" );
-        gridLayout->setContentsMargins( 0, 0, 0, 0 );
-
-        LabelFilePath = new QLabel( this );
-        LabelFilePath->setObjectName( "LabelFilePath" );
-        LabelFilePath->setProperty( "HcLabelDisplay", "true" );
-
-        ButtonAdd = new QPushButton( this );
-        ButtonAdd->setObjectName( "ButtonAdd" );
-        ButtonAdd->setMaximumSize( buttonSizeMax );
-        ButtonAdd->setMinimumSize( buttonSizeMin );
-        ButtonAdd->setProperty( "HcButton", "true" );
-
-        ButtonRemove = new QPushButton( this );
-        ButtonRemove->setObjectName( "ButtonRemove" );
-        ButtonRemove->setMaximumSize( buttonSizeMax );
-        ButtonRemove->setMinimumSize( buttonSizeMin );
-        ButtonRemove->setProperty( "HcButton", "true" );
-
-        gridLayout->addWidget( LabelFilePath, 0, 0, 1, 1 );
-        gridLayout->addWidget( ButtonAdd,     0, 1, 1, 1 );
-        gridLayout->addWidget( ButtonRemove,  0, 2, 1, 1 );
-
-        retranslateUi();
-
-        connect( ButtonAdd,    &QPushButton::clicked, this, &HcWidgetFile::buttonAdd    );
-        connect( ButtonRemove, &QPushButton::clicked, this, &HcWidgetFile::buttonRemove );
-
-        QMetaObject::connectSlotsByName( this );
-    }
-
-    auto buttonAdd() -> void {
-        auto FileDialog = new QFileDialog;
-
-        FileDialog->setStyleSheet( Havoc->getStyleSheet() );
-        FileDialog->setAcceptMode( QFileDialog::AcceptOpen );
-
-        if ( FileDialog->exec() == QFileDialog::Accepted ) {
-            FilePath = FileDialog->selectedFiles().value( 0 );
-            LabelFilePath->setText( FilePath );
-        }
-
-        delete FileDialog;
-    }
-
-    auto buttonRemove() -> void {
-        FilePath = "";
-        LabelFilePath->setText( "(empty)" );
-    }
-
-    auto getFilePath() -> QString { return FilePath; }
-
-    auto retranslateUi( ) -> void {
-        setStyleSheet( Havoc->getStyleSheet() );
-        LabelFilePath->setText( "(empty)" );
-        ButtonAdd->setText( "Add" );
-        ButtonRemove->setText( "Remove" );
-    }
-};
-
-class HcWidgetList : public QWidget
-{
-public:
-    QGridLayout*            gridLayout  = nullptr;
-    QPushButton*            ButtonAdd   = nullptr;
-    QPushButton*            ButtonClear = nullptr;
-    QGroupBox*              ListWidget  = nullptr;
-    QFormLayout*            FormLayout  = nullptr;
-    std::vector<QLineEdit*> InputList   = {};
-
-    explicit HcWidgetList( QWidget* parent ) : QWidget( parent ) {
-
-        auto buttonSize = QSize( 100, 25 );
-
-        setContentsMargins( 0, 0, 0, 0 );
-
-        gridLayout = new QGridLayout( this );
-        gridLayout->setObjectName( "gridLayout" );
-        gridLayout->setContentsMargins( 0, 0, 0, 0 );
-
-        ListWidget = new QGroupBox( this );
-        ListWidget->setObjectName( "ListWidget" );
-        FormLayout = new QFormLayout( ListWidget );
-
-        ButtonAdd = new QPushButton( this );
-        ButtonAdd->setObjectName( "ButtonAdd" );
-        ButtonAdd->setMaximumSize( buttonSize );
-        ButtonAdd->setMinimumSize( buttonSize );
-        ButtonAdd->setStyleSheet( "margin-top: 2px" );
-        ButtonAdd->setProperty( "HcButton", "true" );
-
-        ButtonClear = new QPushButton( this );
-        ButtonClear->setObjectName( "ButtonClear" );
-        ButtonClear->setMaximumSize( buttonSize );
-        ButtonClear->setMinimumSize( buttonSize );
-        ButtonClear->setProperty( "HcButton", "true" );
-
-        gridLayout->addWidget( ListWidget,  0, 0, 3, 1 );
-        gridLayout->addWidget( ButtonAdd,   0, 1, 1, 1 );
-        gridLayout->addWidget( ButtonClear, 1, 1, 1, 1 );
-
-        retranslateUi( );
-
-        connect( ButtonAdd,   &QPushButton::clicked, this, &HcWidgetList::buttonAdd   );
-        connect( ButtonClear, &QPushButton::clicked, this, &HcWidgetList::buttonClear );
-
-        QMetaObject::connectSlotsByName( this );
-    }
-
-    auto addListValue(
-        const std::string& value
-    ) {
-        auto Item = new QLineEdit;
-
-        Item->setFocus();
-        Item->setText( value.c_str() );
-
-        FormLayout->setWidget( InputList.size(), QFormLayout::FieldRole, Item );
-
-        InputList.push_back( Item );
-    }
-
-    auto getListStrings() -> std::vector<std::string> {
-        auto array = std::vector<std::string>();
-
-        for ( auto& input : InputList ) {
-            array.push_back( input->text().toStdString() );
-        }
-
-        return array;
-    }
-
-    auto retranslateUi() -> void {
-        setStyleSheet( Havoc->getStyleSheet() );
-        ButtonAdd->setText( "Add" );
-        ButtonClear->setText( "Clear" );
-    }
-
-private:
-    auto buttonAdd() -> void {
-        auto Item = new QLineEdit;
-
-        Item->setFocus();
-
-        FormLayout->setWidget( InputList.size(), QFormLayout::FieldRole, Item );
-
-        InputList.push_back( Item );
-    }
-
-    auto buttonClear() -> void {
-        for ( auto& item : InputList ) {
-            delete item;
-        }
-
-        InputList.clear();
-    }
-
-};
-
-QT_END_NAMESPACE
 
 HcListenerDialog::HcListenerDialog() {
     if ( objectName().isEmpty() ) {
@@ -287,9 +102,9 @@ auto HcListenerDialog::getCloseState() -> ListenerState { return State; }
 auto HcListenerDialog::start() -> void {
     if ( Havoc->listeners().empty() ) {
         Helper::MessageBox(
-                QMessageBox::Icon::Warning,
-                "Listener error",
-                "No protocols available"
+            QMessageBox::Icon::Warning,
+            "Listener error",
+            "No protocols available"
         );
         return;
     }
@@ -301,16 +116,61 @@ auto HcListenerDialog::start() -> void {
 auto HcListenerDialog::save() -> void {
     auto Result = httplib::Result();
     auto data   = json();
+    auto found  = false;
 
-    /*if ( ! sanityCheckOptions() ) {
+    if ( InputName->text().isEmpty() ) {
+        Helper::MessageBox(
+            QMessageBox::Critical,
+            "Listener failure",
+            "Failed to start listener: name is empty"
+        );
+    }
+
+    for ( auto & protocol : Protocols ) {
+        if ( ComboProtocol->Combo->currentText().toStdString() == protocol.name ) {
+            auto exception = std::string();
+
+            try {
+                /* sanity check input */
+                if ( ! protocol.instance.attr( "sanity_check" )().cast<bool>() ) {
+                    /* sanity check failed. exit and dont send request */
+                    spdlog::debug( "sanity check failed. exit and dont send request" );
+                    return;
+                }
+
+                /* get data */
+                data[ "name" ]     = InputName->text().toStdString();
+                data[ "protocol" ] = protocol.name;
+                data[ "data" ]     = protocol.instance.attr( "save" )();
+
+                spdlog::debug( "data -> {}", data.dump() );
+            } catch ( py11::error_already_set &eas ) {
+                Helper::MessageBox(
+                    QMessageBox::Icon::Critical,
+                    "Listener saving error",
+                    std::string( eas.what() )
+                );
+                return;
+            }
+
+            found = true;
+            break;
+        }
+    }
+
+    if ( ! found ) {
+        Helper::MessageBox(
+            QMessageBox::Critical,
+            "Listener failure",
+            "Failed to start listener: protocol not found"
+        );
+        close();
         return;
     }
 
-    spdlog::debug( "options -> {}", getOptions().dump() );
-
     State = Error;
 
-    if ( ( Result = Havoc->ApiSend( "/api/listener/start", getOptions() ) ) ) {
+    if ( ( Result = Havoc->ApiSend( "/api/listener/start", data ) ) ) {
         if ( Result->status != 200 ) {
             if ( ! Result->body.empty() ) {
                 if ( ( data = json::parse( Result->body ) ).is_discarded() ) {
@@ -342,7 +202,7 @@ auto HcListenerDialog::save() -> void {
             close();
             return;
         }
-    }*/
+    }
 
 InvalidServerResponseError:
     Helper::MessageBox(
@@ -368,9 +228,9 @@ auto HcListenerDialog::addProtocol(
     protocol.widget->setObjectName( "HcListenerDialog.Protocol." + QString( name.c_str() ) );
 
     try {
-        auto instance = object();
-        instance.attr( "_hc_set_name" )( name );
-        instance.attr( "_hc_main" )();
+        protocol.instance = object();
+        protocol.instance.attr( "_hc_set_name" )( name );
+        protocol.instance.attr( "_hc_main" )();
     } catch ( py11::error_already_set &eas ) {
         Helper::MessageBox(
             QMessageBox::Icon::Critical,

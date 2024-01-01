@@ -60,6 +60,11 @@ public:
         const std::string& log
     ) -> void;
 
+    auto setListenerStatus(
+        const std::string& name,
+        const std::string& status
+    ) -> void;
+
     auto updateListenersRunningLabel(
         int value
     ) const -> void;

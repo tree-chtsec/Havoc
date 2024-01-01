@@ -18,8 +18,9 @@
 QT_BEGIN_NAMESPACE
 
 struct Protocol {
-    std::string name;
-    QWidget*    widget;
+    std::string  name;
+    QWidget*     widget;
+    py11::object instance;
 };
 
 enum ListenerState {

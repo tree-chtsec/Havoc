@@ -65,6 +65,15 @@ class HcListenerView:
         pass
 
     ##
+    ## sanity check the given input
+    ## return:
+    ##  true  -> successful checked the input and nothing is wrong
+    ##  false -> failed to check and something went wrong
+    ##
+    def sanity_check(self) -> bool:
+        return True
+
+    ##
     ## pressing "save" action
     ##
     def save( self ) -> dict:
@@ -78,6 +87,25 @@ def HcUiListenerObjName() -> str:
 
 def HcUiGetStyleSheet() -> str:
     return ui.HcUiGetStyleSheet()
+
+def HcUiMessageBox( icon: QMessageBox.Icon, title: str, text: str ) -> None:
+    ##
+    ## heh a dirty fix. maybe there is a better way to
+    ## do it but this is enough for now.
+    ##
+    i = 0
+    if icon is QMessageBox.Information:
+        i = 1
+    elif icon is QMessageBox.Warning:
+        i = 2
+    elif icon is QMessageBox.Critical:
+        i = 3
+    elif icon is QMessageBox.Question:
+        i = 4
+
+    ui.HcUiMessageBox( i, title, text )
+
+    return
 
 def HcUiListenerRegisterView( protocol: str ):
 

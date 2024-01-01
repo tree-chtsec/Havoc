@@ -65,7 +65,39 @@ auto HavocClient::eventDispatch(
     }
     else if ( type == Event::listener::status )
     {
+        auto name = std::string();
+        auto log  = std::string();
 
+        if ( data.empty() ) {
+            spdlog::error( "Event::listener::status: invalid package (data emtpy)" );
+            return;
+        }
+
+        if ( data.contains( "name" ) ) {
+            if ( data[ "name" ].is_string() ) {
+                name = data[ "name" ].get<std::string>();
+            } else {
+                spdlog::error( "invalid listener status: \"name\" is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "invalid listener status: \"name\" is not found" );
+            return;
+        }
+
+        if ( data.contains( "status" ) ) {
+            if ( data[ "status" ].is_string() ) {
+                log = data[ "status" ].get<std::string>();
+            } else {
+                spdlog::error( "invalid listener status: \"status\" is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "invalid listener status: \"status\" is not found" );
+            return;
+        }
+
+        Gui->PageListener->setListenerStatus( name, log );
     }
     else if ( type == Event::listener::log )
     {
@@ -101,7 +133,7 @@ auto HavocClient::eventDispatch(
             return;
         }
 
-        Gui->PageListener->addListenerLog(name, log );
+        Gui->PageListener->addListenerLog( name, log );
     }
     else if ( type == Event::agent::add )
     {

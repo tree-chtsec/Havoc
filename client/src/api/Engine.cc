@@ -19,6 +19,10 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
         core.def( "HcScriptManagerConsoleStdOut",      HcScriptManagerConsoleStdOut );
         core.def( "HcScriptManagerLoadScriptCallback", HcScriptManagerLoadScriptCallback );
 
+        //
+        // Havoc Server api functions
+        //
+        core.def( "HcServerApiSend", HcServerApiSend );
     }
 
     /* havoc client ui api */
@@ -49,6 +53,16 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
 
         ui.def( "HcUiGetStyleSheet", []() -> py11::str {
             return ( Havoc->getStyleSheet().toStdString() );
+        } );
+
+        ui.def( "HcUiMessageBox", [](
+            const int          icon,
+            const std::string& title,
+            const std::string& text
+        ) -> py11::none {
+            Helper::MessageBox( ( QMessageBox::Icon ) icon, title, text );
+
+            return {};
         } );
     }
 }

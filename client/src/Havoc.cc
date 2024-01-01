@@ -1,4 +1,6 @@
 #include <Havoc.h>
+#include <QTimer>
+#include <QtCore5Compat/QTextCodec>
 
 HavocClient::HavocClient() {
     /* initialize logger */
@@ -7,6 +9,16 @@ HavocClient::HavocClient() {
 
     /* enabled debug messages */
     spdlog::set_level( spdlog::level::debug );
+
+    /* TODO: read this from the config file */
+    const auto family = "Monospace";
+    const auto size   = 9;
+
+    QTextCodec::setCodecForLocale( QTextCodec::codecForName( "UTF-8" ) );
+    QApplication::setFont( QFont( family, size ) );
+    QTimer::singleShot( 10, [&]() {
+        QApplication::setFont( QFont( family, size ) );
+    } );
 }
 
 HavocClient::~HavocClient() = default;

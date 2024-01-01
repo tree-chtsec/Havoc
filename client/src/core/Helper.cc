@@ -58,4 +58,3 @@ auto Helper::GrayScaleIcon(
 
     return QPixmap::fromImage( im );
 }
-
