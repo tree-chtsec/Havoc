@@ -24,17 +24,13 @@ def HcUiGetWidgetByObjectName(
 class HcListenerView:
 
     def __init__( self ):
-
         self._hc_name: str = None
-
-        print( f"[HcListenerView] __init__()" )
 
     ##
     ## main entrypoint what the
     ## Havoc client is going to call
     ##
     def _hc_main( self ):
-        print( f"[HcListenerView] _hc_main()" )
         self.main()
 
     ##
@@ -42,7 +38,12 @@ class HcListenerView:
     ##
     def _hc_set_name(self, name: str ):
         self._hc_name = name
-        print( f"[HcListenerView] _hc_name -> {self._hc_name}" )
+
+    ##
+    ## return given listener protocol name
+    ##
+    def listener_name( self ) -> str:
+        return self._hc_name
 
     ##
     ## get our protocol widget
@@ -70,7 +71,7 @@ class HcListenerView:
     ##  true  -> successful checked the input and nothing is wrong
     ##  false -> failed to check and something went wrong
     ##
-    def sanity_check(self) -> bool:
+    def sanity_check( self ) -> bool:
         return True
 
     ##

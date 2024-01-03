@@ -20,3 +20,22 @@ auto HcServerApiSend(
         { "body",    result->body    },
     };
 }
+
+auto HcListenerProtocolData(
+    const std::string& protocol
+) -> json {
+
+    for ( auto& p : Havoc->Gui->PageListener->Protocols ) {
+        if ( p.contains( "data" ) ) {
+            if ( p[ "data" ].contains( "protocol" ) ) {
+                if ( p[ "data" ][ "protocol" ] == protocol ) {
+                    if ( p[ "data" ].contains( "data" ) ) {
+                        return p[ "data" ][ "data" ];
+                    }
+                }
+            }
+        }
+    }
+
+    return {};
+}

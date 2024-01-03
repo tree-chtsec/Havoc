@@ -82,15 +82,15 @@ class HcWidgetFile( QWidget ):
 
         return
 
-    def fileb64( self ) -> str:
+    def file( self ) -> str:
 
         if len( self.file_path ) != 0:
-            file    = open( self.file_path, 'rb' )
+            file    = open( self.file_path, 'r' )
             content = file.read()
 
             file.close()
 
-            return base64.b64encode( content ).decode( "utf-8" )
+            return content
 
         return ''
 
@@ -311,8 +311,6 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
         self.opt_label_hostbind = QLabel( "Host (Bind): " )
         self.opt_combo_hostbind = QComboBox()
-        self.opt_combo_hostbind.addItem( "0.0.0.0"   )
-        self.opt_combo_hostbind.addItem( "127.0.0.1" )
 
         self.opt_label_port = QLabel( "Port: " )
         self.opt_input_port = QLineEdit()
@@ -502,6 +500,10 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
 
     def set_defaults( self ) -> None:
 
+        interfaces = pyhavoc.core.HcListenerProtocolData( self.listener_name() )[ "interfaces" ]
+        for interface in interfaces:
+            self.opt_combo_hostbind.addItem( interface )
+
         self.opt_input_port.setText( "443" )
         self.opt_input_port.setCursorPosition( 0 )
 
@@ -545,8 +547,8 @@ class HcListenerHttp( pyhavoc.ui.HcListenerView ):
                 "HostRotation" : self.opt_combo_rotation.currentText(),
                 "User Agent"   : self.opt_input_useragent.text(),
                 "Secure"       : self.opt_combo_secure.currentText(),
-                "Server Cert"  : self.opt_file_server_cert.fileb64(),
-                "Server Key"   : self.opt_file_server_key.fileb64(),
+                "Server Cert"  : self.opt_file_server_cert.file(),
+                "Server Key"   : self.opt_file_server_key.file(),
             },
 
             "Proxy": {

@@ -44,7 +44,7 @@ auto HavocClient::eventDispatch(
             return;
         }
 
-        Gui->PageListener->Protocols.push_back(data );
+        Gui->PageListener->Protocols.push_back( data );
     }
     else if ( type == Event::listener::start )
     {
@@ -53,7 +53,7 @@ auto HavocClient::eventDispatch(
             return;
         }
 
-        Gui->PageListener->addListener(data );
+        Gui->PageListener->addListener( data );
     }
     else if ( type == Event::listener::edit )
     {

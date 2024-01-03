@@ -6,4 +6,8 @@ auto HcServerApiSend(
     const json&        data
 ) -> json;
 
+auto HcListenerProtocolData(
+    const std::string& protocol
+) -> json;
+
 #endif //HAVOCCLIENT_API_HCCORE_H

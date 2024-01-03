@@ -23,6 +23,11 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
         // Havoc Server api functions
         //
         core.def( "HcServerApiSend", HcServerApiSend );
+
+        //
+        // Havoc Listener api functions
+        //
+        core.def( "HcListenerProtocolData", HcListenerProtocolData );
     }
 
     /* havoc client ui api */
