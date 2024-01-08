@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 
+	"Havoc/pkg/api"
 	"Havoc/pkg/colors"
 	"Havoc/pkg/logger"
 	"Havoc/pkg/plugin"
@@ -41,7 +42,8 @@ func (t *Teamserver) Start() {
 	)
 
 	plugins = []string{
-		"../HavocPlugins/http.hp/http.hp",
+		"../HavocPlugins/kaine-kit/http.hp/http.hp",
+		"../HavocPlugins/kaine-kit/kaine.hp/kaine.hp",
 	}
 
 	if t.Flags.Server.Host == "" {
@@ -52,7 +54,7 @@ func (t *Teamserver) Start() {
 		t.Flags.Server.Port = strconv.Itoa(t.Profile.ServerPort())
 	}
 
-	if t.Server, err = NewServerApi(t); err != nil {
+	if t.Server, err = api.NewServerApi(t); err != nil {
 		logger.Error("failed to start api server: " + err.Error())
 		return
 	}
@@ -69,7 +71,9 @@ func (t *Teamserver) Start() {
 			logger.Error("failed to load plugin: %v", err)
 		}
 
-		logger.Info(" %v plugin \"%v\" loaded", colors.Blue("*"), colors.Blue(ext.Name))
+		if ext != nil {
+			logger.Info(" %v plugin \"%v\" loaded", colors.Blue("*"), colors.Blue(ext.Name))
+		}
 	}
 
 	// start the api server

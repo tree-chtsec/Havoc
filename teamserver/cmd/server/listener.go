@@ -1,7 +1,6 @@
 package server
 
 import (
-	"Havoc/pkg/logger"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -76,9 +75,8 @@ func (t *Teamserver) ListenerStart(name, protocol string, options map[string]any
 	)
 
 	for _, prot := range t.protocols {
-		if val, ok := prot.Data["protocol"]; ok {
 
-			logger.Debug("val.(string)[%v] == protocol[%v]", val.(string), protocol)
+		if val, ok := prot.Data["protocol"]; ok {
 
 			if val.(string) == protocol {
 

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"Havoc/pkg/api"
 	"Havoc/pkg/plugin"
 	"Havoc/pkg/profile"
 
@@ -42,19 +43,8 @@ type serverFlags struct {
 	Default  bool
 }
 
-type utilFlags struct {
-	NoBanner bool
-	Debug    bool
-	Verbose  bool
-
-	Test bool
-
-	ListOperators bool
-}
-
 type TeamserverFlags struct {
 	Server serverFlags
-	Util   utilFlags
 }
 
 type Handler struct {
@@ -66,7 +56,7 @@ type Teamserver struct {
 	Flags   TeamserverFlags
 	Profile *profile.Profile
 
-	Server *ServerApi
+	Server *api.ServerApi
 
 	configPath string
 	events     struct {
@@ -78,5 +68,6 @@ type Teamserver struct {
 	plugins   *plugin.PluginSystem
 	protocols []Handler // available handlers/listeners to use
 	listener  []Handler // started listeners
+	payloads  []Handler // available payloads
 	agents    sync.Map  // current connected agents
 }

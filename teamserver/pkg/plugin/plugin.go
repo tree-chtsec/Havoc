@@ -34,6 +34,8 @@ type HavocInterface interface {
 	Version() map[string]string
 
 	ListenerRegister(name string, listener map[string]any) error
+
+	AgentRegister(name string, agent map[string]any) error
 }
 
 type BasicInterface interface {
@@ -207,6 +209,21 @@ func (s *PluginSystem) CheckAndInsertInterface(extension *Plugin, inter any) err
 
 	switch extension.Type {
 	case PluginTypeAgent:
+
+		// sanity check if the method exist
+		if _, ok = reflection.MethodByName("AgentRegister"); !ok {
+			return fmt.Errorf("AgentRegister not found")
+		}
+
+		// sanity check if the method exist
+		if _, ok = reflection.MethodByName("AgentGenerate"); !ok {
+			return fmt.Errorf("AgentGenerate not found")
+		}
+
+		// cast the interface
+		// we found everything we searched for
+		extension.AgentInterface = inter.(AgentInterface)
+
 		break
 
 	case PluginTypeListener:
@@ -259,6 +276,11 @@ func (s *PluginSystem) interactPlugin(extension *Plugin) error {
 
 	switch extension.Type {
 	case PluginTypeAgent:
+
+		if err := s.havoc.AgentRegister(extension.Name, extension.AgentRegister()); err != nil {
+			return err
+		}
+
 		break
 
 	case PluginTypeListener:
