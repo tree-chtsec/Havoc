@@ -7,3 +7,6 @@ def HcListenerProtocolData(
     protocol: str
 ) -> dict:
     return core.HcListenerProtocolData( protocol )
+
+def HcListenerAll() -> list[str]:
+    return core.HcListenerAll()

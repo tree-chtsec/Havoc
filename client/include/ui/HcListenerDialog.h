@@ -55,7 +55,7 @@ public:
         const QString& text
     ) -> void;
 
-    auto addProtocol(
+    auto AddProtocol(
         const std::string&  name,
         const py11::object& object
     ) -> void;

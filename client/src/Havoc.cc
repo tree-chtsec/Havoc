@@ -2,6 +2,61 @@
 #include <QTimer>
 #include <QtCore5Compat/QTextCodec>
 
+auto HttpErrorToString(
+    const httplib::Error& error
+) -> std::optional<std::string> {
+    switch ( error ) {
+        case httplib::Error::Unknown:
+            return "Unknown";
+
+        case httplib::Error::Connection:
+            return ( "Connection" );
+
+        case httplib::Error::BindIPAddress:
+            return ( "BindIPAddress" );
+
+        case httplib::Error::Read:
+            return ( "Read" );
+
+        case httplib::Error::Write:
+            return ( "Write" );
+
+        case httplib::Error::ExceedRedirectCount:
+            return ( "ExceedRedirectCount" );
+
+        case httplib::Error::Canceled:
+            return ( "Canceled" );
+
+        case httplib::Error::SSLConnection:
+            return ( "SSLConnection" );
+
+        case httplib::Error::SSLLoadingCerts:
+            return ( "SSLLoadingCerts" );
+
+        case httplib::Error::SSLServerVerification:
+            return ( "SSLServerVerification" );
+
+        case httplib::Error::UnsupportedMultipartBoundaryChars:
+            return ( "UnsupportedMultipartBoundaryChars" );
+
+        case httplib::Error::Compression:
+            return ( "Compression" );
+
+        case httplib::Error::ConnectionTimeout:
+            return ( "ConnectionTimeout" );
+
+        case httplib::Error::ProxyConnection:
+            return ( "ProxyConnection" );
+
+        case httplib::Error::SSLPeerCouldBeClosed_:
+            return ( "SSLPeerCouldBeClosed_" );
+
+        default: break;
+    }
+
+    return std::nullopt;
+}
+
 HavocClient::HavocClient() {
     /* initialize logger */
     spdlog::set_pattern( "[%T %^%l%$] %v" );
@@ -53,68 +108,9 @@ auto HavocClient::Main(
     /* send request */
     Result = Http.Post( "/api/login", data.dump(), "application/json" );
 
-    switch ( Result.error() ) {
-        case httplib::Error::Unknown:
-            spdlog::error( Error + "Unknown" );
-            return;
-
-        case httplib::Error::Connection:
-            spdlog::error( Error + "Connection" );
-            return;
-
-        case httplib::Error::BindIPAddress:
-            spdlog::error( Error + "BindIPAddress" );
-            return;
-
-        case httplib::Error::Read:
-            spdlog::error( Error + "Read" );
-            return;
-
-        case httplib::Error::Write:
-            spdlog::error( Error + "Write" );
-            return;
-
-        case httplib::Error::ExceedRedirectCount:
-            spdlog::error( Error + "ExceedRedirectCount" );
-            return;
-
-        case httplib::Error::Canceled:
-            spdlog::error( Error + "Canceled" );
-            return;
-
-        case httplib::Error::SSLConnection:
-            spdlog::error( Error + "SSLConnection" );
-            return;
-
-        case httplib::Error::SSLLoadingCerts:
-            spdlog::error( Error + "SSLLoadingCerts" );
-            return;
-
-        case httplib::Error::SSLServerVerification:
-            spdlog::error( Error + "SSLServerVerification" );
-            return;
-
-        case httplib::Error::UnsupportedMultipartBoundaryChars:
-            spdlog::error( Error + "UnsupportedMultipartBoundaryChars" );
-            return;
-
-        case httplib::Error::Compression:
-            spdlog::error( Error + "Compression" );
-            return;
-
-        case httplib::Error::ConnectionTimeout:
-            spdlog::error( Error + "ConnectionTimeout" );
-            return;
-
-        case httplib::Error::ProxyConnection:
-            spdlog::error( Error + "ProxyConnection" );
-            return;
-
-        case httplib::Error::SSLPeerCouldBeClosed_:
-            spdlog::error( Error + "SSLPeerCouldBeClosed_" );
-            return;
-
-        default: break;
+    if ( HttpErrorToString( Result.error() ).has_value() ) {
+        spdlog::error( "Failed to send login request: {}", HttpErrorToString( Result.error() ).value() );
+        return;
     }
 
     /* 401 Unauthorized: Failed to log in */
@@ -210,78 +206,22 @@ auto HavocClient::ApiSend(
     const std::string& endpoint,
     const json&        body
 ) const -> httplib::Result {
+
     /* create http client */
     auto Http   = httplib::Client( "https://" + Profile.Host + ":" + Profile.Port );
     auto Result = httplib::Result();
     auto Error  = std::string( "Failed to send api request: " );
 
     Http.enable_server_certificate_verification( false );
+    Http.set_default_headers( {
+        { "x-havoc-token", Havoc->Profile.Token }
+    } );
 
     /* send request */
     Result = Http.Post( endpoint, body.dump(), "application/json" );
 
-    switch ( Result.error() ) {
-        case httplib::Error::Unknown:
-            spdlog::error( Error + "Unknown" );
-            goto END;
-
-        case httplib::Error::Connection:
-            spdlog::error( Error + "Connection" );
-            goto END;
-
-        case httplib::Error::BindIPAddress:
-            spdlog::error( Error + "BindIPAddress" );
-            goto END;
-
-        case httplib::Error::Read:
-            spdlog::error( Error + "Read" );
-            goto END;
-
-        case httplib::Error::Write:
-            spdlog::error( Error + "Write" );
-            goto END;
-
-        case httplib::Error::ExceedRedirectCount:
-            spdlog::error( Error + "ExceedRedirectCount" );
-            goto END;
-
-        case httplib::Error::Canceled:
-            spdlog::error( Error + "Canceled" );
-            goto END;
-
-        case httplib::Error::SSLConnection:
-            spdlog::error( Error + "SSLConnection" );
-            goto END;
-
-        case httplib::Error::SSLLoadingCerts:
-            spdlog::error( Error + "SSLLoadingCerts" );
-            goto END;
-
-        case httplib::Error::SSLServerVerification:
-            spdlog::error( Error + "SSLServerVerification" );
-            goto END;
-
-        case httplib::Error::UnsupportedMultipartBoundaryChars:
-            spdlog::error( Error + "UnsupportedMultipartBoundaryChars" );
-            goto END;
-
-        case httplib::Error::Compression:
-            spdlog::error( Error + "Compression" );
-            goto END;
-
-        case httplib::Error::ConnectionTimeout:
-            spdlog::error( Error + "ConnectionTimeout" );
-            goto END;
-
-        case httplib::Error::ProxyConnection:
-            spdlog::error( Error + "ProxyConnection" );
-            goto END;
-
-        case httplib::Error::SSLPeerCouldBeClosed_:
-            spdlog::error( Error + "SSLPeerCouldBeClosed_" );
-            goto END;
-
-        default: break;
+    if ( HttpErrorToString( Result.error() ).has_value() ) {
+        spdlog::error( "Failed to send login request: {}", HttpErrorToString( Result.error() ).value() );
     }
 
 END:
@@ -323,17 +263,17 @@ auto HavocClient::getStyleSheet(
     return Helper::FileRead( ":/style/default" );
 }
 
-auto HavocClient::addListener(
+auto HavocClient::AddProtocol(
     const std::string&  name,
     const py11::object& listener
 ) -> void {
-    protocols.push_back( Listener{
+    protocols.push_back( NamedObject{
         .name   = name,
         .object = listener
     } );
 }
 
-auto HavocClient::listener(
+auto HavocClient::ProtocolObject(
     const std::string& name
 ) -> std::optional<py11::object> {
     for ( auto& listener : protocols ) {
@@ -345,7 +285,7 @@ auto HavocClient::listener(
     return std::nullopt;
 }
 
-auto HavocClient::listeners() -> std::vector<std::string> {
+auto HavocClient::Protocols() -> std::vector<std::string> {
     auto names = std::vector<std::string>();
 
     for ( auto& listener : protocols ) {
@@ -369,4 +309,65 @@ auto HavocClient::setupThreads() -> void {
     /* fire up the even thread that is going to
      * process events and emit signals to the main gui thread */
     Events.Thread->start();
+}
+
+auto HavocClient::AddBuilder(
+    const std::string & name,
+    const py11::object& builder
+) -> void {
+    builders.push_back( NamedObject{
+        .name   = name,
+        .object = builder
+    } );
+
+    Havoc->Gui->PagePayload->AddBuilder( name, builder );
+}
+
+auto HavocClient::BuilderObject(
+    const std::string& name
+) -> std::optional<py11::object> {
+
+    for ( auto& builder : builders ) {
+        if ( builder.name == name ) {
+            return builder.object;
+        }
+    }
+
+    return std::nullopt;
+}
+
+auto HavocClient::Builders() -> std::vector<std::string>
+{
+    auto names = std::vector<std::string>();
+
+    for ( auto& builder : builders ) {
+        names.push_back( builder.name );
+    }
+
+    return names;
+}
+
+auto HavocClient::AddListener(
+    const json& listener
+) -> void {
+    spdlog::debug( "listener -> {}", listener.dump() );
+    listeners.push_back( listener );
+
+    Gui->PageListener->addListener( listener );
+    Gui->PagePayload->RefreshBuilders();
+}
+
+auto HavocClient::Listeners() -> std::vector<std::string>
+{
+    auto names = std::vector<std::string>();
+
+    for ( auto& data : listeners ) {
+        if ( data.contains( "name" ) ) {
+            if ( data[ "name" ].is_string() ) {
+                names.push_back( data[ "name" ].get<std::string>() );
+            }
+        }
+    }
+
+    return names;
 }

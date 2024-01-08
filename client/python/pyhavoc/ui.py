@@ -21,6 +21,69 @@ def HcUiGetWidgetByObjectName(
 
     return None
 
+class HcPayloadView:
+
+    def __init__( self, name: str ):
+        self._hc_name = name
+
+    ##
+    ## get our builder widget
+    ##
+    def _hc_builder_widget( self ) -> QWidget:
+
+        widget = HcUiGetWidgetByObjectName( "HcPageBuilder.Builder." + self._hc_name )
+
+        if widget is None:
+            raise "HcPageBuilder builder widget not found: " + "HcPageBuilder.Builder." + self._hc_name
+
+        return widget
+
+    ##
+    ## main entrypoint what the
+    ## Havoc client is going to call
+    ##
+    def _hc_main( self ) -> None:
+        self.main( self._hc_builder_widget() )
+
+    ##
+    ## main function to be executed
+    ## should create the widgets inputs
+    ## for the payload builder
+    ##
+    def main( self, widget: QWidget ):
+        pass
+
+    ##
+    ## sanity check the given input
+    ## return:
+    ##  true  -> successful checked the input and nothing is wrong
+    ##  false -> failed to check and something went wrong
+    ##
+    def sanity_check( self ) -> bool:
+        return True
+
+    ##
+    ## refresh the widget based on following things:
+    ##  - new listener started
+    ##  - new script loaded
+    ##  - new agent connected
+    ##
+    def refresh( self ) -> None:
+        pass
+
+    ##
+    ## pressing "generate" action or
+    ## while saving a profile
+    ##
+    def generate( self, profile_save: bool = False ) -> dict:
+        pass
+
+    ##
+    ## load profile
+    ##
+    def profile_load( self, profile: dict ) -> bool:
+        pass
+
 class HcListenerView:
 
     def __init__( self ):
@@ -36,7 +99,7 @@ class HcListenerView:
     ##
     ## set the protocol name
     ##
-    def _hc_set_name(self, name: str ):
+    def _hc_set_name( self, name: str ):
         self._hc_name = name
 
     ##
@@ -112,5 +175,12 @@ def HcUiListenerRegisterView( protocol: str ):
 
     def _register( listener_view ):
         ui.HcUiListenerRegisterView( protocol, listener_view )
+
+    return _register
+
+def HcUiBuilderRegisterView( payload: str ):
+
+    def _register( builder_view ):
+        ui.HcUiBuilderRegisterView( payload, builder_view )
 
     return _register

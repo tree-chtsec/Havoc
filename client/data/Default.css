@@ -116,7 +116,7 @@ QGroupBox {
     color: #f8f8f2;
 }
 
-QLineEdit {
+QLineEdit, QDateTimeEdit {
     border-radius: 2px;
     padding: 2px 6px 2px 6px;
     background-color: #44475A;
@@ -180,6 +180,16 @@ QTextEdit[HcConsole="true"] {
     color: #f8f8f2;
 }
 
+QScrollArea {
+    background-color: #282A36;
+    color: #f8f8f2;
+}
+
+QCheckBox {
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
 QMenu {
     background: #282a36;
     color: #f8f8f2;
@@ -226,6 +236,10 @@ QPushButton[HcButton="true"] {
     border: 1px solid #44475a;
     border-radius: 2px;
     padding: 4px 8px 4px 8px;
+}
+
+QPushButton[HcButtonPurple="true"] {
+    background-color: #BD93F9;
 }
 
 QPushButton:pressed[HcButton="true"] {

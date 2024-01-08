@@ -69,6 +69,10 @@ auto HcConsole::inputEnter() -> void {
     auto input = Input->text().toStdString();
     auto text  = py11::str( input );
 
+    if ( input.empty() ) {
+        return;
+    }
+
     Input->setText( "" );
 
     appendConsole( ( ">>> " + input ).c_str() );
@@ -77,8 +81,6 @@ auto HcConsole::inputEnter() -> void {
         pybind11::exec( text );
     } catch ( py11::error_already_set &eas ) {
         expt = std::string( eas.what() );
-    } catch ( const std::exception &e ) {
-        expt = std::string( e.what() );
     }
 
     if ( ! expt.empty() ) {

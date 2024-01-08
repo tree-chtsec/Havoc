@@ -39,3 +39,8 @@ auto HcListenerProtocolData(
 
     return {};
 }
+
+auto HcListenerAll() -> std::vector<std::string>
+{
+    return Havoc->Listeners();
+}

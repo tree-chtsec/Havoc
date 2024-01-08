@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QHBoxLayout>
-#include <QtDesigner/QDesignerExportWidget>
+#include <QtUiPlugin/QDesignerExportWidget>
 
 class HcLineEdit : public QWidget {
     QHBoxLayout* Layout = nullptr;
@@ -29,7 +29,6 @@ public:
     ) -> void;
 
     auto text() -> QString;
-
 };
 
 #endif //HAVOCCLIENT_HCLINEEDIT_H

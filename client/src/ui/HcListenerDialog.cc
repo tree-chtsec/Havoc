@@ -5,7 +5,6 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QFormLayout>
 #include <QMetaMethod>
 
 HcListenerDialog::HcListenerDialog() {
@@ -63,9 +62,9 @@ HcListenerDialog::HcListenerDialog() {
 
     retranslateUi();
 
-    for ( auto& name : Havoc->listeners() ) {
-        if ( Havoc->listener( name ).has_value() ) {
-            addProtocol( name, Havoc->listener( name ).value() );
+    for ( auto& name : Havoc->Protocols() ) {
+        if ( Havoc->ProtocolObject( name ).has_value() ) {
+            AddProtocol( name, Havoc->ProtocolObject( name ).value() );
         }
     }
 
@@ -100,7 +99,7 @@ auto HcListenerDialog::changeProtocol(
 auto HcListenerDialog::getCloseState() -> ListenerState { return State; }
 
 auto HcListenerDialog::start() -> void {
-    if ( Havoc->listeners().empty() ) {
+    if ( Havoc->Protocols().empty() ) {
         Helper::MessageBox(
             QMessageBox::Icon::Warning,
             "Listener error",
@@ -216,7 +215,7 @@ InvalidServerResponseError:
 
 auto HcListenerDialog::getCurrentProtocol() -> Protocol* { return & Protocols[ StackedProtocols->currentIndex() ]; }
 
-auto HcListenerDialog::addProtocol(
+auto HcListenerDialog::AddProtocol(
     const std::string&  name,
     const py11::object& object
 ) -> void {

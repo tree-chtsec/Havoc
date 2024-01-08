@@ -24,8 +24,8 @@
 #define HAVOC_CODENAME "Killer Queen"
 
 class HavocClient : public QWidget {
-
-    struct Listener {
+    
+    struct NamedObject {
         std::string  name;
         py11::object object;
     };
@@ -48,7 +48,10 @@ class HavocClient : public QWidget {
         EventWorker* Worker;
     } Events;
 
-    std::vector<Listener> protocols = {};
+    std::vector<json>         listeners = {};
+    std::vector<NamedObject>  protocols = {};
+    std::vector<NamedObject>  builders  = {};
+
 
 public:
     HcMainWindow* Gui    = nullptr;
@@ -77,16 +80,50 @@ public:
 
     auto setupThreads() -> void;
 
-    auto addListener(
+    //
+    // Listeners
+    //
+    auto Listeners() -> std::vector<std::string>;
+
+    auto ListenerObject(
+        const std::string& name
+    ) -> std::vector<json>;
+
+    auto AddListener(
+        const json& listener
+    ) -> void;
+
+    //
+    // Protocols
+    //
+    auto AddProtocol(
         const std::string&  name,
         const py11::object& listener
     ) -> void;
 
-    auto listener(
+    auto ProtocolObject(
         const std::string& name
     ) -> std::optional<py11::object>;
 
-    auto listeners() -> std::vector<std::string>;
+    auto Protocols() -> std::vector<std::string>;
+
+    //
+    // Payload Builder
+    //
+    auto AddBuilder(
+        const std::string & name,
+        const py11::object& builder
+    ) -> void;
+
+    auto BuilderObject(
+        const std::string& name
+    ) -> std::optional<py11::object>;
+
+    auto Builders() -> std::vector<std::string>;
+
+    //
+    // Server Api
+    //
 
     /* send request to api endpoint */
     auto ApiSend(

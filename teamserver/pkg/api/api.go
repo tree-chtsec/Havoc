@@ -55,16 +55,26 @@ func NewServerApi(teamserver teamserver) (*ServerApi, error) {
 	api.Engine = gin.New()
 	api.teamserver = teamserver
 
+	//
 	// set api endpoints
+	//
 	api.Engine.POST("/api/login", api.login)
 
+	//
 	// listeners
+	//
 	api.Engine.POST("/api/listener/start", api.listenerStart)
 	api.Engine.POST("/api/listener/stop", api.listenerStop)
 	api.Engine.POST("/api/listener/edit", api.listenerEdit)
 	api.Engine.POST("/api/listener/event", api.listenerEvent)
 
+	//
+	// payloads
+	//
+
+	//
 	// websocket event endpoint
+	//
 	api.Engine.GET("/api/event", api.event)
 
 	return api, nil

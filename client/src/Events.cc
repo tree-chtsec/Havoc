@@ -45,6 +45,7 @@ auto HavocClient::eventDispatch(
         }
 
         Gui->PageListener->Protocols.push_back( data );
+        Gui->PagePayload->RefreshBuilders();
     }
     else if ( type == Event::listener::start )
     {
@@ -53,7 +54,7 @@ auto HavocClient::eventDispatch(
             return;
         }
 
-        Gui->PageListener->addListener( data );
+        AddListener( data );
     }
     else if ( type == Event::listener::edit )
     {
@@ -98,6 +99,7 @@ auto HavocClient::eventDispatch(
         }
 
         Gui->PageListener->setListenerStatus( name, log );
+        Gui->PagePayload->RefreshBuilders();
     }
     else if ( type == Event::listener::log )
     {
@@ -138,10 +140,11 @@ auto HavocClient::eventDispatch(
     else if ( type == Event::agent::add )
     {
 
+        Gui->PagePayload->RefreshBuilders();
     }
     else if ( type == Event::agent::initialize )
     {
-
+        Gui->PagePayload->RefreshBuilders();
     }
     else if ( type == Event::agent::callback )
     {
@@ -167,3 +170,7 @@ auto HavocClient::eventDispatch(
     }
 
 }
+
+
+
+

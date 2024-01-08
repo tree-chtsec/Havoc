@@ -35,5 +35,5 @@ def _HcPyScriptLoad(
 ## TODO: make own class or add param for
 ##       StdErr to pretty print it as red
 ##
-# sys.stdout = HcPyScriptMngrStdOutErrHandler()
-# sys.stderr = HcPyScriptMngrStdOutErrHandler()
+sys.stdout = HcPyScriptMngrStdOutErrHandler()
+sys.stderr = HcPyScriptMngrStdOutErrHandler()

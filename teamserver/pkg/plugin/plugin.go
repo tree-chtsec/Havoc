@@ -48,7 +48,11 @@ type ListenerInterface interface {
 	ListenerEvent(event map[string]any) (map[string]any, error)
 }
 
-type AgentInterface interface{}
+type AgentInterface interface {
+	AgentRegister() map[string]any
+	AgentGenerate(ctx map[string]any, config map[string]any) ([]byte, error)
+}
+
 type ManagementInterface interface{}
 
 type Plugin struct {
@@ -273,52 +277,4 @@ func (s *PluginSystem) interactPlugin(extension *Plugin) error {
 	}
 
 	return nil
-}
-
-func (s *PluginSystem) ListenerStart(name, protocol string, options map[string]any) (map[string]string, error) {
-	var (
-		data map[string]string
-		err  error
-		ext  *Plugin
-	)
-
-	err = errors.New("protocol not found")
-
-	s.loaded.Range(func(key, value any) bool {
-		ext = value.(*Plugin)
-
-		if protocol == ext.ListenerRegister()["protocol"].(string) {
-			data, err = ext.ListenerStart(name, options)
-
-			return false
-		}
-
-		return true
-	})
-
-	return data, err
-}
-
-func (s *PluginSystem) ListenerEvent(protocol string, event map[string]any) (map[string]any, error) {
-	var (
-		err  error
-		ext  *Plugin
-		resp map[string]any
-	)
-
-	err = errors.New("protocol not found")
-
-	s.loaded.Range(func(key, value any) bool {
-		ext = value.(*Plugin)
-
-		if protocol == ext.ListenerRegister()["protocol"].(string) {
-			resp, err = ext.ListenerEvent(event)
-
-			return false
-		}
-
-		return true
-	})
-
-	return resp, err
 }

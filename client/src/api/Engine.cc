@@ -28,6 +28,7 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
         // Havoc Listener api functions
         //
         core.def( "HcListenerProtocolData", HcListenerProtocolData );
+        core.def( "HcListenerAll",          HcListenerAll );
     }
 
     /* havoc client ui api */
@@ -53,7 +54,54 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
             const std::string&  name,
             const py11::object& object
         ) {
-            Havoc->addListener( name, object );
+            /*if ( Havoc->Protocols().empty() ) {
+                Helper::MessageBox(
+                    QMessageBox::Critical,
+                    "Script Manager",
+                    "Failed to register listener view: No protocols registered"
+                );
+
+                return;
+            }
+
+            if ( ! Havoc->ProtocolObject( name ).has_value() ) {
+                Helper::MessageBox(
+                    QMessageBox::Critical,
+                    "Script Manager",
+                    QString( "Failed to register listener view: No protocol with the name \"%1\" found" ).arg( name.c_str() ).toStdString()
+                );
+
+                return;
+            }*/
+
+            Havoc->AddProtocol( name, object );
+        } );
+
+        ui.def( "HcUiBuilderRegisterView", [](
+            const std::string&  name,
+            const py11::object& object
+        ) {
+            /*if ( Havoc->Builders().empty() ) {
+                Helper::MessageBox(
+                    QMessageBox::Critical,
+                    "Script Manager",
+                    "Failed to register builder view: No payloads registered"
+                );
+
+                return;
+            }
+
+            if ( ! Havoc->BuilderObject( name ).has_value() ) {
+                Helper::MessageBox(
+                    QMessageBox::Critical,
+                    "Script Manager",
+                    QString( "Failed to register builder view: No payload with the name \"%1\" found" ).arg( name.c_str() ).toStdString()
+                );
+
+                return;
+            }*/
+
+            Havoc->AddBuilder( name, object );
         } );
 
         ui.def( "HcUiGetStyleSheet", []() -> py11::str {
@@ -64,10 +112,8 @@ PYBIND11_EMBEDDED_MODULE( _pyhavoc, m ) {
             const int          icon,
             const std::string& title,
             const std::string& text
-        ) -> py11::none {
+        ) {
             Helper::MessageBox( ( QMessageBox::Icon ) icon, title, text );
-
-            return {};
         } );
     }
 }

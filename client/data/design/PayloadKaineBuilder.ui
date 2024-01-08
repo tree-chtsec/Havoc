@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>KaineBuilder</class>
+ <widget class="QWidget" name="KaineBuilder">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>938</width>
+    <height>685</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QScrollArea" name="ScrollAreaStack">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="ScrollAreaWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>916</width>
+        <height>663</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0" colspan="2">
+        <layout class="QGridLayout" name="GridLayoutHeader" columnstretch="0,1">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="ComboListener"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="LabelArch">
+           <property name="text">
+            <string>Arch: </string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="ComboArch"/>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="LabelListener">
+           <property name="text">
+            <string>Listener: </string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="LabelFormat">
+           <property name="text">
+            <string>Format: </string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="ComboFormat"/>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="GroupCoreSettings">
+         <property name="title">
+          <string>Core Settings</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="LabelKillDate">
+            <property name="text">
+             <string>Kill Date: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="LabelStackSpoofing">
+            <property name="text">
+             <string>Stack Spoofing: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0" colspan="3">
+           <widget class="QGroupBox" name="GroupSleepObf">
+            <property name="title">
+             <string>Sleep Obfuscation</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="GridLayoutSleepObf" columnstretch="0,1,0,0">
+               <item row="1" column="0">
+                <widget class="QLabel" name="LabelSleepObfJmpGadget">
+                 <property name="text">
+                  <string>Jmp Gadget: </string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="LabelEncryption">
+                 <property name="text">
+                  <string>Encryption:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="LabelSleepObfTechnique">
+                 <property name="text">
+                  <string>Technique: </string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0" colspan="3">
+                <widget class="QCheckBox" name="CheckHeapEncryption">
+                 <property name="text">
+                  <string>Heap Encryption</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="3">
+                <widget class="QCheckBox" name="CheckStackDuplication">
+                 <property name="text">
+                  <string>Stack Duplication</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="2">
+                <widget class="QComboBox" name="ComboEncryption"/>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="ComboSleepObfJmpGadget"/>
+               </item>
+               <item row="0" column="1" colspan="2">
+                <widget class="QComboBox" name="ComboSleepObfTechnique"/>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0">
+              <spacer name="VSpacerSleepObf">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>3</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="6" column="1" colspan="2">
+           <widget class="QLineEdit" name="InputModuleStomp"/>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QLineEdit" name="InputSleep"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="CheckKillDate">
+            <property name="text">
+             <string>Enable Killdate</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="LabelAntiShellcode">
+            <property name="text">
+             <string>Anti-Shellcode mitigation: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QComboBox" name="ComboAntiShellcode"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="LabelModuleLoad">
+            <property name="text">
+             <string>Module load technique: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="QLineEdit" name="InputJitter"/>
+          </item>
+          <item row="8" column="0" colspan="3">
+           <widget class="QCheckBox" name="CheckModuleRndOrder">
+            <property name="text">
+             <string>Module random load order</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="LabelModuleStomp">
+            <property name="text">
+             <string>Module Stomp (Plugin): </string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDateTimeEdit" name="DateTimeKillDate"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="LabelSleep">
+            <property name="text">
+             <string>Sleep: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+           <widget class="QComboBox" name="ComboStackSpoofing"/>
+          </item>
+          <item row="5" column="1" colspan="2">
+           <widget class="QComboBox" name="ComboModuleLoad"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="LabelJitter">
+            <property name="text">
+             <string>Jitter (%): </string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QCheckBox" name="CheckIndirectSyscall">
+            <property name="text">
+             <string>Indirect Syscall</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1" colspan="2">
+           <widget class="QLineEdit" name="InputIndirectSyscall"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="2" rowspan="2" colspan="2">
+        <widget class="QGroupBox" name="GroupExecuteable">
+         <property name="title">
+          <string>Executable:</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

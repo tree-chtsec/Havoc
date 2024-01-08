@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PageBuilder</class>
- <widget class="QWidget" name="PageBuilder">
+ <class>HcPageBuilder</class>
+ <widget class="QWidget" name="HcPageBuilder">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>990</width>
-    <height>637</height>
+    <width>956</width>
+    <height>618</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QLabel" name="LabelPayload">
      <property name="text">
-      <string>Payload: </string>
+      <string>Payload:</string>
      </property>
     </widget>
    </item>
@@ -31,14 +31,53 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>834</width>
+       <width>789</width>
        <height>20</height>
       </size>
      </property>
     </spacer>
    </item>
    <item row="1" column="0" colspan="3">
-    <widget class="QStackedWidget" name="stackedWidget"/>
+    <widget class="QSplitter" name="SplitterTopBottom">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QSplitter" name="SplitterLeftRight">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QStackedWidget" name="StackedWidget"/>
+      <widget class="QWidget" name="ProfileWidget" native="true">
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="ButtonGenerate">
+          <property name="text">
+           <string>Generate</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="ButtonSaveProfile">
+          <property name="text">
+           <string>Save Profile</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="ButtonLoadProfile">
+          <property name="text">
+           <string>Load Profile</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QListWidget" name="ListProfiles"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QTextEdit" name="TextBuildLog"/>
+    </widget>
    </item>
   </layout>
  </widget>
