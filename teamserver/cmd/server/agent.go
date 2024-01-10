@@ -4,6 +4,7 @@ import (
 	"Havoc/pkg/logger"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 func (t *Teamserver) AgentRegister(name string, agent map[string]any) error {
@@ -40,9 +41,6 @@ func (t *Teamserver) AgentProcess(context map[string]any, request []byte) ([]byt
 
 func (t *Teamserver) AgentGenerate(ctx map[string]any, config map[string]any) ([]byte, error) {
 	for _, agent := range t.payloads {
-
-		logger.Debug("%v == %v", agent.Name, ctx["name"].(string))
-
 		if agent.Data["name"].(string) == ctx["name"].(string) {
 			return t.plugins.AgentGenerate(ctx, config)
 		}
@@ -51,6 +49,23 @@ func (t *Teamserver) AgentGenerate(ctx map[string]any, config map[string]any) ([
 	return nil, errors.New("agent to generate not found")
 }
 
-func (t *Teamserver) AgentBuildLog(ctx any, fmt string, args ...any) {
+func (t *Teamserver) AgentBuildLog(context map[string]any, format string, args ...any) {
+	var (
+		user string
+		err  error
+	)
 
+	user = context["user"].(string)
+
+	//
+	// send the client the build log message
+	//
+	err = t.UserSend(user, t.EventCreate(EventAgentBuildLog, map[string]any{
+		"log": fmt.Sprintf(format, args...),
+	}))
+
+	if err != nil {
+		logger.DebugError("failed to send build log message to %v: %v", user, err)
+		return
+	}
 }

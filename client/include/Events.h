@@ -20,6 +20,7 @@ namespace Event {
         static std::string input      = "agent::input";
         static std::string status     = "agent::status";
         static std::string remove     = "agent::remove";
+        static std::string buildlog   = "agent::build-log";
     }
 
     namespace listener {
@@ -29,10 +30,6 @@ namespace Event {
         static std::string stop   = "listener::stop";
         static std::string status = "listener::status";
         static std::string log    = "listener::log";
-    }
-
-    namespace payload {
-
     }
 };
 

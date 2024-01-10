@@ -72,7 +72,7 @@ func (t *Teamserver) Start() {
 		}
 
 		if ext != nil {
-			logger.Info(" %v plugin \"%v\" loaded", colors.Blue("*"), colors.Blue(ext.Name))
+			logger.Info(" %v plugin loaded => \"%v\"", colors.BoldBlue("*"), colors.BoldBlue(ext.Name))
 		}
 	}
 

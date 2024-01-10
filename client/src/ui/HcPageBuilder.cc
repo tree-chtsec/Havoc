@@ -157,6 +157,8 @@ auto HcPageBuilder::PressedGenerate() -> void
     auto name   = std::string();
     auto found  = false;
 
+    TextBuildLog->clear();
+
     for ( auto& builder : Builders ) {
         if ( builder.name == ComboPayload->currentText().toStdString() ) {
             found = true;
@@ -174,7 +176,6 @@ auto HcPageBuilder::PressedGenerate() -> void
                 if ( ( config = builder.instance.attr( "generate" )() ).empty() ) {
                     return;
                 }
-
             } catch ( py11::error_already_set &eas ) {
                 spdlog::error( "failed to refresh builder \"{}\": \n{}", builder.name, eas.what() );
                 return;
@@ -221,6 +222,9 @@ auto HcPageBuilder::PressedGenerate() -> void
                 QString( "Failed to build payload \"%1\": %2" ).arg( name.c_str() ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
             );
         } else {
+
+
+
             RefreshBuilders();
             return;
         }

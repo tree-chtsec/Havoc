@@ -165,6 +165,29 @@ auto HavocClient::eventDispatch(
     else if ( type == Event::agent::remove )
     {
 
+    }
+    else if ( type == Event::agent::buildlog )
+    {
+        auto log = std::string();
+
+        if ( data.empty() ) {
+            spdlog::error( "Event::agent::buildlog: invalid package (data emtpy)" );
+            return;
+        }
+
+        if ( data.contains( "log" ) ) {
+            if ( data[ "log" ].is_string() ) {
+                log = data[ "log" ].get<std::string>();
+            } else {
+                spdlog::error( "invalid agent build log: \"log\" is not string" );
+                return;
+            }
+        } else {
+            spdlog::error( "invalid agent build log: \"log\" is not found" );
+            return;
+        }
+
+        Gui->PagePayload->TextBuildLog->append( log.c_str() );
     } else {
         spdlog::debug( "invalid event: {} not found", type );
     }

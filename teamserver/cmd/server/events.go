@@ -28,6 +28,7 @@ const (
 	EventAgentRemove     = "agent::remove"
 	EventAgentInput      = "agent::input"
 	EventAgentStatus     = "agent::status"
+	EventAgentBuildLog   = "agent::build-log"
 )
 
 func (t *Teamserver) EventCreate(event string, data any) map[string]any {
