@@ -83,7 +83,7 @@ func (api *ServerApi) agentBuild(ctx *gin.Context) {
 	//
 	// interact with the plugin to generate a payload
 	//
-	body, err = api.teamserver.AgentGenerate(context, config)
+	name, body, err = api.teamserver.AgentGenerate(context, config)
 	if err != nil {
 		logger.DebugError("Failed to generate agent payload: %v", err)
 		goto ERROR
@@ -93,7 +93,8 @@ func (api *ServerApi) agentBuild(ctx *gin.Context) {
 	// return base64 encoded payload
 	//
 	ctx.JSON(http.StatusOK, gin.H{
-		"payload": base64.StdEncoding.EncodeToString(body),
+		"payload":  base64.StdEncoding.EncodeToString(body),
+		"filename": name,
 	})
 
 	return

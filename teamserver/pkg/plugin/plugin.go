@@ -52,7 +52,7 @@ type ListenerInterface interface {
 
 type AgentInterface interface {
 	AgentRegister() map[string]any
-	AgentGenerate(ctx map[string]any, config map[string]any) ([]byte, error)
+	AgentGenerate(ctx map[string]any, config map[string]any) (string, []byte, error)
 }
 
 type ManagementInterface interface{}

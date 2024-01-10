@@ -153,6 +153,7 @@ auto HcPageBuilder::PressedGenerate() -> void
 {
     auto result = httplib::Result();
     auto data   = json();
+    auto body   = json();
     auto config = json();
     auto name   = std::string();
     auto found  = false;
@@ -222,8 +223,49 @@ auto HcPageBuilder::PressedGenerate() -> void
                 QString( "Failed to build payload \"%1\": %2" ).arg( name.c_str() ).arg( data[ "error" ].get<std::string>().c_str() ).toStdString()
             );
         } else {
+            auto Dialog = QFileDialog();
+            auto Path   = QString();
+            auto File   = QFile();
 
+            if ( ( data = json::parse( result->body ) ).is_discarded() ) {
+                goto InvalidServerResponseError;
+            }
 
+            if ( data.contains( "filename" ) ) {
+                if ( data[ "filename" ].is_string() ) {
+                    name = data[ "filename" ].get<std::string>();
+                }
+            }
+
+            Dialog.setDirectory( QDir::homePath() );
+            Dialog.selectFile( name.c_str() );
+
+            if ( Dialog.exec() == QFileDialog::Accepted ) {
+                Path = Dialog.selectedFiles().value( 0 );
+
+                File.setFileName( Path );
+                if ( File.open( QIODevice::ReadWrite ) ) {
+
+                    if ( data.contains( "payload" ) ) {
+                        if ( data[ "payload" ].is_string() ) {
+                            File.write( QByteArray::fromBase64( data[ "payload" ].get<std::string>().c_str() ) );
+
+                            Helper::MessageBox(
+                                QMessageBox::Information,
+                                "Payload build",
+                                QString( "Saved payload under:\n%1" ).arg( Path ).toStdString()
+                            );
+                        }
+                    }
+
+                } else {
+                    Helper::MessageBox(
+                        QMessageBox::Critical,
+                        "Payload build failure",
+                        QString( "Failed to write payload to \"%1\": %2" ).arg( Path ).arg( File.errorString() ).toStdString()
+                    );
+                }
+            }
 
             RefreshBuilders();
             return;
