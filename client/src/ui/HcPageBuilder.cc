@@ -160,6 +160,16 @@ auto HcPageBuilder::PressedGenerate() -> void
 
     TextBuildLog->clear();
 
+    if ( Builders.empty() ) {
+        Helper::MessageBox(
+            QMessageBox::Critical,
+            "Payload build failure",
+            "Failed to build payload: no builder registered"
+        );
+
+        return;
+    }
+
     for ( auto& builder : Builders ) {
         if ( builder.name == ComboPayload->currentText().toStdString() ) {
             found = true;
@@ -190,7 +200,7 @@ auto HcPageBuilder::PressedGenerate() -> void
         Helper::MessageBox(
             QMessageBox::Critical,
             "Payload build failure",
-            QString( "Failed to build payload \"%1\": %2" ).arg( ComboPayload->currentText() ).toStdString()
+            QString( "Failed to build payload: %1" ).arg( ComboPayload->currentText() ).toStdString()
         );
         return;
     }
