@@ -2,6 +2,7 @@ package server
 
 import (
 	"Havoc/pkg/logger"
+	"Havoc/pkg/profile"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/websocket"
@@ -13,12 +14,20 @@ const (
 )
 
 func (t *Teamserver) UserAuthenticate(username, password string) bool {
+	var (
+		operators []profile.Operator
+		err       error
+	)
 
-	if t.Profile.Config.Operators != nil {
-		for _, User := range t.Profile.Config.Operators.Users {
-			if User.Name == username && User.Password == password {
-				return true
-			}
+	operators, err = t.profile.Operators()
+	if err != nil {
+		logger.DebugError("failed to get operators from profile: %v", err)
+		return false
+	}
+
+	for _, operator := range operators {
+		if operator.Username == username && operator.Password == password {
+			return true
 		}
 	}
 

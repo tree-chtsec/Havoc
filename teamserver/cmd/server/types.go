@@ -4,7 +4,6 @@ import (
 	"Havoc/pkg/api"
 	"Havoc/pkg/plugin"
 	"Havoc/pkg/profile"
-
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -32,9 +31,6 @@ type HavocAgent struct {
 }
 
 type serverFlags struct {
-	Host string
-	Port string
-
 	Profile  string
 	Verbose  bool
 	Debug    bool
@@ -53,11 +49,10 @@ type Handler struct {
 }
 
 type Teamserver struct {
-	Flags   TeamserverFlags
-	Profile *profile.Profile
-
+	Flags  TeamserverFlags
 	Server *api.ServerApi
 
+	profile    *profile.Profile
 	configPath string
 	events     struct {
 		mutex sync.Mutex

@@ -1,54 +1,50 @@
 package profile
 
 import (
-	"Havoc/pkg/colors"
 	"Havoc/pkg/logger"
-	yaotl "Havoc/pkg/profile/yaotl/hclsimple"
+	"github.com/pelletier/go-toml/v2"
+	"os"
 )
 
 type Profile struct {
-	Config HavocConfig
+	config map[string]any
 }
 
 func NewProfile() *Profile {
-	return new(Profile)
+	var profile *Profile
+
+	profile = new(Profile)
+	profile.config = make(map[string]any)
+
+	return profile
 }
 
-func (p *Profile) SetProfile(path string, def bool) error {
-	err := yaotl.DecodeFile(path, nil, &p.Config)
+func (p *Profile) Parse(path string) error {
+	var (
+		file []byte
+		err  error
+	)
+
+	file, err = os.ReadFile(path)
 	if err != nil {
 		return err
 	}
 
-	if def {
-		logger.Info("use default profile")
-	} else {
-		logger.Info("profile:", colors.Blue(path))
+	err = toml.Unmarshal(file, &p.config)
+	if err != nil {
+		return err
 	}
+
+	err = p.sanityCheck()
+	if err != nil {
+		return err
+	}
+
+	logger.Debug("p.config -> %v", p.config)
 
 	return nil
 }
 
-func (p *Profile) ServerHost() string {
-	if p.Config.Server != nil {
-		return p.Config.Server.Host
-	}
-	return ""
-}
-
-func (p *Profile) ServerPort() int {
-	if p.Config.Server != nil {
-		return p.Config.Server.Port
-	}
-	return 0
-}
-
-func (p *Profile) ListOfUsernames() []string {
-	var Usernames []string
-
-	for _, user := range p.Config.Operators.Users {
-		Usernames = append(Usernames, user.Name)
-	}
-
-	return Usernames
+func (p *Profile) Config() map[string]any {
+	return p.config
 }

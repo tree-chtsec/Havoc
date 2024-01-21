@@ -1,14 +1,12 @@
 package server
 
 import (
-	"os"
-	"strconv"
-
 	"Havoc/pkg/api"
 	"Havoc/pkg/colors"
 	"Havoc/pkg/logger"
 	"Havoc/pkg/plugin"
 	"Havoc/pkg/profile"
+	"os"
 )
 
 var (
@@ -38,21 +36,8 @@ func (t *Teamserver) Start() {
 	var (
 		ServerFinished chan bool
 		err            error
-		plugins        []string
+		server         profile.Server
 	)
-
-	plugins = []string{
-		"../HavocPlugins/kaine-kit/http.hp/http.hp",
-		"../HavocPlugins/kaine-kit/kaine.hp/kaine.hp",
-	}
-
-	if t.Flags.Server.Host == "" {
-		t.Flags.Server.Host = t.Profile.ServerHost()
-	}
-
-	if t.Flags.Server.Port == "" {
-		t.Flags.Server.Port = strconv.Itoa(t.Profile.ServerPort())
-	}
 
 	if t.Server, err = api.NewServerApi(t); err != nil {
 		logger.Error("failed to start api server: " + err.Error())
@@ -62,12 +47,18 @@ func (t *Teamserver) Start() {
 	// generate a new plugin system instance
 	t.plugins = plugin.NewPluginSystem(t)
 
+	server, err = t.profile.Server()
+	if err != nil {
+		logger.Error("failed to parse profile server block: " + err.Error())
+		return
+	}
+
 	// load all plugins that has been specified in the folder
-	logger.Info("loading plugins [%v]:", len(plugins))
-	for i := range plugins {
+	logger.Info("loading plugins [%v]:", len(server.Plugins))
+	for i := range server.Plugins {
 		var ext *plugin.Plugin
 
-		if ext, err = t.plugins.RegisterPlugin(plugins[i]); err != nil {
+		if ext, err = t.plugins.RegisterPlugin(server.Plugins[i]); err != nil {
 			logger.Error("failed to load plugin: %v", err)
 		}
 
@@ -77,14 +68,16 @@ func (t *Teamserver) Start() {
 	}
 
 	// start the api server
-	go t.Server.Start(t.Flags.Server.Host, t.Flags.Server.Port, t.ConfigPath(), &ServerFinished)
+	go t.Server.Start(server.Host, server.Port, t.ConfigPath(), &ServerFinished)
 
-	logger.Info("starting server on %v", colors.BlueUnderline("https://"+t.Flags.Server.Host+":"+t.Flags.Server.Port))
+	logger.Info("starting server on %v", colors.BlueUnderline("https://"+server.Host+":"+server.Port))
 
 	// This should hold the Teamserver as long as the WebSocket Server is running
 	logger.Debug("wait til the server shutdown")
-
 	<-ServerFinished
+
+	logger.Warn("server finished (?)")
+	os.Exit(0)
 }
 
 // Version
@@ -126,13 +119,19 @@ func (t *Teamserver) ConfigPath() string {
 	return t.configPath
 }
 
-func (t *Teamserver) SetProfile(path string) {
-	t.Profile = profile.NewProfile()
+func (t *Teamserver) Profile(path string) error {
+	var err error
+
+	t.profile = profile.NewProfile()
+
 	logger.LoggerInstance.STDERR = os.Stderr
-	err := t.Profile.SetProfile(path, t.Flags.Server.Default)
+
+	err = t.profile.Parse(path)
 	if err != nil {
 		logger.SetStdOut(os.Stderr)
-		logger.Error("Profile error:", colors.Red(err))
-		os.Exit(1)
+		logger.Error("Profile error: %v", colors.Red(err))
+		return err
 	}
+
+	return nil
 }

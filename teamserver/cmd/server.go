@@ -20,6 +20,7 @@ var CobraServer = &cobra.Command{
 			DirPath, _  = os.Getwd()
 			ServerTimer = time.Now()
 			Server      *server.Teamserver
+			err         error
 		)
 
 		if len(os.Args) <= 2 {
@@ -47,9 +48,15 @@ var CobraServer = &cobra.Command{
 		logger.Info("%v [Version: %v %v]", colors.BoldWhite("Havoc Framework"), server.Version, server.CodeName)
 
 		if flags.Server.Default {
-			Server.SetProfile(DirPath + "/data/havoc.yaotl")
+			err = Server.Profile(DirPath + "/data/havoc.toml")
+			if err != nil {
+				return nil
+			}
 		} else if flags.Server.Profile != "" {
-			Server.SetProfile(flags.Server.Profile)
+			err = Server.Profile(flags.Server.Profile)
+			if err != nil {
+				return nil
+			}
 		} else {
 			logger.Error("No profile specified. Specify a profile with --profile or choose the standard profile with --default")
 			os.Exit(1)
@@ -58,8 +65,6 @@ var CobraServer = &cobra.Command{
 		logger.Info("time: " + colors.Yellow(ServerTimer.Format("02/01/2006 15:04:05")))
 
 		Server.Start()
-
-		os.Exit(0)
 
 		return nil
 	},
