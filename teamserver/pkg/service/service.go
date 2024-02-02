@@ -271,7 +271,7 @@ func (s *Service) dispatch(response map[string]map[string]any, client *ClientSer
 								return
 							}
 
-							s.Data.ServerAgents.Agents[index].Info.LastCallIn = time.Now().Format("02-01-2006 15:04:05")
+							s.Data.ServerAgents.Agents[index].Info.LastCallIn = time.Now().UTC().Format("02-01-2006 15:04:05")
 
 							logger.Debug("Wrote to the client")
 

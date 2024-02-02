@@ -4847,7 +4847,7 @@ func (a *Agent) TaskDispatch(RequestID uint32, CommandID uint32, Parser *parser.
 			if Success == 1 {
 				if Parser.CanIRead([]parser.ReadType{parser.ReadBytes}) {
 					var BmpBytes = Parser.ParseBytes()
-					var Name = "Desktop_" + time.Now().Format("02.01.2006-05.04.05") + ".png"
+					var Name = "Desktop_" + time.Now().UTC().Format("02.01.2006-05.04.05") + ".png"
 
 					if len(BmpBytes) > 0 {
 						err := logr.LogrInstance.DemonSaveScreenshot(a.NameID, Name, BmpBytes)

@@ -25,7 +25,7 @@ func Authenticated(authed bool) packager.Package {
 		return packager.Package{
 			Head: packager.Head{
 				Event: packager.Type.InitConnection.Type,
-				Time:  time.Now().Format("02/01/2006 15:04:05"),
+				Time:  time.Now().UTC().Format("02/01/2006 15:04:05"),
 			},
 
 			Body: packager.Body{
@@ -39,7 +39,7 @@ func Authenticated(authed bool) packager.Package {
 		return packager.Package{
 			Head: packager.Head{
 				Event: packager.Type.InitConnection.Type,
-				Time:  time.Now().Format("02/01/2006 15:04:05"),
+				Time:  time.Now().UTC().Format("02/01/2006 15:04:05"),
 			},
 
 			Body: packager.Body{
@@ -57,7 +57,7 @@ func UserAlreadyExits() packager.Package {
 	return packager.Package{
 		Head: packager.Head{
 			Event: packager.Type.InitConnection.Type,
-			Time:  time.Now().Format("02/01/2006 15:04:05"),
+			Time:  time.Now().UTC().Format("02/01/2006 15:04:05"),
 		},
 
 		Body: packager.Body{
@@ -73,7 +73,7 @@ func UserDoNotExists() packager.Package {
 	return packager.Package{
 		Head: packager.Head{
 			Event: packager.Type.InitConnection.Type,
-			Time:  time.Now().Format("02/01/2006 15:04:05"),
+			Time:  time.Now().UTC().Format("02/01/2006 15:04:05"),
 		},
 
 		Body: packager.Body{
@@ -120,7 +120,7 @@ func SendProfile(profile *profile.Profile) packager.Package {
 	return packager.Package{
 		Head: packager.Head{
 			Event: packager.Type.InitConnection.Type,
-			Time:  time.Now().Format("02/01/2006 15:04:05"),
+			Time:  time.Now().UTC().Format("02/01/2006 15:04:05"),
 		},
 
 		Body: packager.Body{

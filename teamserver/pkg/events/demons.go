@@ -22,7 +22,7 @@ func (demons) NewDemon(Agent *agent.Agent) packager.Package {
 	)
 
 	Package.Head.Event   = packager.Type.Session.Type
-	Package.Head.Time    = time.Now().Format("02/01/2006 15:04:05")
+	Package.Head.Time    = time.Now().UTC().Format("02/01/2006 15:04:05")
 	Package.Head.OneTime = "true"
 
 	Package.Body.SubEvent = packager.Type.Session.NewSession
@@ -90,7 +90,7 @@ func (demons) DemonOutput(DemonID string, CommandID int, Output string) packager
 	}
 
 	Package.Head.Event = packager.Type.Session.Type
-	Package.Head.Time = time.Now().Format("02/01/2006 15:04:05")
+	Package.Head.Time = time.Now().UTC().Format("02/01/2006 15:04:05")
 
 	Package.Body.SubEvent = packager.Type.Session.Output
 	Package.Body.Info = make(map[string]interface{})
@@ -106,7 +106,7 @@ func (demons) CallBack(DemonID string, callback string) packager.Package {
 	var Package packager.Package
 
 	Package.Head.Event = packager.Type.Session.Type
-	Package.Head.Time = time.Now().Format("02/01/2006 15:04:05")
+	Package.Head.Time = time.Now().UTC().Format("02/01/2006 15:04:05")
 
 	Package.Body.SubEvent = packager.Type.Session.Output
 	Package.Body.Info = make(map[string]interface{})
@@ -122,7 +122,7 @@ func (demons) MarkAs(AgentID, Mark string) packager.Package {
 	var Package packager.Package
 
 	Package.Head.Event = packager.Type.Session.Type
-	Package.Head.Time = time.Now().Format("02/01/2006 15:04:05")
+	Package.Head.Time = time.Now().UTC().Format("02/01/2006 15:04:05")
 
 	Package.Body.SubEvent = packager.Type.Session.MarkAsDead
 	Package.Body.Info = make(map[string]interface{})

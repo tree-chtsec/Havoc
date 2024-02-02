@@ -447,7 +447,7 @@ func (t *Teamserver) ListenerStartNotify(Listener map[string]any) {
 		return
 	}
 
-	pk.Head.Time = time.Now().Format("02/01/2006 15:04:05")
+	pk.Head.Time = time.Now().UTC().Format("02/01/2006 15:04:05")
 	pk.Body.Info = map[string]any{
 		"Name":     ListenerName,
 		"Protocol": ListenerProt,

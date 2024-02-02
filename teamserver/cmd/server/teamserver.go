@@ -616,7 +616,7 @@ func (t *Teamserver) handleRequest(id string) {
 		}
 
 		pk := client.Packager.CreatePackage(string(EventPackage))
-		pk.Head.Time = time.Now().Format("02/01/2006 15:04:05")
+		pk.Head.Time = time.Now().UTC().Format("02/01/2006 15:04:05")
 
 		t.EventAppend(pk)
 		t.DispatchEvent(pk)

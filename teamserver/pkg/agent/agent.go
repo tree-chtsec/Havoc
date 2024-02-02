@@ -314,9 +314,9 @@ func RegisterInfoToInstance(Header Header, RegisterInfo map[string]any) *Agent {
 	}
 	
 
-	agent.Info.FirstCallIn = time.Now().Format("02/01/2006 15:04:05")
+	agent.Info.FirstCallIn = time.Now().UTC().Format("02/01/2006 15:04:05")
 	
-	agent.Info.LastCallIn = time.Now().Format("02-01-2006 15:04:05")
+	agent.Info.LastCallIn = time.Now().UTC().Format("02-01-2006 15:04:05")
 	
 
 	agent.BackgroundCheck = false
@@ -466,8 +466,8 @@ func ParseDemonRegisterRequest(AgentID int, Parser *parser.Parser, ExternalIP st
 
 			Session.NameID = fmt.Sprintf("%08x", DemonID)
 			Session.Info.MagicValue = MagicValue
-			Session.Info.FirstCallIn = time.Now().Format("02/01/2006 15:04:05")
-			Session.Info.LastCallIn = time.Now().Format("02-01-2006 15:04:05")
+			Session.Info.FirstCallIn = time.Now().UTC().Format("02/01/2006 15:04:05")
+			Session.Info.LastCallIn = time.Now().UTC().Format("02-01-2006 15:04:05")
 			Session.Info.Hostname = Hostname
 			Session.Info.DomainName = DomainName
 			Session.Info.Username = Username
@@ -737,7 +737,7 @@ func (a *Agent) GetQueuedJobs() []Job {
 }
 
 func (a *Agent) UpdateLastCallback(Teamserver TeamServer) {
-	a.Info.LastCallIn = time.Now().Format("02-01-2006 15:04:05")
+	a.Info.LastCallIn = time.Now().UTC().Format("02-01-2006 15:04:05")
 	Teamserver.AgentUpdate(a)
 
 	Teamserver.AgentLastTimeCalled(a.NameID, a.Info.LastCallIn, a.Info.SleepDelay, a.Info.SleepJitter, a.Info.KillDate, a.Info.WorkingHours)

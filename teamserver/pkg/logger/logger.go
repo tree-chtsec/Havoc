@@ -42,7 +42,7 @@ type Logger struct {
 
 func (logger *Logger) Info(args ...interface{}) {
     if logger.showTime {
-        logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.Blue("INFO") + "] ")
+        logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.Blue("INFO") + "] ")
     } else {
         logger.log.SetPrefix("[" + colors.Blue("INFO") + "] ")
     }
@@ -51,7 +51,7 @@ func (logger *Logger) Info(args ...interface{}) {
 
 func (logger *Logger) Good(args ...interface{}) {
     if logger.showTime {
-        logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.Green("GOOD") + "] ")
+        logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.Green("GOOD") + "] ")
     } else {
         logger.log.SetPrefix("[" + colors.Green("GOOD") + "] ")
     }
@@ -63,7 +63,7 @@ func (logger *Logger) Debug(args ...interface{}) {
     var Functions = strings.Split(Trace, "/")
     if logger.debug {
         if logger.showTime {
-            logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.Yellow("DBUG") + "] [" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + "]: ")
+            logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.Yellow("DBUG") + "] [" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + "]: ")
         } else {
             logger.log.SetPrefix("[" + colors.Yellow("DBUG") + "] [" + Functions[len(Functions)-1] + ":" + fmt.Sprintf("%03d", Line) + "]: ")
         }
@@ -76,7 +76,7 @@ func (logger *Logger) DebugError(args ...interface{}) {
     var Functions = strings.Split(Trace, "/")
     if logger.debug {
         if logger.showTime {
-            logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.BoldRed("DBER") + "] [" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + "]: ")
+            logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.BoldRed("DBER") + "] [" + colors.BlueUnderline(Functions[len(Functions)-1]+":"+strconv.Itoa(Line)) + "]: ")
         } else {
             logger.log.SetPrefix("[" + colors.BoldRed("DBER") + "] [" + Functions[len(Functions)-1] + ":" + fmt.Sprintf("%03d", Line) + "]: ")
         }
@@ -86,7 +86,7 @@ func (logger *Logger) DebugError(args ...interface{}) {
 
 func (logger *Logger) Warn(args ...interface{}) {
     if logger.showTime {
-        logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.Yellow("WARN") + "] ")
+        logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.Yellow("WARN") + "] ")
     } else {
         logger.log.SetPrefix("[" + colors.Yellow("WARN") + "] ")
     }
@@ -95,7 +95,7 @@ func (logger *Logger) Warn(args ...interface{}) {
 
 func (logger *Logger) Error(args ...interface{}) {
     if logger.showTime {
-        logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.Red("ERRO") + "] ")
+        logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.Red("ERRO") + "] ")
     } else {
         logger.log.SetPrefix("[" + colors.Red("ERRO") + "] ")
     }
@@ -104,7 +104,7 @@ func (logger *Logger) Error(args ...interface{}) {
 
 func (logger *Logger) Fatal(args ...interface{}) {
     if logger.showTime {
-        logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.BoldRed("FATA") + "] ")
+        logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.BoldRed("FATA") + "] ")
     } else {
         logger.log.SetPrefix("[" + colors.BoldRed("FATA") + "] ")
     }
@@ -114,7 +114,7 @@ func (logger *Logger) Fatal(args ...interface{}) {
 
 func (logger *Logger) Panic(args ...interface{}) {
     if logger.showTime {
-        logger.log.SetPrefix("[" + colors.Green(time.Now().Format("15:04:05")) + "] [" + colors.BoldRed("PANIC") + "] ")
+        logger.log.SetPrefix("[" + colors.Green(time.Now().UTC().Format("15:04:05")) + "] [" + colors.BoldRed("PANIC") + "] ")
     } else {
         logger.log.SetPrefix("[" + colors.BoldRed("PANIC") + "] ")
     }
